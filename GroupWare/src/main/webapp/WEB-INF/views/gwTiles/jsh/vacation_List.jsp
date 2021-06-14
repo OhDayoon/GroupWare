@@ -6,20 +6,31 @@
 <% String ctxPath = request.getContextPath(); %>
 
 <style type="text/css">
-   table, th, td {border: solid 1px gray;}
-
+   
     #table {width: 970px; border-collapse: collapse;}
-    #table th, #table td {padding: 5px;}
-    #table th {background-color: #DDD;}
+    #table th, #table td {padding: 5px; border: solid 1px gray;}
+    #table th{
+		background-color: #395673; 
+		color: #ffffff;
+		padding: 5px;
+		border: solid 1px #ccc;
+		border-collapse: collapse;
+	}
      
     .subjectStyle {font-weight: bold;
                    color: navy;
                    cursor: pointer;} 
+    .btn{
+     background-color: #99ccff;
+    }               
+    button.btn:hover{
+	 background-color: #c3c6c9;
+	}      
 </style>
 
 <script type="text/javascript">
 		$(document).ready(function(){
-			 $("div#submenu3").show();
+			// $("div#submenu3").show();
 			
 		    $("span.subject").bind("mouseover", function(event){
 		         var $target = $(event.target);
@@ -119,9 +130,9 @@
 		}); //end of  $(document).ready(function(){})--------------------------------------------
 		
 		 
-		  function goView(ano,vcatname){
+		  function goView(ano,vcatname,employeeid){
 		      
-			  <%-- location.href="<%= ctxPath%>/t1/view.tw?ano="+ano+"&ncatname="+ncatname; --%>
+			 
 			// === #124. 페이징 처리되어진 후 특정 글제목을 클릭하여 상세내용을 본 이후
 			    //           사용자가 목록보기 버튼을 클릭했을때 돌아갈 페이지를 알려주기 위해
 			    //           현재 페이지 주소를 뷰단으로 넘겨준다.
@@ -129,6 +140,7 @@
 			    	var frm =document.goViewFrm;
 			    	frm.ano.value = ano;
 			    	frm.vcatname.value = vcatname;
+			    	frm.employeeid.value=employeeid;
 			    	
 			    	frm.method = "get";
 			    	frm.action = "<%= ctxPath%>/t1/vacView.tw";
@@ -143,9 +155,9 @@
 		   
 </script>
 
-<div style="padding-left: 3%;">
+<div  style="padding-left: 3%; margin: 50px 50px;">
 
-   <h2 style="margin-bottom: 30px;">지출결재내역</h2>
+   <h2 style="margin-bottom: 30px;">근태결재내역</h2>
    
    
    
@@ -165,11 +177,11 @@
          <option value="name">글쓴이</option>
       </select>
       <input type="text" name="searchWord" id="searchWord" size="40" autocomplete="off" /> 
-      <input type="submit"  value="검색"/>
+      <input type="submit" id="btn" value="검색"/>
    </form>
    
    <%-- === # 검색어 입력시 자동글 완성하기 1 === --%>
-   <div id="displayList" style="border: solid 1px gray; border-top: 0px; width: 331px; height: 100px; margin-left: 70px; padding-top: 5px; overflow: auto;">
+   <div id="displayList" style="border: solid 1px gray; border-top: 0px;  width: 320px; height: 100px; margin-left: 237px; padding-top: 5px; overflow: auto;">
       
    </div>
    
@@ -187,26 +199,16 @@
 	         <td align="center">${evo.rno}</td>
 	         
 	         
-	         <td align="left"> ${evo.vcatname} 
-	         
-	         
-	          <%-- 첨부파일이 있는 경우 시작 --%>
-            
-             <%-- 첨부파일이 있는 경우 끝 --%>
-	         
-	         
-	         
-	         
-	         </td>
+	         <td align="left"> ${evo.vcatname}</td>
 	         
 	         
 	         <td align="center">
 	          <%-- 첨부파일이 있는 경우 시작 --%>
              	<c:if test="${not empty evo.fileName}">
-	         			<span class="subject" onclick="goView('${evo.fk_ano}','${evo.vcatname}')">${evo.atitle}</span>&nbsp;<img src="<%=ctxPath%>/resources/images/jsh/disk.gif" />
+	         			<span class="subject" onclick="goView('${evo.ano}','${evo.vcatname}' ,'${evo.employeeid}')">${evo.atitle}</span>&nbsp;<img src="<%=ctxPath%>/resources/images/jsh/disk.gif" />
         		</c:if>
         		<c:if test="${empty evo.fileName}">
-	         			<span class="subject" onclick="goView('${evo.fk_ano}','${evo.vcatname}')">${evo.atitle}</span>&nbsp;
+	         			<span class="subject" onclick="goView('${evo.ano}','${evo.vcatname}','${evo.employeeid}')">${evo.atitle}</span>&nbsp;
         		</c:if>
         	   <%-- 첨부파일이 있는 경우 끝 --%>
      	     </td>
@@ -229,6 +231,7 @@
 	        현재 페이지 주소를 뷰단으로 넘겨준다. --%>
 	        
    <form name="goViewFrm">
+    <input type="hidden" name="employeeid" />
    	<input type="hidden" name="ano"/>
    	<input type="hidden" name="vcatname"/>
 	<input type="hidden" name="gobackURL" value="${requestScope.gobackURL}"/>

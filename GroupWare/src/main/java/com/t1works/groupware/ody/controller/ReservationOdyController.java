@@ -81,8 +81,9 @@ public class ReservationOdyController {
 	}
 	
 	// 회의실 예약하기
+	@ResponseBody
 	@RequestMapping(value="/t1/addReserveRoom.tw" , method = {RequestMethod.POST})
-	public ModelAndView addReserveRoom(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
+	public String addReserveRoom(HttpServletRequest request, HttpServletResponse response) {
 		
 		String rtimeArr = request.getParameter("rtime");
 		
@@ -108,18 +109,9 @@ public class ReservationOdyController {
 		}
 	
 
-		if(n>0) {
-			mav.addObject("message","해당 회의실이 예약되었습니다.");
-			mav.addObject("loc",request.getContextPath()+"/t1/rsRoom.tw");
-		}
-		else {
-			mav.addObject("message","회의실 예약을 실패하였습니다.");
-			mav.addObject("loc",request.getContextPath()+"/t1/rsRoom.tw");
-		}
-		
-		mav.setViewName("msg");
-
-		return mav;
+		JSONObject jsObj = new JSONObject();
+		jsObj.put("n", n);
+		return jsObj.toString();
 	}
 	
 	
@@ -231,8 +223,9 @@ public class ReservationOdyController {
 	
 	
 	// 사무용품 예약하기
+		@ResponseBody
 		@RequestMapping(value="/t1/addReserveGoods.tw" , method = {RequestMethod.POST})
-		public ModelAndView addReserveGoods(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
+		public String addReserveGoods(HttpServletRequest request, HttpServletResponse response) {
 			
 			String rgtimeArr = request.getParameter("rgtime");
 			
@@ -259,18 +252,9 @@ public class ReservationOdyController {
 				n = service.insert_rsGoods(paraMap);
 			}
 			
-			
-			if(n>0) {
-				mav.addObject("message","해당 사무용품이 예약되었습니다.");
-				mav.addObject("loc",request.getContextPath()+"/t1/rsGoods.tw");
-			}
-			else {
-				mav.addObject("message","사무용품 예약을 실패하였습니다.");
-				mav.addObject("loc",request.getContextPath()+"/t1/rsGoods.tw");
-			}
-			
-			mav.setViewName("msg");
-			return mav;
+			JSONObject jsObj = new JSONObject();
+			jsObj.put("n", n);
+			return jsObj.toString();
 		}
 		
 
@@ -302,8 +286,9 @@ public class ReservationOdyController {
 	}
 	
 	// 차량 예약하기
+	@ResponseBody
 	@RequestMapping(value="/t1/addReserveCar.tw", method= {RequestMethod.POST})
-	public ModelAndView addReserveCar(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
+	public String addReserveCar(HttpServletRequest request, HttpServletResponse response) {
 		
 		String rctimeArr = request.getParameter("rctime");
 		
@@ -332,18 +317,9 @@ public class ReservationOdyController {
 			n = service.insert_rsCar(paraMap);
 		}
 	
-		if(n>0) {
-			mav.addObject("message","해당 차량이 예약되었습니다.");
-			mav.addObject("loc",request.getContextPath()+"/t1/rsCar.tw");
-		}
-		else {
-			mav.addObject("message","차량을 실패하였습니다.");
-			mav.addObject("loc",request.getContextPath()+"/t1/rsCar.tw");
-		}
-		
-		mav.setViewName("msg");
-
-		return mav;
+		JSONObject jsObj = new JSONObject();
+		jsObj.put("n", n);
+		return jsObj.toString();
 	}
 	
 	// 차량 예약 삭제

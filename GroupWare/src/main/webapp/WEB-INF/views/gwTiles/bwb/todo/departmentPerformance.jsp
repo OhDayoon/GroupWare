@@ -54,15 +54,6 @@
 <script src="https://code.highcharts.com/modules/export-data.js"></script>
 <script src="https://code.highcharts.com/modules/accessibility.js"></script>
 
-<script type="text/javascript">
-	
-
-
-</script>
-
-
-
-
 <figure class="highcharts-figure">
 	<div id="siljuk">
 		<select id="siljukMonth" style="float:right;">
@@ -73,7 +64,7 @@
 			</c:forEach>
 		</select>
 	</div>
-    <div id="container"></div>
+    <div id="container" style="width:900px; height:600px; margin-left:-200px; margin-top:40px;"></div>
 </figure>
 
 <script type="text/javascript">
@@ -88,7 +79,9 @@
 		var minYear = "${paraMap.minYear}";
 		var maxMonth = Number("${paraMap.maxMonth}");
 		var maxYear = "${paraMap.maxYear}";
-	
+		
+		
+		
 		// 문서 초기 로딩 시 select태그에 최근 년에 해당하는 월 선택값 넣어주기
 		$("select#siljukYear").val(maxYear);
 		
@@ -276,6 +269,8 @@
 						   
 						}); // end of Highcharts.chart
 						// 차트 구현하기 끝
+						
+						$("text.highcharts-axis-title").text("실적건수");
 						
 					},
 			    	error: function(request, status, error){

@@ -78,14 +78,10 @@ div.room{
 	background-color: #b1b8cd;
 }
 
-button#btn_show{
-	float: right;
-	margin-top: 20px;
-	margin-bottom: 20px;
-	margin-right: 50px;
+.info{
+	background-color: #b1b8cd;
+	cursor: pointer;
 }
-
-
 </style>
 
 
@@ -111,21 +107,32 @@ if(curDay.toString().length < 2){
 var curYear = curDate.getFullYear();
 var curTime = curYear + "" + curMonth + "" + curDay;
 
-
+var cgtime= curYear + "-" + curMonth + "-" + curDay;
 
 $(document).ready(function(){
 	
-	$("button#btn_Reserve").hide(); // 등록버튼 숨기기
+	// 등록버튼 숨기기
+	$("button#btn_Reserve").hide(); 
 	
 	var roomno="";
 	var chgdate="";
 
+	// 변경 날짜에 현재 날짜 넣어주기
+	$("input#chgdate").val(cgtime); 
+
+	// 회의실 종류에서 마우스 오버시
 	
-	$("tr.selectRoom").hover(function(){
-		$(this).css("cursor", "pointer");
+	$("tr.selectRoom").bind("mouseover",function(){			
+		$(this).addClass("info");			
+	}); 
+	
+	$("tr.selectRoom").bind("mouseout",function(){
+		$(this).removeClass("info");
 	});
 	
-
+	
+	
+	// 회의실 종류 선택했을 때
 	$("tr.selectRoom").click(function(){
 		$("tr.selectRoom").removeClass("roomClick");
 		var roomno = $(this).find("td#findno").html();
@@ -134,10 +141,14 @@ $(document).ready(function(){
 		$("input#roomno").val(roomno);
 		$("input#roomname").val(roomname);
 		$(this).addClass("roomClick");
+		
+		ajaxReserve();
+		
 	});
 	
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
+	<%-- full calendar API 시작--%>
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: 'dayGridMonth',
           locale: 'ko',
           selectable: true,
@@ -145,64 +156,35 @@ $(document).ready(function(){
 	      headerToolbar: {
 	    	    left: 'prev',
 	    	    center: 'title',
-	    	    right: 'next' // today 추가?
+	    	    right: 'next' 
 	    	  },
-	    	  
+	      // 날짜 클릭  
           dateClick: function(info) {
-        	//  alert('Date: ' + info.dateStr);
+        	 // alert('Date: ' + info.dateStr);
         	    $(".fc-day").css('background','none'); // 현재 날짜 배경색 없애기
         	    info.dayEl.style.backgroundColor = '#b1b8cd';
         	    chgdate=info.dateStr;
-        	    $("input#chgdate").val(chgdate);
+        	    $("input#chgdate").val(chgdate); 
+        	    
+        	    if($("input#roomno").val().trim()!=""){
+        	    	ajaxReserve();
+        	    }
         	  }
-        });
-        
-        
+      });
+
         calendar.render();
         calendar.setOption('height', 510);
+        <%-- full calendar API 끝--%>
+	 
         
-		
-        $("button#btn_show").click(function(){
-        	
-        	var roomno=$("input#roomno").val();
-        	var chgdate=$("input#chgdate").val();
-        	 if( roomno!= "" && chgdate != "" ){
-             	$.ajax({
-             		url:"<%= ctxPath%>/t1/rsroom/reserveRoom.tw",
-             		data:{"roomno":roomno, "chgdate":chgdate},
-             		dataType: "json",
-             		success:function(json){
-             		 //	console.log("json:"+json);
-             		 	
-             		 // 불러온 배열을 함수에 값 지정해주기
-             		 	showReserve(json);
-             		}
-             		, error: function(request, status, error){
-        	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-          	      }
-             	});
-             	
-             }
-        	 else if(roomno!= "" && chgdate == ""){
-        		 alert("날짜를 선택하세요");
-        	 }
-        	 else if(roomno == "" && chgdate != ""){
-        		 alert("회의실을 선택하세요");
-        	 }
-        	 else{
-        		 alert("날짜 및 회의실을 선택하세요");
-        	 }
-        });
-        
-        // '등록' 버튼 클릭 이벤트
-    	$("button#btn_Reserve").click(function(){
+       // '등록' 버튼 클릭 이벤트
+       $("button#btn_Reserve").click(function(){
     		func_reserve();
-    	});
+       });
     
-    	$("div#myModal").modal('hide');
     	
-        // 모달창에서 예약
-    	$("button#realReserve").click(function(event){
+       // 모달창에서 예약버튼 클릭
+       $("button#realReserve").click(function(event){
     		 event.stopPropagation();
              event.preventDefault();
              
@@ -212,20 +194,51 @@ $(document).ready(function(){
             	 alert("목적을 입력하세요");
              }
              else{
-            	 <%-- form으로 값 넘겨주기--%>
-            	 var frm = document.reserveRoom;
-            	 frm.method = "POST";
-                 frm.action = "<%= ctxPath%>/t1/addReserveRoom.tw";
-                 frm.submit();  
+                 $.ajax({
+                	url: "<%= ctxPath%>/t1/addReserveRoom.tw",
+                	type: "post",
+                	data: $("form[name=reserveRoom]").serialize(),
+                	dataType: "json",
+                	success:function(json){
+                		if(json.n>0){
+                			alert("예약되었습니다.");
+                			$("#myModal").modal('hide');
+                			ajaxReserve();
+                		}
+                		
+                	},
+                	error: function(request, status, error){
+        	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+                	}
+                 });
         
              }
     	});
     	
 }); // end of $(document).ready(function(){}------
 
+	//선택한 날짜와 사무용품 종류를 ajax를 이용하여 예약 가능한 시간 보여주기	
+	function ajaxReserve(){
+		var roomno=$("input#roomno").val();
+    	var chgdate=$("input#chgdate").val();
+    	 if( roomno!= "" && chgdate != "" ){
+         	$.ajax({
+         		url:"<%= ctxPath%>/t1/rsroom/reserveRoom.tw",
+         		data:{"roomno":roomno, "chgdate":chgdate},
+         		dataType: "json",
+         		success:function(json){
+         		 	showReserve(json);
+         		}
+         		, error: function(request, status, error){
+    	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+      	      }
+         	});
+	
+    	 }
+	}
+	
+	// ajaxReserve() 에서 받은 json 데이터 값으로 예약 가능한 시간 보여주기
 	function showReserve(json){
-	//	console.log("개수:"+json.length); 
-		
 		var chgdate=$("input#chgdate").val();
 
 		// 선택한 날짜 숫자로 바꿔주는 과정
@@ -332,13 +345,7 @@ $(document).ready(function(){
 						else{ // 현재 날짜가 클릭한 날짜보다 작은 경우
 							html +="<td><button id='btn_delete' class='btn_r' onclick='deleteReserve("+rsroomno[index]+")';>취소</button></td></tr>";
 						}
-						
-						
-						
-						
 					}
-			
-				
 			} 
 			else {
 
@@ -349,7 +356,7 @@ $(document).ready(function(){
 			$("tbody#rstimeList").append(html);
 		}// end of for----
 		
-		
+		// 등록버튼 보여주기
 		$("button#btn_Reserve").show();
 	} // end of reservationList
 			
@@ -405,7 +412,6 @@ $(document).ready(function(){
 			
 			showTime(chkTime);
 			
-			
 			$("button[id='btn_Reserve']").attr("data-target","#myModal");
 			$("td#roomname").html(roomname);
 			
@@ -445,7 +451,7 @@ $(document).ready(function(){
      		dataType: "json",
      		success:function(json){
      		 	alert("예약내역이 삭제되었습니다.");
-     		 	location.href="javascript:history.go(0);"; 
+     		 	ajaxReserve();
      		}
      		, error: function(request, status, error){
 	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -458,10 +464,10 @@ $(document).ready(function(){
 	
 </script>
 
-<div class="rsRoomContainer" style="margin-left: 80px;"> 
-	<h3 style="margin-top: 20px !important;">회의실 대여신청</h3>
+<div class="rsRoomContainer" style="margin: 30px 0px 30px 50px;"> 
+	<i class='fas fa-tasks fa-lg' style='font-size:24px'></i>&nbsp;<span style="font-size: 18pt; font-weight: bold;">회의실 대여신청</span>
 	
-
+	<div>
 		<div id="calendarWrapper">
 			<div id="calendar" style="width: 450px; margin-top: 50px; margin-bottom: 80px; margin-left: 200px;" ></div>
 		</div>
@@ -483,9 +489,8 @@ $(document).ready(function(){
 			        	</c:forEach>
 	          		</c:if>
 	         </table>
-	         <button id="btn_show" class="btn_r" style="width: 120px;">예약현황보기</button>
 		</div>
-
+	</div>
 	
 	<div class="middle">
 		<table  style="width: 92%; " class="table table-bordered" id="rsroom">

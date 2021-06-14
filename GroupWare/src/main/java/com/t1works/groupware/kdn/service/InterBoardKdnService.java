@@ -50,11 +50,13 @@ public interface InterBoardKdnService {
 	
 	int getSuggCmntTotalPage(Map<String, String> paraMap); // 원게시물에 딸린 댓글 totalPage 알아오기(Ajax 로 처리)
 	
-	int delSuggComment(String seq); // 댓글 삭제하기
+	int delSuggComment(CommentKdnVO commentvo); // 댓글 삭제하기
 	
-	int editSuggComment(String seq); // (건의사항) 댓글 수정하기
+	int editSuggComment(CommentKdnVO commentvo); // (건의사항) 댓글 수정하기
 	
 	int suggUploadWithFile(BoardKdnVO boardvo); // 파일첨부가 있는 글쓰기
+	
+	int getSuggCmntTotalCnt(String seq); // 건의사항 특정 글 1개의 총 댓글 수 구해오기
 	
 	// === 자유게시판 ===
 	
@@ -78,35 +80,17 @@ public interface InterBoardKdnService {
 
 	int getCommentTotalPage(Map<String, String> paraMap); // 원게시물에 딸린 댓글 totalPage 알아오기(Ajax 로 처리)
 
-	int delGenComment(String seq); //(자유게시판) 댓글 삭제하기
-
 	int genUploadWithFile(BoardKdnVO boardvo); // (자유게시판) 파일첨부가 있는 글쓰기
 
 	int generalEditNewAttach(BoardKdnVO boardvo); // 첨부파일 변경이 있는 글수정
 
-	
+	int delGenComment(CommentKdnVO commentvo); // (자유게시판) 댓글 삭제하기
 
-	
+	int editGenComment(CommentKdnVO commentvo); // 자유게시판 댓글 수정하기
 
-	
+	int getGenCmntTotalCnt(String seq); // 자유게시판 특정 글 1개의 총 댓글 수 구해오기
 
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
+	int checkNewNotice(); // 신규 공지사항 유무 확인하기
 
 	
 	

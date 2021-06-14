@@ -69,7 +69,7 @@ public class ScheduleOdyController {
 	}
 	
 	// 일정관리 등록 페이지로 이동
-	@RequestMapping(value="/t1/insertSchedule.tw", method = {RequestMethod.POST})
+	@RequestMapping(value="/t1/insertSchedule.tw", method = {RequestMethod.GET})
 	public String requiredLogin_insertSchedule(HttpServletRequest request, HttpServletResponse response) {
 		
 		// form에서 받아온 날짜

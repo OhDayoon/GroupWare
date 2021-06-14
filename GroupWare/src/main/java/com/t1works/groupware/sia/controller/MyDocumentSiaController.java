@@ -26,6 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.t1works.groupware.common.FileManager;
 import com.t1works.groupware.bwb.model.MemberBwbVO;
+import com.t1works.groupware.bwb.service.InterHomepageBwbService;
 import com.t1works.groupware.sia.model.ApprovalSiaVO;
 import com.t1works.groupware.sia.service.InterMyDocumentSiaService;
 
@@ -39,6 +40,10 @@ public class MyDocumentSiaController {
 	// 파일업로드 및 다운로드를 해주는 FileManager 클래스 의존객체 주입하기  
 	@Autowired // Type에 따라 알아서 Bean 을 주입해준다.
 	private FileManager fileManager;
+	
+	@Autowired // Type에 따라 알아서 Bean 을 주입해준다.
+	private InterHomepageBwbService service2;
+	
 	
 	// 내문서함 - 수신함 - 일반결재문서 (기본으로 일반결재문서가 보여짐!)
 	@RequestMapping(value="/t1/myDocuNorm_rec.tw")
@@ -143,6 +148,8 @@ public class MyDocumentSiaController {
 	public String requiredLogin_myDocuNorm_temp(HttpServletRequest request, HttpServletResponse response) {
 		
 		request.setAttribute("ano", request.getParameter("ano"));
+		request.setAttribute("fromDate", request.getParameter("fromDate"));
+		request.setAttribute("toDate", request.getParameter("toDate"));
 		request.setAttribute("ncat", request.getParameter("ncat"));
 		request.setAttribute("sort", request.getParameter("sort"));		
 		request.setAttribute("searchWord", request.getParameter("searchWord"));
@@ -156,6 +163,8 @@ public class MyDocumentSiaController {
 	public String requiredLogin_myDocuSpend_temp(HttpServletRequest request, HttpServletResponse response) {
 		
 		request.setAttribute("ano", request.getParameter("ano"));
+		request.setAttribute("fromDate", request.getParameter("fromDate"));
+		request.setAttribute("toDate", request.getParameter("toDate"));
 		request.setAttribute("scat", request.getParameter("scat"));
 		request.setAttribute("sort", request.getParameter("sort"));		
 		request.setAttribute("searchWord", request.getParameter("searchWord"));
@@ -169,6 +178,8 @@ public class MyDocumentSiaController {
 	public String requiredLogin_myDocuVacation_temp(HttpServletRequest request, HttpServletResponse response) {
 		
 		request.setAttribute("ano", request.getParameter("ano"));
+		request.setAttribute("fromDate", request.getParameter("fromDate"));
+		request.setAttribute("toDate", request.getParameter("toDate"));
 		request.setAttribute("vno", request.getParameter("vno"));
 		request.setAttribute("sort", request.getParameter("sort"));		
 		request.setAttribute("searchWord", request.getParameter("searchWord"));
@@ -317,6 +328,7 @@ public class MyDocumentSiaController {
 				jsonObj.put("astatus", appvo.getAstatus());
 				jsonObj.put("asdate", appvo.getAsdate());
 				jsonObj.put("rno", appvo.getRno());
+				jsonObj.put("fileName", appvo.getFileName());
 				
 				jsonArr.put(jsonObj);
 			}
@@ -532,6 +544,7 @@ public class MyDocumentSiaController {
 				jsonObj.put("astatus", appvo.getAstatus());
 				jsonObj.put("asdate", appvo.getAsdate());
 				jsonObj.put("rno", appvo.getRno());
+				jsonObj.put("fileName", appvo.getFileName());
 				
 				jsonArr.put(jsonObj);
 			}
@@ -745,6 +758,7 @@ public class MyDocumentSiaController {
 				jsonObj.put("astatus", appvo.getAstatus());
 				jsonObj.put("asdate", appvo.getAsdate());
 				jsonObj.put("rno", appvo.getRno());
+				jsonObj.put("fileName", appvo.getFileName());
 				
 				jsonArr.put(jsonObj);
 			}
@@ -899,6 +913,10 @@ public class MyDocumentSiaController {
 		
 		JSONArray jsonArr = new JSONArray(); // []
 		
+		HttpSession session = request.getSession();
+		MemberBwbVO loginuser = (MemberBwbVO) session.getAttribute("loginuser");		
+		String userid = loginuser.getEmployeeid();
+		
 		if(opinionList != null) {
 			for(ApprovalSiaVO avo : opinionList) {
 				JSONObject jsonObj = new JSONObject();				
@@ -907,6 +925,9 @@ public class MyDocumentSiaController {
 				jsonObj.put("pname", avo.getPname());
 				jsonObj.put("odate", avo.getOdate());
 				jsonObj.put("ocontent", avo.getOcontent());
+				jsonObj.put("employeeid", avo.getEmployeeid());
+				jsonObj.put("userid", userid);
+				jsonObj.put("ono", avo.getOno());
 				
 				jsonArr.put(jsonObj);
 			}
@@ -951,13 +972,7 @@ public class MyDocumentSiaController {
 		
 		JSONObject jsonObj = new JSONObject();		
 		jsonObj.put("n", n);
-		/*
-		 * jsonObj.put("employeeid", avo.getEmployeeid()); jsonObj.put("arecipient1",
-		 * avo.getArecipient1()); jsonObj.put("arecipient2", avo.getArecipient2());
-		 * jsonObj.put("arecipient3", avo.getArecipient3()); jsonObj.put("fk_pcode",
-		 * avo.getFk_pcode());
-		 */
-	
+		
 		return jsonObj.toString();
 	}
 	
@@ -965,19 +980,23 @@ public class MyDocumentSiaController {
 	// 내문서함 - 수신함 - 반려버튼 클릭
 	@ResponseBody
 	@RequestMapping(value="/t1/reject.tw", method= {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
-	public String reject(HttpServletRequest request) { 
+	public String reject(HttpServletRequest request, ApprovalSiaVO avo) { 
 		
 		String ano = request.getParameter("ano");
 		String arecipient1 = request.getParameter("arecipient1");
 		String arecipient2 = request.getParameter("arecipient2");
-		String arecipient3 = request.getParameter("arecipient3");	
+		String arecipient3 = request.getParameter("arecipient3");
+		String employeeid = request.getParameter("employeeid");
+		String vcatname = request.getParameter("vcatname");
 		
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("ano", ano);  
 		paraMap.put("arecipient1", arecipient1);
 		paraMap.put("arecipient2", arecipient2);
-		paraMap.put("arecipient3", arecipient3);		
-	 
+		paraMap.put("arecipient3", arecipient3);
+		paraMap.put("employeeid", employeeid);
+		paraMap.put("vcatname", vcatname);
+		
 		int n = service.reject(paraMap); 	
 		
 		JSONObject jsonObj = new JSONObject();		
@@ -985,6 +1004,35 @@ public class MyDocumentSiaController {
 				
 		return jsonObj.toString();
 	}
+	
+	
+	// 결재로그 리스트보기
+	@ResponseBody
+	@RequestMapping(value="/t1/approvalLogList.tw", produces="text/plain;charset=UTF-8")
+	public String approvalLogList(HttpServletRequest request) {
+		
+		String parentAno = request.getParameter("parentAno");
+		
+		List<ApprovalSiaVO> approvalLogList = service.approvalLogList(parentAno);
+		
+		JSONArray jsonArr = new JSONArray();
+		
+		if(approvalLogList != null) {
+			for(ApprovalSiaVO avo : approvalLogList) {
+				JSONObject jsonObj = new JSONObject();
+				jsonObj.put("dname", avo.getDname());
+				jsonObj.put("name", avo.getName());
+				jsonObj.put("pname", avo.getPname());
+				jsonObj.put("logstatus", avo.getLogstatus());
+				jsonObj.put("logdate", avo.getLogdate());
+				jsonObj.put("pcode", avo.getPcode());
+				
+				jsonArr.put(jsonObj);
+			}
+		}
+		
+		return jsonArr.toString();
+	}	
 	
 	//////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////
@@ -1079,6 +1127,7 @@ public class MyDocumentSiaController {
 				jsonObj.put("astatus", appvo.getAstatus());
 				jsonObj.put("asdate", appvo.getAsdate());
 				jsonObj.put("rno", appvo.getRno());
+				jsonObj.put("fileName", appvo.getFileName());
 				
 				jsonArr.put(jsonObj);
 			}
@@ -1294,6 +1343,7 @@ public class MyDocumentSiaController {
 				jsonObj.put("astatus", appvo.getAstatus());
 				jsonObj.put("asdate", appvo.getAsdate());
 				jsonObj.put("rno", appvo.getRno());
+				jsonObj.put("fileName", appvo.getFileName());
 				
 				jsonArr.put(jsonObj);
 			}
@@ -1492,7 +1542,7 @@ public class MyDocumentSiaController {
 		paraMap.put("a", a);
 		paraMap.put("startRno", String.valueOf(startRno));
 		paraMap.put("endRno", String.valueOf(endRno));
-		paraMap.put("userid", userid);
+		paraMap.put("userid", userid);		
 		
 		List<ApprovalSiaVO> approvalvo = service.getVacation_sendlist(paraMap);		
 		
@@ -1507,6 +1557,7 @@ public class MyDocumentSiaController {
 				jsonObj.put("astatus", appvo.getAstatus());
 				jsonObj.put("asdate", appvo.getAsdate());
 				jsonObj.put("rno", appvo.getRno());
+				jsonObj.put("fileName", appvo.getFileName());
 				
 				jsonArr.put(jsonObj);
 			}
@@ -1640,12 +1691,18 @@ public class MyDocumentSiaController {
 	@ResponseBody
 	@RequestMapping(value="/t1/norm_templist.tw", produces="text/plain;charset=UTF-8")
 	public String norm_templist(HttpServletRequest request) {
-				
+		
+		String fromDate = request.getParameter("fromDate");
+		String toDate = request.getParameter("toDate");
 		String ncat = request.getParameter("ncat");
 		String sort = request.getParameter("sort");
 		String searchWord = request.getParameter("searchWord");
 		String currentShowPageNo = request.getParameter("currentShowPageNo");
-				
+		
+		if(fromDate == null || toDate == null) {
+			fromDate = "";
+			toDate = "";
+		}
 		if(sort == null || (!"atitle".equals(sort) && !"ano".equals(sort))) {
 			sort = "";
 		}
@@ -1692,6 +1749,8 @@ public class MyDocumentSiaController {
 		String userid = loginuser.getEmployeeid();		
 		
 		Map<String, String> paraMap = new HashMap<>();		
+		paraMap.put("fromDate", fromDate);
+		paraMap.put("toDate", toDate);
 		paraMap.put("sort", sort);
 		paraMap.put("searchWord", searchWord);
 		paraMap.put("a", a);
@@ -1708,8 +1767,10 @@ public class MyDocumentSiaController {
 				JSONObject jsonObj = new JSONObject();
 				jsonObj.put("atitle", appvo.getAtitle());
 				jsonObj.put("ano", appvo.getAno());
-				jsonObj.put("ncatname", appvo.getNcatname());				
+				jsonObj.put("ncatname", appvo.getNcatname());
+				jsonObj.put("asdate", appvo.getAsdate());
 				jsonObj.put("rno", appvo.getRno());
+				jsonObj.put("fileName", appvo.getFileName());
 				
 				jsonArr.put(jsonObj);
 			}
@@ -1723,11 +1784,17 @@ public class MyDocumentSiaController {
 	@RequestMapping(value="/t1/getNormTempTotalPage.tw", method= {RequestMethod.GET})
 	public String getNormTempTotalPage(HttpServletRequest request) {
 		
+		String fromDate = request.getParameter("fromDate");
+		String toDate = request.getParameter("toDate");
 		String ncat = request.getParameter("ncat");
 		String sort = request.getParameter("sort");
 		String searchWord = request.getParameter("searchWord");
 		String sizePerPage = request.getParameter("sizePerPage");
 		
+		if(fromDate == null || toDate == null) {
+			fromDate = "";
+			toDate = "";
+		}
 		if(sort == null || (!"atitle".equals(sort) && !"ano".equals(sort))) {
 			sort = "";
 		}
@@ -1759,6 +1826,8 @@ public class MyDocumentSiaController {
 		String userid = loginuser.getEmployeeid();
 		
 		Map<String, String> paraMap = new HashMap<>();		
+		paraMap.put("fromDate", fromDate);
+		paraMap.put("toDate", toDate);
 		paraMap.put("sort", sort);
 		paraMap.put("searchWord", searchWord);
 		paraMap.put("a", a);
@@ -1782,7 +1851,9 @@ public class MyDocumentSiaController {
 		String ncatname = request.getParameter("ncatname");
 				
 		mav.addObject("ano", request.getParameter("ano"));
-		mav.addObject("ncatname", request.getParameter("ncatname"));		
+		mav.addObject("ncatname", request.getParameter("ncatname"));
+		mav.addObject("fromDate", request.getParameter("fromDate"));
+		mav.addObject("toDate", request.getParameter("toDate"));
 		mav.addObject("ncat", request.getParameter("ncat"));
 		mav.addObject("sort", request.getParameter("sort"));		
 		mav.addObject("searchWord", request.getParameter("searchWord"));
@@ -1826,11 +1897,17 @@ public class MyDocumentSiaController {
 	@RequestMapping(value="/t1/spend_templist.tw", produces="text/plain;charset=UTF-8")
 	public String spend_templist(HttpServletRequest request) {
 		
+		String fromDate = request.getParameter("fromDate");
+		String toDate = request.getParameter("toDate");
 		String scat = request.getParameter("scat");
 		String sort = request.getParameter("sort");
 		String searchWord = request.getParameter("searchWord");
 		String currentShowPageNo = request.getParameter("currentShowPageNo");
 				
+		if(fromDate == null || toDate == null) {
+			fromDate = "";
+			toDate = "";
+		}
 		if(sort == null || (!"atitle".equals(sort) && !"ano".equals(sort))) {
 			sort = "";
 		}
@@ -1877,6 +1954,8 @@ public class MyDocumentSiaController {
 		String userid = loginuser.getEmployeeid();
 		
 		Map<String, String> paraMap = new HashMap<>();		
+		paraMap.put("fromDate", fromDate);
+		paraMap.put("toDate", toDate);
 		paraMap.put("sort", sort);
 		paraMap.put("searchWord", searchWord);
 		paraMap.put("a", a);
@@ -1895,7 +1974,9 @@ public class MyDocumentSiaController {
 				jsonObj.put("atitle", appvo.getAtitle());
 				jsonObj.put("ano", appvo.getAno());
 				jsonObj.put("scatname", appvo.getScatname());
+				jsonObj.put("asdate", appvo.getAsdate());
 				jsonObj.put("rno", appvo.getRno());
+				jsonObj.put("fileName", appvo.getFileName());
 				
 				jsonArr.put(jsonObj);
 			}
@@ -1910,11 +1991,17 @@ public class MyDocumentSiaController {
 	@RequestMapping(value="/t1/getSpendTempTotalPage.tw", method= {RequestMethod.GET})
 	public String getSpendTempTotalPage(HttpServletRequest request) {
 		
+		String fromDate = request.getParameter("fromDate");
+		String toDate = request.getParameter("toDate");
 		String scat = request.getParameter("scat");
 		String sort = request.getParameter("sort");
 		String searchWord = request.getParameter("searchWord");
 		String sizePerPage = request.getParameter("sizePerPage");
 		
+		if(fromDate == null || toDate == null) {
+			fromDate = "";
+			toDate = "";
+		}
 		if(sort == null || (!"atitle".equals(sort) && !"ano".equals(sort))) {
 			sort = "";
 		}
@@ -1946,6 +2033,8 @@ public class MyDocumentSiaController {
 		String userid = loginuser.getEmployeeid();
 		
 		Map<String, String> paraMap = new HashMap<>();		
+		paraMap.put("fromDate", fromDate);
+		paraMap.put("toDate", toDate);
 		paraMap.put("sort", sort);
 		paraMap.put("searchWord", searchWord);
 		paraMap.put("a", a);
@@ -1969,7 +2058,9 @@ public class MyDocumentSiaController {
 		String scatname = request.getParameter("scatname");
 		
 		mav.addObject("ano", request.getParameter("ano"));
-		mav.addObject("scatname", request.getParameter("scatname"));		
+		mav.addObject("scatname", request.getParameter("scatname"));
+		mav.addObject("fromDate", request.getParameter("fromDate"));
+		mav.addObject("toDate", request.getParameter("toDate"));
 		mav.addObject("scat", request.getParameter("scat"));
 		mav.addObject("sort", request.getParameter("sort"));		
 		mav.addObject("searchWord", request.getParameter("searchWord"));
@@ -2012,12 +2103,18 @@ public class MyDocumentSiaController {
 	@ResponseBody
 	@RequestMapping(value="/t1/vacation_templist.tw", produces="text/plain;charset=UTF-8")
 	public String vacation_templist(HttpServletRequest request) {
-					
+		
+		String fromDate = request.getParameter("fromDate");
+		String toDate = request.getParameter("toDate");
 		String vno = request.getParameter("vno");
 		String sort = request.getParameter("sort");
 		String searchWord = request.getParameter("searchWord");
 		String currentShowPageNo = request.getParameter("currentShowPageNo");		
 		
+		if(fromDate == null || toDate == null) {
+			fromDate = "";
+			toDate = "";
+		}
 		if(sort == null || (!"atitle".equals(sort) && !"ano".equals(sort))) {
 			sort = "";
 		}
@@ -2064,6 +2161,8 @@ public class MyDocumentSiaController {
 		String userid = loginuser.getEmployeeid();
 		
 		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("fromDate", fromDate);
+		paraMap.put("toDate", toDate);
 		paraMap.put("sort", sort);
 		paraMap.put("searchWord", searchWord);
 		paraMap.put("a", a);
@@ -2081,7 +2180,9 @@ public class MyDocumentSiaController {
 				jsonObj.put("atitle", appvo.getAtitle());
 				jsonObj.put("ano", appvo.getAno());
 				jsonObj.put("vcatname", appvo.getVcatname());
+				jsonObj.put("asdate", appvo.getAsdate());
 				jsonObj.put("rno", appvo.getRno());
+				jsonObj.put("fileName", appvo.getFileName());
 				
 				jsonArr.put(jsonObj);
 			}
@@ -2096,11 +2197,17 @@ public class MyDocumentSiaController {
 	@RequestMapping(value="/t1/getVacationTempTotalPage.tw", method= {RequestMethod.GET})
 	public String getVacationTempTotalPage(HttpServletRequest request) {
 		
+		String fromDate = request.getParameter("fromDate");
+		String toDate = request.getParameter("toDate");
 		String vno = request.getParameter("vno");
 		String sort = request.getParameter("sort");
 		String searchWord = request.getParameter("searchWord");
 		String sizePerPage = request.getParameter("sizePerPage");
 		
+		if(fromDate == null || toDate == null) {
+			fromDate = "";
+			toDate = "";
+		}
 		if(sort == null || (!"atitle".equals(sort) && !"ano".equals(sort))) {
 			sort = "";
 		}
@@ -2132,6 +2239,8 @@ public class MyDocumentSiaController {
 		String userid = loginuser.getEmployeeid();
 		
 		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("fromDate", fromDate);
+		paraMap.put("toDate", toDate);
 		paraMap.put("sort", sort);
 		paraMap.put("searchWord", searchWord);
 		paraMap.put("a", a);
@@ -2155,7 +2264,9 @@ public class MyDocumentSiaController {
 		String vcatname = request.getParameter("vcatname");
 		
 		mav.addObject("ano", request.getParameter("ano"));
-		mav.addObject("vcatname", request.getParameter("vcatname"));		
+		mav.addObject("vcatname", request.getParameter("vcatname"));
+		mav.addObject("fromDate", request.getParameter("fromDate"));
+		mav.addObject("toDate", request.getParameter("toDate"));
 		mav.addObject("vno", request.getParameter("vno"));
 		mav.addObject("sort", request.getParameter("sort"));		
 		mav.addObject("searchWord", request.getParameter("searchWord"));
@@ -2168,24 +2279,34 @@ public class MyDocumentSiaController {
 		
 		if(loginuser != null) {
 			userid = loginuser.getEmployeeid(); 
-		}
+			String pcode = loginuser.getFk_pcode();
+			
+			String totalOffCnt = service2.selectTotaloffCnt(pcode);
+			
+			// 이용자의 사용연차수 가지고 오기
+	    	String useOffCnt = service2.selectUseoffCnt(userid);
+	    	
+	    	// 전체 연차수
+	    	double dtotalOffCnt = Double.parseDouble(totalOffCnt);
+	    	// 사용 연차수
+	    	double duseOffCnt = Double.parseDouble(useOffCnt);
+	    	
+	    	// 이용자의 남은연차수
+	    	String leftOffCnt = String.valueOf(dtotalOffCnt-duseOffCnt);		
 		
-		Map<String, String> paraMap = new HashMap<>();
-		paraMap.put("ano", ano);
-		paraMap.put("vcatname", vcatname);
-		paraMap.put("userid", userid);
-		
-		try {
+			Map<String, String> paraMap = new HashMap<>();
+			paraMap.put("ano", ano);
+			paraMap.put("vcatname", vcatname);
+			paraMap.put("userid", userid);
+			
 			// 근태결재문서 한 개 상세보기
 			ApprovalSiaVO avo = service.myDocuVacation_temp_detail(paraMap);						
 			ApprovalSiaVO mng = service.viewMng(paraMap);
 			
 			mav.addObject("avo", avo);
 			mav.addObject("mng", mng);
-			
-		} catch (NumberFormatException e) {
-			
-		}		
+			mav.addObject("leftOffCnt", leftOffCnt);			
+		}
 		
 		mav.setViewName("sia/myDocumentDetail/myDocuVacation_temp_detail.gwTiles");
 		
@@ -2276,8 +2397,8 @@ public class MyDocumentSiaController {
 		avo.setFk_wiimdate(fk_wiimdate);
 		
 		MultipartFile attach = avo.getAttach();
-		System.out.println(attach);
-		if(!attach.isEmpty()) {
+		
+		if(attach != null && !attach.isEmpty()) {
 			// 첨부파일이 있을 경우
 			
 			HttpSession session = mrequest.getSession();
@@ -2311,7 +2432,7 @@ public class MyDocumentSiaController {
 		
 		int n = 0;
 		try {
-			if(attach.isEmpty()) {
+			if(attach == null || attach.isEmpty()) {
 				// 첨부파일이 없는 경우
 				n = service.save(avo);
 			}
@@ -2347,15 +2468,22 @@ public class MyDocumentSiaController {
 		String mdate = mdate1+" "+mdate2+" ~ "+mdate3;
 		String fk_wiimdate = fk_wiimdate1+" ~ "+fk_wiimdate2;
 		
+		System.out.println(mdate);
+
+		HttpSession session = mrequest.getSession();
+		MemberBwbVO loginuser = (MemberBwbVO) session.getAttribute("loginuser");		
+		String userid = loginuser.getEmployeeid();
+		
+		avo.setFk_employeeid(userid);
 		avo.setMdate(mdate);
 		avo.setFk_wiimdate(fk_wiimdate);
 		
 		MultipartFile attach = avo.getAttach();
 		
-		if(!attach.isEmpty()) {
+		if(attach != null && !attach.isEmpty()) {
 			// 첨부파일이 있을 경우
 			
-			HttpSession session = mrequest.getSession();
+			session = mrequest.getSession();
 			String root = session.getServletContext().getRealPath("/");
 			
 			String path = root+"resources"+File.separator+"files";
@@ -2386,12 +2514,14 @@ public class MyDocumentSiaController {
 		
 		int n = 0;
 		try {
-			if(attach.isEmpty()) {
+			if(attach == null || attach.isEmpty()) {
 				// 첨부파일이 없는 경우
+				
 				n = service.submit(avo);
 			}
 			else {
 				// 첨부파일이 있는 경우
+				
 				n = service.submit_withFile(avo);
 			}			
 		} catch (Throwable e) {
@@ -2415,7 +2545,7 @@ public class MyDocumentSiaController {
 		
 		MultipartFile attach = avo.getAttach();
 		
-		if(!attach.isEmpty()) {
+		if(attach != null && !attach.isEmpty()) {
 			// 첨부파일이 있을 경우
 			
 			HttpSession session = mrequest.getSession();
@@ -2449,7 +2579,7 @@ public class MyDocumentSiaController {
 		
 		int n = 0;
 		try {
-			if(attach.isEmpty()) {
+			if(attach == null || attach.isEmpty()) {
 				// 첨부파일이 없는 경우
 				n = service.saveSpend(avo);
 			}
@@ -2475,13 +2605,19 @@ public class MyDocumentSiaController {
 	// 내문서함 - 임시저장함 - 지출결재 - 제출버튼 클릭	
 	@RequestMapping(value="/t1/submitSpend.tw", method= {RequestMethod.POST})
 	public ModelAndView submitSpend(ModelAndView mav, ApprovalSiaVO avo, MultipartHttpServletRequest mrequest) { 
-					
+		
+		HttpSession session = mrequest.getSession();
+		MemberBwbVO loginuser = (MemberBwbVO) session.getAttribute("loginuser");		
+		String userid = loginuser.getEmployeeid();
+		
+		avo.setFk_employeeid(userid);
+		
 		MultipartFile attach = avo.getAttach();
 		
-		if(!attach.isEmpty()) {
+		if(attach != null && !attach.isEmpty()) {
 			// 첨부파일이 있을 경우
 			
-			HttpSession session = mrequest.getSession();
+			session = mrequest.getSession();
 			String root = session.getServletContext().getRealPath("/");
 			
 			String path = root+"resources"+File.separator+"files";
@@ -2512,7 +2648,7 @@ public class MyDocumentSiaController {
 		
 		int n = 0;
 		try {
-			if(attach.isEmpty()) {
+			if(attach == null || attach.isEmpty()) {
 				// 첨부파일이 없는 경우
 				n = service.submitSpend(avo);
 			}
@@ -2541,7 +2677,7 @@ public class MyDocumentSiaController {
 					
 		MultipartFile attach = avo.getAttach();
 		
-		if(!attach.isEmpty()) {
+		if(attach != null && !attach.isEmpty()) {
 			// 첨부파일이 있을 경우
 			
 			HttpSession session = mrequest.getSession();
@@ -2575,7 +2711,7 @@ public class MyDocumentSiaController {
 		
 		int n = 0;
 		try {
-			if(attach.isEmpty()) {
+			if(attach == null || attach.isEmpty()) {
 				// 첨부파일이 없는 경우
 				n = service.saveVacation(avo);
 			}
@@ -2588,7 +2724,7 @@ public class MyDocumentSiaController {
 		}
 		
 		if(n==1) {
-			mav.setViewName("redirect:/t1/myDocuVacation_send.tw");
+			mav.setViewName("redirect:/t1/myDocuVacation_temp.tw");
 		}
 		else {
 			System.out.println("실패!");
@@ -2600,13 +2736,19 @@ public class MyDocumentSiaController {
 	// 내문서함 - 임시저장함 - 지출결재 - 제출버튼 클릭	
 	@RequestMapping(value="/t1/submitVacation.tw", method= {RequestMethod.POST})
 	public ModelAndView submitVacation(ModelAndView mav, ApprovalSiaVO avo, MultipartHttpServletRequest mrequest) { 
-					
+		
+		HttpSession session = mrequest.getSession();
+		MemberBwbVO loginuser = (MemberBwbVO) session.getAttribute("loginuser");		
+		String userid = loginuser.getEmployeeid();
+		
+		avo.setFk_employeeid(userid);
+		
 		MultipartFile attach = avo.getAttach();
 		
-		if(!attach.isEmpty()) {
+		if(attach != null && !attach.isEmpty()) {
 			// 첨부파일이 있을 경우
 			
-			HttpSession session = mrequest.getSession();
+			session = mrequest.getSession();
 			String root = session.getServletContext().getRealPath("/");
 			
 			String path = root+"resources"+File.separator+"files";
@@ -2637,7 +2779,7 @@ public class MyDocumentSiaController {
 		
 		int n = 0;
 		try {
-			if(attach.isEmpty()) {
+			if(attach == null || attach.isEmpty()) {
 				// 첨부파일이 없는 경우
 				n = service.submitVacation(avo);
 			}
@@ -3423,53 +3565,23 @@ public class MyDocumentSiaController {
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	// 결재의견 삭제하기
+	@ResponseBody
+	@RequestMapping(value="/t1/delMyOpinion.tw", method= {RequestMethod.POST})
+	public String delMyOpinion(HttpServletRequest request) {
+		
+		String ono = request.getParameter("ono");
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("ono", ono);
+		
+		int n = service.delMyOpinion(paraMap);
+		
+		JSONObject jsonObj = new JSONObject();		
+		jsonObj.put("n", n);
+				
+		return jsonObj.toString();
+	}
 	
 
 }

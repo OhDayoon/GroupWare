@@ -60,35 +60,26 @@ $(document).ready(function(){
 		str_arrEmailSeq = arrEmailSeq.toString();
 		// console.log("최종 배열 string :"+str_arrEmailSeq);
 		location.href="<%=ctxPath%>/t1/moveToMailInbox.tw?str_arrEmailSeq="+str_arrEmailSeq+"&gobackURL=${requestScope.gobackURL}";
-		<%-- if (confirm("선택하신 메일을 완전히 삭제하시겠습니까?") == true){    //확인
-			location.href="<%=ctxPath%>/t1/delImmed.tw?mailBoxNo=1&str_arrEmailSeq="+str_arrEmailSeq+"&gobackURL=${requestScope.gobackURL}";
-		 }else{   //취소
-		     return false;
-		 } --%>
 	});
 	
-	//중요표시 변경
-	$("select#star").change(function(){
-		if($(this).val() == "star"){
-			str_arrEmailSeq = arrEmailSeq.toString();
-			//console.log("최종 배열 :"+str_arrEmailSeq);
-			if(str_arrEmailSeq != ""){
-				location.href="<%=ctxPath%>/t1/goStar.tw?mailBoxNo=1&checkImportant=1&str_arrEmailSeq="+str_arrEmailSeq;
-			}
-			$(this).val("");
-		} else if($(this).val() == "unstar") {
-			str_arrEmailSeq = arrEmailSeq.toString();
-			//console.log("최종 배열 :"+str_arrEmailSeq);
-			if(str_arrEmailSeq != ""){
-				location.href="<%=ctxPath%>/t1/goStar.tw?mailBoxNo=1&checkImportant=0&str_arrEmailSeq="+str_arrEmailSeq;
-			}
-			$(this).val("");
-		} else {
-			$(this).val("");
+	// 조건검색
+	$("input#searchWord").keydown(function(){
+		if(event.keyCode == 13){  //엔터 했을 경우
+			goSearch();
 		}
 	});
 	
+	//보기개수 변경
+	$("select#sizePerPage").change(function(){
+			goSearch();
+	});
 	
+	//보기개수 선택시 선택값 유지시키기
+	if(${not empty requestScope.paraMap}){
+		$("select#searchType").val("${requestScope.paraMap.searchType}");
+		$("input#searchWord").val("${requestScope.paraMap.searchWord}");
+	  	$("select#sizePerPage").val("${requestScope.paraMap.sizePerPage}");
+	  }
 	
 });
 
@@ -125,28 +116,37 @@ function goView(seq){
 		
 	}//end of function goView('${boardvo.seq}') ---------------
 
+//조건검색
+function goSearch(){
+	var frm = document.searchFrm;
+	frm.method = "get";
+	frm.action = "<%=ctxPath%>/t1/mail_sent.tw";
+	$("#searchFrm").submit();
+}// end of function goSearch() -----------------------
 
 </script>
 <div id="mail-header" style="background-color: #e6f2ff; width: 100%; height: 120px; padding: 20px;">
-	 <h4 style="margin-bottom: 20px; font-weight: bold;">휴지통</h4>
+	 <h4 style="margin-bottom: 20px; font-weight: bold;"><a class="anchor-style" href="<%=ctxPath%>/t1/mail_trash.tw">휴지통</a></h4>
 	 <div id="left-header">
 		 <button type="button" id="delImmed" class="btn-style">완전삭제</button>
 		 <button type="button" id="toMailinbox" class="btn-style">받은메일함 이동</button>
-	 <div id="right-header" style="float: right;">
-		 <select name="mailSearch">
-		 	<option value="">선택</option>
-		 	<option value="subject">제목</option>
-		 	<option value="sender">받는사람</option>
-		 	<option value="content">내용</option>
-		 </select>
-		<input type="text" />
-	 	<button type="submit">검색</button>
-	 	<select name="numberOfEmails">
-		 	<option value="10">10개보기</option>
-		 	<option value="20">20개보기</option>
-		 	<option value="30">30개보기</option>
-		 </select>
-	 </div>
+		 <div id="right-header" style="float: right;">
+			 <form name="searchFrm" id="searchFrm" style="display:inline-block;">
+				 <select name="searchType">
+				 	<option value="">선택</option>
+				 	<option value="subject">제목</option>
+				 	<option value="sender">받는사람</option>
+				 	<option value="content">내용</option>
+				 </select>
+				<input type="text" />
+			 	<button type="submit" name="searchWord" id="searchWord">검색</button>
+			 	<select name="sizePerPage" id="sizePerPage">
+				 	<option value="10">10개보기</option>
+				 	<option value="20">20개보기</option>
+				 	<option value="30">30개보기</option>
+				 </select>
+			 </form>
+		 </div>
 	 </div>
 </div>
 
@@ -173,8 +173,14 @@ function goView(seq){
 	 				</td>
 	 				<td>${evo.senderName}&lt;${evo.senderEmail}&gt;</td>
 	 				<td>
-	 				<input type="hidden" name="seq" value="${evo.seq}" />
-	 				<a href="javascript:goView('${evo.seq}')" class="anchor-style">${evo.subject}</a></td>
+		 				<input type="hidden" name="seq" value="${evo.seq}" />
+		 				<c:if test="${evo.readStatus eq '0' }">
+		 					<a href="javascript:goView('${evo.seq}')" class="anchor-style" style="font-weight:bold;">${evo.subject}</a>
+		 				</c:if>
+		 				<c:if test="${evo.readStatus eq '1' }">
+		 					<a href="javascript:goView('${evo.seq}')" class="anchor-style">${evo.subject}</a>
+		 				</c:if>
+	 				</td>
 	 				<td>${evo.sendingDate}</td>
 	 			</tr>
 	 		</c:forEach>
@@ -193,7 +199,7 @@ function goView(seq){
      </div>
  
  <form name="goViewFrm">
- 		<input type="hidden" name="mailBoxNo" value="1">
+ 		<input type="hidden" name="mailBoxNo" value="4">
     	<input type="hidden" name="seq"/>
     	<input type="hidden" name="gobackURL" value="${requestScope.gobackURL}"/>
     	<input type="hidden" name="searchType" />

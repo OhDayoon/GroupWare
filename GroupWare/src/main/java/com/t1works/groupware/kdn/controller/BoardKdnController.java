@@ -270,15 +270,15 @@ public class BoardKdnController {
 		
 		// === [맨처음][이전] 만들기 ===
 		if(pageNo != 1) {
-			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+1+"'>[맨처음]</a></li>";
-			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'>[이전]</a></li>";
+			pageBar += "<li style='display:inline-block; width:20px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+1+"'><i class=\"fas fa-angle-double-left\" style='font-size: 18px;'></i></a></li>";
+			pageBar += "<li style='display:inline-block; width:20px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'><i class=\"fas fa-chevron-left\" style='font-size:15px;'></i></a></li>";
 		}
 		
 		
 		while( !(loop > blockSize || pageNo > totalPage)) {
 			
 			if(pageNo == currentShowPageNo) {
-				pageBar += "<li style='display:inline-block; width:20px; font-size:11pt; font-weight: bold; padding:2px 2px;'>"+pageNo+"</li>";
+				pageBar += "<li style='display:inline-block; width:20px; font-size:11pt; border: solid 1px #395673; color: #fff; background-color: #395673; font-weight: bold; padding:2px 2px;'>"+pageNo+"</li>";
 			} else {
 				pageBar += "<li style='display:inline-block; width:20px; font-size:11pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>"+pageNo+"</a></li>";
 			}
@@ -290,8 +290,8 @@ public class BoardKdnController {
 		
 		// === [다음][마지막] 만들기 ===
 		if(pageNo <= totalPage) {
-			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>[다음]</a></li>";
-			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"'>[마지막]</a></li>";
+			pageBar += "<li style='display:inline-block; width:20px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'><i class=\"fas fa-chevron-right\"></i></a></li>";
+			pageBar += "<li style='display:inline-block; width:20px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"'><i class=\"fas fa-angle-double-right\"></i></a></li>";
 		}
 		
 		pageBar += "</ul>";
@@ -694,15 +694,15 @@ public class BoardKdnController {
 		
 		// === [맨처음][이전] 만들기 ===
 		if(pageNo != 1) {
-			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+1+"'>[맨처음]</a></li>";
-			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'>[이전]</a></li>";
+			pageBar += "<li style='display:inline-block; width:20px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+1+"'><i class=\"fas fa-angle-double-left\" style='font-size: 18px;'></i></a></li>";
+			pageBar += "<li style='display:inline-block; width:20px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'><i class=\"fas fa-chevron-left\" style='font-size:15px;'></i></a></li>";
 		}
 		
 		
 		while( !(loop > blockSize || pageNo > totalPage)) {
 			
 			if(pageNo == currentShowPageNo) {
-				pageBar += "<li style='display:inline-block; width:20px; font-size:11pt; font-weight: bold; padding:2px 2px;'>"+pageNo+"</li>";
+				pageBar += "<li style='display:inline-block; width:20px; font-size:11pt; border: solid 1px #395673; color: #fff; background-color: #395673; font-weight: bold; padding:2px 2px;'>"+pageNo+"</li>";
 			} else {
 				pageBar += "<li style='display:inline-block; width:20px; font-size:11pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>"+pageNo+"</a></li>";
 			}
@@ -714,8 +714,8 @@ public class BoardKdnController {
 		
 		// === [다음][마지막] 만들기 ===
 		if(pageNo <= totalPage) {
-			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>[다음]</a></li>";
-			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"'>[마지막]</a></li>";
+			pageBar += "<li style='display:inline-block; width:20px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'><i class=\"fas fa-chevron-right\"></i></a></li>";
+			pageBar += "<li style='display:inline-block; width:20px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"'><i class=\"fas fa-angle-double-right\"></i></a></li>";
 		}
 		
 		pageBar += "</ul>";
@@ -892,6 +892,9 @@ public class BoardKdnController {
 	    	  searchWord = "";
 	      }
 	      
+	      // 건의사항 댓글 더보기 페이징을 위한 해당 글 댓글 총 갯수 알아오기
+	      int totalCmntCount = service.getSuggCmntTotalCnt(seq);
+	      
 	      Map<String,String> paraMap = new HashMap<>();
 	      paraMap.put("seq", seq);
 	      paraMap.put("searchType", searchType);
@@ -899,6 +902,7 @@ public class BoardKdnController {
 	      
 	      mav.addObject("searchType", searchType);
 	      mav.addObject("searchWord", searchWord);
+	      mav.addObject("totalCmntCount", totalCmntCount);
 		
 		String gobackURL = request.getParameter("gobackURL");
 		if(gobackURL != null) {
@@ -1150,7 +1154,7 @@ public class BoardKdnController {
 	// === 건의사항 댓글쓰기(ajax 처리) === 
 	@ResponseBody
 	@RequestMapping(value="/t1/addSuggComment.tw", method= {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
-	public String addSuggComment(CommentKdnVO commentvo) {
+	public String requiredLogin_addSuggComment(HttpServletRequest request, HttpServletResponse response, CommentKdnVO commentvo) {
 		try {
 			service.addSuggComment(commentvo);
 		} catch (Throwable e) {
@@ -1163,7 +1167,8 @@ public class BoardKdnController {
 		
 		return jsonObj.toString();
 	}
-		
+	
+	/*
 	// === 건의사항 원게시물에 딸린 댓글들을 페이징처리해서 조회해오기(Ajax 로 처리) ===
 	@ResponseBody
 	@RequestMapping(value="/t1/suggCommentList.tw", method= {RequestMethod.GET}, produces="text/plain;charset=UTF-8")
@@ -1209,6 +1214,49 @@ public class BoardKdnController {
 		// "[]" 또는
 		// "[{"content":"댓글내용물", "name":"작성자명", "regDate":"작성일자"}]
 	}
+	*/
+	
+	// === 건의사항 원게시물에 딸린 댓글들을 더보기 버튼으로 페이징처리하기(Ajax 로 처리) ===
+	@ResponseBody
+	@RequestMapping(value="/t1/suggCommentList.tw", method= {RequestMethod.GET}, produces="text/plain;charset=UTF-8")
+	public String suggCommentList(HttpServletRequest request) {
+		
+		String seq = request.getParameter("seq");
+		String fk_seq = request.getParameter("fk_seq");
+		String startRno = request.getParameter("start");
+		String len = request.getParameter("len");
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("fk_seq", fk_seq);
+		paraMap.put("startRno",startRno);	
+		
+		String end = String.valueOf(Integer.parseInt(startRno) + Integer.parseInt(len) - 1);
+		paraMap.put("endRno", end);
+		
+		List<CommentKdnVO> commentList = service.getSuggCmntListPaging(paraMap);
+		
+		JSONArray jsonArr = new JSONArray(); // []
+		
+		if(commentList != null) {
+			for(CommentKdnVO cmtvo : commentList) {
+				JSONObject jsonObj = new JSONObject();
+				jsonObj.put("content", cmtvo.getContent());
+				jsonObj.put("name", cmtvo.getName());
+				jsonObj.put("fk_employeeid", cmtvo.getFk_employeeid());
+				jsonObj.put("regDate", cmtvo.getRegDate());
+				jsonObj.put("seq", cmtvo.getSeq());
+				
+				jsonArr.put(jsonObj);
+			}
+		}
+		
+		return jsonArr.toString();
+		// "[]" 또는
+		// "[{"content":"댓글내용물", "name":"작성자명", "regDate":"작성일자"}]
+	}
+	
+	
+	
 	
 	// === 건의사항 원게시물에 딸린 댓글 totalPage 알아오기(Ajax 로 처리) ===
 	@ResponseBody
@@ -1233,28 +1281,37 @@ public class BoardKdnController {
 	
 	// 건의사항 댓글 수정하기
 	@ResponseBody
-	@RequestMapping(value="/t1/editSuggComment.tw", method= {RequestMethod.GET})
-	public String editSuggComment(HttpServletRequest request, CommentKdnVO commentvo) {
+	@RequestMapping(value="/t1/editSuggComment.tw", method= {RequestMethod.GET}, produces="text/plain;charset=UTF-8")
+	public String requiredLogin_editSuggComment(HttpServletRequest request, HttpServletResponse response, CommentKdnVO commentvo) {
 		
-		String seq = request.getParameter("seq");
+		String content = request.getParameter("editComntContent");
+		String seq = request.getParameter("editCmntSeq");
 		
-		int n = service.editSuggComment(seq);
+		commentvo.setContent(content);
+		commentvo.setSeq(seq);
 		
+		int n = 0;
+		try {
+			n = service.editSuggComment(commentvo);
+		} catch (Throwable e) {
+
+		}
+
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("n", n);
 		
 		return jsonObj.toString();
-		
 	}
 	
 	// 건의사항 댓글 삭제하기
 	@ResponseBody
 	@RequestMapping(value="/t1/delSuggComment.tw", method= {RequestMethod.GET})
-	public String delSuggComment(HttpServletRequest request, CommentKdnVO commentvo) {
+	public String requiredLogin_delSuggComment(HttpServletRequest request, HttpServletResponse response, CommentKdnVO commentvo) {
 		
-		String seq = request.getParameter("seq");
+		String fk_seq = request.getParameter("fk_seq");
+		commentvo.setFk_seq(fk_seq);
 		
-		int n = service.delSuggComment(seq);
+		int n = service.delSuggComment(commentvo);
 		
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("n", n);
@@ -1262,11 +1319,6 @@ public class BoardKdnController {
 		return jsonObj.toString();
 		
 	}
-	
-	
-	
-	
-	
 	
 	
 	
@@ -1358,15 +1410,15 @@ public class BoardKdnController {
 	
 	// === [맨처음][이전] 만들기 ===
 	if(pageNo != 1) {
-		pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+1+"'>[맨처음]</a></li>";
-		pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'>[이전]</a></li>";
+		pageBar += "<li style='display:inline-block; width:20px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+1+"'><i class=\"fas fa-angle-double-left\" style='font-size: 18px;'></i></a></li>";
+		pageBar += "<li style='display:inline-block; width:20px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'><i class=\"fas fa-chevron-left\" style='font-size:15px;'></i></a></li>";
 	}
 	
 	
 	while( !(loop > blockSize || pageNo > totalPage)) {
 		
 		if(pageNo == currentShowPageNo) {
-			pageBar += "<li style='display:inline-block; width:20px; font-size:11pt; font-weight: bold; padding:2px 2px;'>"+pageNo+"</li>";
+			pageBar += "<li style='display:inline-block; width:20px; font-size:11pt; border: solid 1px #395673; color: #fff; background-color: #395673; font-weight: bold; padding:2px 2px;'>"+pageNo+"</li>";
 		} else {
 			pageBar += "<li style='display:inline-block; width:20px; font-size:11pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>"+pageNo+"</a></li>";
 		}
@@ -1378,8 +1430,8 @@ public class BoardKdnController {
 	
 	// === [다음][마지막] 만들기 ===
 	if(pageNo <= totalPage) {
-		pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>[다음]</a></li>";
-		pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"'>[마지막]</a></li>";
+		pageBar += "<li style='display:inline-block; width:20px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'><i class=\"fas fa-chevron-right\"></i></a></li>";
+		pageBar += "<li style='display:inline-block; width:20px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"'><i class=\"fas fa-angle-double-right\"></i></a></li>";
 	}
 	
 	pageBar += "</ul>";
@@ -1542,14 +1594,17 @@ public class BoardKdnController {
 	    	searchWord = "";
 	    }
 	    
+	    // 자유게시판 댓글 더보기 페이징을 위한 해당 글 댓글 총 갯수 알아오기
+	    int totalCmntCount = service.getGenCmntTotalCnt(seq);
+	    
 	    Map<String,String> paraMap = new HashMap<>();
 	    paraMap.put("seq", seq);
 	    paraMap.put("searchType", searchType);
 	    paraMap.put("searchWord", searchWord);
 	      
-	    
-	      mav.addObject("searchType", searchType);
-	      mav.addObject("searchWord", searchWord);
+        mav.addObject("searchType", searchType);
+        mav.addObject("searchWord", searchWord);
+        mav.addObject("totalCmntCount", totalCmntCount);
 	      
 		// === 페이징 처리되어진 후 특정 글제목을 클릭하여 상세내용을 본 이후 사용자가 목록보기 버튼을 클릭했을때 돌아갈 페이지를 알려주기 위해 현재 페이지 주소를 뷰단으로 넘겨준다.
 		String gobackURL = request.getParameter("gobackURL");
@@ -1798,22 +1853,25 @@ public class BoardKdnController {
 	// === 댓글쓰기(ajax 처리) === 
 	@ResponseBody
 	@RequestMapping(value="/t1/addComment.tw", method= {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
-	public String addComment(CommentKdnVO commentvo) {
+	public String requiredLogin_addComment(HttpServletRequest request, HttpServletResponse response, CommentKdnVO commentvo) {
+		int n=0;
 		try {
-			service.addComment(commentvo);
+			n = service.addComment(commentvo);
+			
 		} catch (Throwable e) {
 
 		}
-		// 댓글쓰기(insert) 및 원게시물(tbl_board 테이블)에 댓글의 개수 증가(update 1씩 증가)하기 
+		// 댓글쓰기(insert) 및 원게시물(tbl_generalboard 테이블)에 댓글의 개수 증가(update 1씩 증가)하기 
 
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("name", commentvo.getName());
+		jsonObj.put("n", n);
 		
 		return jsonObj.toString();
 	}
 	
 	// === 원게시물에 딸린 댓글들을 페이징처리해서 조회해오기(Ajax 로 처리) ===
-	@ResponseBody
+/*	@ResponseBody
 	@RequestMapping(value="/t1/commentList.tw", method= {RequestMethod.GET}, produces="text/plain;charset=UTF-8")
 	public String commentList(HttpServletRequest request) {
 		
@@ -1852,7 +1910,45 @@ public class BoardKdnController {
 		}
 		
 		return jsonArr.toString();
+	} */
+	
+	// === 자유게시판 원게시물에 딸린 댓글들을 더보기 버튼으로 페이징처리하기(Ajax 로 처리) ===
+	@ResponseBody
+	@RequestMapping(value="/t1/commentList.tw", method= {RequestMethod.GET}, produces="text/plain;charset=UTF-8")
+	public String commentList(HttpServletRequest request) {
+		
+		String seq = request.getParameter("seq");
+		String fk_seq = request.getParameter("fk_seq");
+		String startRno = request.getParameter("start");
+		String len = request.getParameter("len");
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("fk_seq", fk_seq);
+		paraMap.put("startRno",startRno);	
+		
+		String end = String.valueOf(Integer.parseInt(startRno) + Integer.parseInt(len) - 1);
+		paraMap.put("endRno", end);
+		
+		List<CommentKdnVO> commentList = service.getCommentListPaging(paraMap);
+		
+		JSONArray jsonArr = new JSONArray(); // []
+		
+		if(commentList != null) {
+			for(CommentKdnVO cmtvo : commentList) {
+				JSONObject jsonObj = new JSONObject();
+				jsonObj.put("content", cmtvo.getContent());
+				jsonObj.put("name", cmtvo.getName());
+				jsonObj.put("fk_employeeid", cmtvo.getFk_employeeid());
+				jsonObj.put("regDate", cmtvo.getRegDate());
+				jsonObj.put("seq", cmtvo.getSeq());
+				
+				jsonArr.put(jsonObj);
+			}
+		}
+		
+		return jsonArr.toString();
 	}
+	
 	
 	// === 원게시물에 딸린 댓글 totalPage 알아오기(Ajax 로 처리) ===
 	@ResponseBody
@@ -1875,30 +1971,23 @@ public class BoardKdnController {
 		// "{"totalPage":5}"0
 	}
 	
-	// 건의사항 댓글 수정하기
-/*	@ResponseBody
-	@RequestMapping(value="/t1/editGenComment.tw", method= {RequestMethod.GET})
-	public String editGenComment(HttpServletRequest request, CommentKdnVO commentvo) {
-		
-		String seq = request.getParameter("seq");
-		
-		//int n = service.editGenComment(seq);
-		
-		JSONObject jsonObj = new JSONObject();
-		jsonObj.put("n", n);
-		
-		return jsonObj.toString();
-		
-	} */
-	
-	// 건의사항 댓글 삭제하기
+	// 자유게시판 댓글 수정하기
 	@ResponseBody
-	@RequestMapping(value="/t1/delGenComment.tw", method= {RequestMethod.GET})
-	public String delGenComment(HttpServletRequest request, CommentKdnVO commentvo) {
+	@RequestMapping(value="/t1/editGenComment.tw", method= {RequestMethod.GET})
+	public String editGenComment(HttpServletRequest request, HttpServletResponse response, CommentKdnVO commentvo) {
 		
-		String seq = request.getParameter("seq");
+		String content = request.getParameter("editComntContent");
+		String seq = request.getParameter("editCmntSeq");
 		
-		int n = service.delGenComment(seq);
+		commentvo.setContent(content);
+		commentvo.setSeq(seq);
+		
+		int n = 0;
+		try {
+			n = service.editGenComment(commentvo);
+		} catch (Throwable e) {
+
+		}
 		
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("n", n);
@@ -1907,6 +1996,68 @@ public class BoardKdnController {
 		
 	}
 	
+	// 자유게시판 댓글 삭제하기
+	@ResponseBody
+	@RequestMapping(value="/t1/delGenComment.tw", method= {RequestMethod.GET})
+	public String requiredLogin_delGenComment(HttpServletRequest request, HttpServletResponse response, CommentKdnVO commentvo) {
+		
+		String fk_seq = request.getParameter("fk_seq");
+		commentvo.setFk_seq(fk_seq);
+		
+		int n = service.delGenComment(commentvo);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("n", n);
+		
+		return jsonObj.toString();
+		
+	}
 	
+	// 홈 페이지 공지사항 게시판 
+	@ResponseBody
+	@RequestMapping(value="/t1/recentNotice.tw", method= {RequestMethod.GET}, produces="text/plain;charset=UTF-8")
+	public String displayNotice(HttpServletRequest request, HttpServletResponse response) {
+		
+		Map<String,String> paraMap = new HashMap<>();
+		paraMap.put("fk_categnum", "");
+		paraMap.put("searchWord", "");
+		paraMap.put("startRno", "1");
+		paraMap.put("endRno", "4");
+		
+		List<BoardKdnVO> boardList = service.noticeBoardListSearchWithPaging(paraMap);
+		//System.out.println(boardList.size());
+		JSONArray jsonArr = new JSONArray();
+		
+		if(boardList != null) {
+			for(BoardKdnVO boardvo : boardList) {
+				JSONObject jsonObj = new JSONObject();
+				jsonObj.put("fk_categnum", boardvo.getFk_categnum());
+				jsonObj.put("subject", boardvo.getSubject());
+				jsonObj.put("regDate", boardvo.getRegDate());
+				jsonObj.put("seq", boardvo.getSeq());
+				
+				jsonArr.put(jsonObj);
+			}
+		}
 
+		return jsonArr.toString();
+		
+	}
+	
+	// 홈 페이지 공지사항 게시판 
+	@ResponseBody
+	@RequestMapping(value="/t1/checkNewNotice.tw", method= {RequestMethod.GET}, produces="text/plain;charset=UTF-8")
+	public String checkNewNotice(HttpServletRequest request, HttpServletResponse response) {
+		
+		int n = service.checkNewNotice();
+		
+		JSONObject jsonObj = new JSONObject();
+
+		if(n > 0) {
+			jsonObj.put("n", "1");
+		}
+			return jsonObj.toString();
+			
+		}
+		
 }

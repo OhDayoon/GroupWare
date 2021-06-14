@@ -50,6 +50,13 @@ public class EmailKdnDAO implements InterEmailKdnDAO {
 		return n;
 	}
 
+	// 읽지않은 메일 총 건수 구해오기
+	@Override
+	public int getTotalUnreadEmail(Map<String, String> paraMap) {
+		int n =sqlsession3.selectOne("email.getTotalUnreadEmail", paraMap);
+		return n;
+	}
+	
 	// (받은메일함, 중요메일함) 페이징 처리한 이메일목록 가져오기(검색어 유무 상관없이 모두 다 포함한것)
 	@Override
 	public List<EmailKdnVO> emailListSearchWithPaging(Map<String, String> paraMap) {
@@ -171,6 +178,13 @@ public class EmailKdnDAO implements InterEmailKdnDAO {
 		return boardList;
 	}
 
+	// 휴지통 메일 열람하기
+	@Override
+	public EmailKdnVO getTrashView(Map<String, String> paraMap) {
+		EmailKdnVO evo = sqlsession3.selectOne("email.getTrashView",paraMap);
+		return evo;
+	}
+
 	// 휴지통 메일을 받은메일함으로 이동시키기
 	@Override
 	public int moveToMailInbox(List<String> emailSeqList) {
@@ -191,5 +205,49 @@ public class EmailKdnDAO implements InterEmailKdnDAO {
 		int n = sqlsession3.update("email.markAsRead",emailSeqList);
 		return n;
 	}
+
+	// 보낸메일함 메일 읽지 않음으로 변경
+	@Override
+	public int markAsUnreadSentMail(List<String> emailSeqList) {
+		int n = sqlsession3.update("email.markAsUnreadSentMail",emailSeqList);
+		return n;
+	}
+
+	// 보낸메일함 메일 읽음으로 변경
+	@Override
+	public int markAsReadSentMail(List<String> emailSeqList) {
+		int n = sqlsession3.update("email.markAsReadSentMail",emailSeqList);
+		return n;
+	}
+
+	// 휴지통 비우기
+	@Override
+	public int emptyTrash(String email) {
+		int n = sqlsession3.update("email.emptyTrash",email);
+		return n;
+	}
+
+	// 해당 seq의 수신자이메일 가져오기 (여러명일수도 있고 한명일 수도 있다)
+	@Override
+	public String receiverEmail(String seq) {
+		String receiverEmail= sqlsession3.selectOne("email.receiverEmail",seq);
+		return receiverEmail;
+	}
+
+	// 한개의 email에 해당하는 사원명 가져오기
+	@Override
+	public String getName(String receiverEmail) {
+		String getName= sqlsession3.selectOne("email.getName",receiverEmail);
+		return getName;
+	}
+
+	// 해당 seq의 수신자이메일 가져오기 (여러명일수도 있고 한명일 수도 있다 + null 일 수도 있다)
+	@Override
+	public String ccEmail(String seq) {
+		String ccEmail= sqlsession3.selectOne("email.ccEmail",seq);
+		return ccEmail;
+	}
+
+	
 
 }

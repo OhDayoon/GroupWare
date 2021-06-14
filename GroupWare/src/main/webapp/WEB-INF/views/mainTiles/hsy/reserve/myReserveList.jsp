@@ -128,7 +128,7 @@
 	$(document).ready(function(){
 		
 		reserveList("1");
-		
+
 		// 더보기버튼 (또는 처음으로 버튼) 클릭 이벤트  
 		$("button#moreList").click(function(){
 			
@@ -257,6 +257,21 @@
 			}); // end of $.ajax({------------- 
 		}); // end of $(document).on("click", "span.changeCount", function (){-------
 		
+			
+			
+		
+		// 백원빈 작업 시작 //
+		// 엑셀출력하기 버튼 클릭 시
+		$("button#excelBtn").click(function(){
+			var frm = document.excelFrm;
+			frm.action="<%=ctxPath%>/excel/downloadSchedule.tw";
+			frm.method="post";
+			frm.submit();
+		});
+		// 백원빈 작업  끝 //
+			
+			
+			
 	}); // end of $(document).ready(function(){-------
 		
 		
@@ -279,6 +294,7 @@
 	            		var paidPriceComma= paidPrice.toLocaleString('en')+"원";
 	            		
 	            		$("span#name").text(item.clientname);
+	            		$("input#clientname").val(item.clientname);
 	            		
 	            		html+="<div class='outerBox'>"+
 	            				"<div align='right'><span class='status "+item.statusColor+"'>"+item.status+"</span></div>"+
@@ -405,8 +421,11 @@
 </script>
 
 <div id="content">
+	<form name="excelFrm">
 	<div style="padding-bottom:35px;"></div>
-	<div id="reserveTitle"><span id="name"></span>&nbsp;님의 예약현황</div>
+	<div id="reserveTitle"><span id="name"></span>&nbsp;님의 예약현황<input type="hidden" id="clientname" name="clientname" />
+	<button type="button" id="excelBtn" style="background-color:#00b33c; color:white; margin-left:700px; width:75px; height:35px; cursor:pointer;">엑셀출력</button></div>
+	</form>
 	
 	<div id="reserveList"></div>
 	<div align="center" style="margin: 30px 0px 10px 0px;">

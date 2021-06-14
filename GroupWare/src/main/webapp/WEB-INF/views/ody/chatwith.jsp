@@ -4,13 +4,17 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <meta charset="UTF-8">
-<title>T1Works Talk</title>
+<title>T1Works GroupChat</title>
 
 <style type="text/css">
 
-html{
+html,body{
 	background-color: #9bbad8;
 	overflow: hidden;
+	padding: 0px 0px;
+	margin: 0px 0px;
+	width: 100%;
+        height: 100%;
 }
 input.btn_normal{
 	background-color: #0071bd;
@@ -30,11 +34,30 @@ input.btn_normal{
   
 div#sendmsg{
 	position: fixed; bottom: 10px; width: 100%;
-
 }
+
+button#btnAllDialog{
+	border:none;
+	font-sixe: 12pt;
+	background-color: #9bbad8;
+	margin-bottom: 2px;
+}
+
+
+
 </style>
+
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js" ></script>
 <script type="text/javascript">
+	var today = new Date();
+	var hours = today.getHours(); // 시
+	if(hours.toString().length<2){
+		hours="0"+hours;
+	}
+	var minutes = today.getMinutes();  // 분
+	if(minutes.toString().length<2){
+		minutes="0"+minutes;
+	}
 	
 	$(document).ready(function(){
 		
@@ -60,50 +83,20 @@ div#sendmsg{
 	     // /multichatstart.action은 컨트롤러가 아닌 xml에서 작성해야함
 	     
 	      	var websocket = new WebSocket(wsUrl);       
-	        // === 웹소켓에 최초로 연결이 되었을 경우에 실행되어지는 콜백함수 정의하기 ===  
+	      	 // === 웹소켓에 최초로 연결이 되었을 경우에 실행되어지는 콜백함수 정의하기 ===  
 	        websocket.onopen = function(){
-	      	// alert("웹소켓 연결됨!!"); 
-	      	 $("div#chatStatus").text("정보 : 웹소켓에 연결이 성공됨!!");
-	        
-	      	 messageObj = { message : ""
-	               			, type : "one"     // all은 전체, one은 한사람애개먼
-	              			 , to : "all" };  // 자바스크립트에서 객체의 데이터값 초기화  
-	      	 
-	              			 
-	            websocket.send(JSON.stringify(messageObj));
-	  	          // JSON.stringify(자바객체) 는 자바객체를 JSON 표기법의 문자열(String)로 변환한다
-	  	          /*
-	  	             JSON.stringify({});                  // '{}'
-	  		         JSON.stringify(true);                // 'true'
-	  		         JSON.stringify('foo');               // '"foo"'
-	  		         JSON.stringify([1, 'false', false]); // '[1,"false",false]'
-	  		         JSON.stringify({ x: 5 });            // '{"x":5}'
-	  	          */ 
+	      	
 	        };
-	      
-	        // 아래는 귓속말을 위해서 대화를 나누는 상대방의 이름을 클릭하면 상대방IP주소를 귓속말대상IP주소에 입력하도록 하는 것.
-	        $(document).on("click",".loginuserName",function(){
-	           /* class loginuserName 은 
-	              com.spring.chatting.websockethandler.WebsocketEchoHandler 의 
-	              protected void handleTextMessage(WebSocketSession wsession, TextMessage message) 메소드내에
-	              133번 라인에 기재해두었음.
-	           */
-	           var ip = $(".loginuserName").prev().prev().text();
-	        //   alert(ip);
-	            $("input#to").val(ip); 
-	   
-	        });
-	        
-	        
-	        
-	        if($("span.ip").text()!=""){
-	        	$("input#to").val($("span.ip").text());
-	        }
+	          
 	        // === 메시지 수신시 콜백함수 정의하기 === 
 	        websocket.onmessage = function(event) {
 	                                 // 자음 ㄴ 임
 	          if(event.data.substr(0,1)=="「" && event.data.substr(event.data.length-1)=="」") { 
-	             $("div#connectingUserList").html(event.data);
+	        	  
+	        	  var event = event.data.replace(/\#/gi, "<br/><br/>");
+	        	  event = event.substring(event.indexOf("「")+1, event.lastIndexOf("」"));
+	        	 console.log(event);
+	             $("div#connectingUserList").html(event);
 	          }
 	          else {
 	               $("div#chatMessage").append(event.data);
@@ -125,7 +118,7 @@ div#sendmsg{
 	             }
 	          }); 
 	     
-	     
+	        
 	     // 메시지 보내기
 	        $("input#btnSendMessage").click(function() {
 	            if( $("input#message").val() != "") {
@@ -144,52 +137,77 @@ div#sendmsg{
 	                messageObj.to = "all";
 	                 
 	                var to = $("input#to").val();
-	              
 	                if ( to != "" ) {
 	                    messageObj.type = "one";
 	                    messageObj.to = to;
 	                }
-	                
-	                var d = new Date();
+	                 
 	                websocket.send(JSON.stringify(messageObj));
 	                // JSON.stringify() 는 값을 그 값을 나타내는 JSON 표기법의 문자열로 변환한다
 	                
-	                $("div#chatMessage").append("<div style='float: right;'><span style='font-size: 10pt;'>"+d.getHours() + ":" + d.getMinutes() +"</span>&nbsp;<span style='background-color: yellow; padding: 3px 2px;'>" + messageVal + "</span></div>&nbsp;<br/><br/>");
+	                $("div#chatMessage").append("<div style='float:right;'><span style='font-size: 10pt;'>"+hours + ":" + minutes +"</span>&nbsp;<span style='background-color: yellow; padding: 3px 2px;'>" + messageVal + "</span></div>&nbsp;<br/><br/>");
 	                $("div#chatMessage").scrollTop(99999999); // 스크롤이 맨위로 간다
 	                 
 	                $("input#message").val("");
 	            }
 	        });
 	        
-		
-		
-		
-	});
+	     
+	     
+	        /////////////////////////////////////////////////////////////
+	        
+	        
+	     // 귀속말대화끊기 버튼은 처음에는 보이지 않도록 한다.
+	        $("button#btnAllDialog").hide();
+	        $("input#toname").hide();
+	        // 아래는 귓속말을 위해서 대화를 나누는 상대방의 이름을 클릭하면 상대방IP주소를 귓속말대상IP주소에 입력하도록 하는 것.
+	        $(document).on("click",".loginuserName",function(){
+	           /* class loginuserName 은 
+	              com.spring.chatting.websockethandler.WebsocketEchoHandler 의 
+	              protected void handleTextMessage(WebSocketSession wsession, TextMessage message) 메소드내에
+	              133번 라인에 기재해두었음.
+	           */
+	           var ip = $(this).prev().text();
+	           var name=$(this).text();
+	        //   alert(ip);
+	            $("input#to").val(ip); 
+	            $("span#toname").show();
+	            $("span#toname").text("@"+name);
+	            $("span#privateWho").text($(this).text());
+	            $("button#btnAllDialog").show();
+	        });
+	        
+	        
+	        // 귀속말대화끊기 버튼을 클릭한 경우는 전체대상으로 채팅하겠다는 말이다. 
+	        $("button#btnAllDialog").click(function(){
+	              $("input#to").val("");
+	              $("span#privateWho").text("");
+	              $(this).hide();
+	              $("span#toname").text("");
+	              $("span#toname").hide();
+	        });
+	        
+	        
+	  	});// end of $(document).ready(function(){})-----------------
 
 </script>
 
+<h3 style="margin-top:5px;">T1Works GroupChat</h3>
+<div style="width: 100%; height: 90%; margin-legt:10px;">
 
-
-
-
-<div id="body">
- 
-  <div id="name">
-  	<c:if test="${not emptyparaMap}">
-  		${paraMap.name}&nbsp;
-  		<c:if test="${paraMap.fk_pcode == '1'}">사원</c:if>
-  		<c:if test="${paraMap.fk_pcode == '2'}">대리님</c:if>
-  		<c:if test="${paraMap.fk_pcode == '3'}">부장님</c:if>
-  		<c:if test="${paraMap.fk_pcode == '4'}">사장님</c:if>
-  	</c:if>
-  </div>	
- 
-  <div id="chatMessage" style="overFlow: auto; max-height: 550px;"></div>
-  
-  <div id="sendmsg">
-	<input type="text" id="message" size="54" style="height: 35px;"  placeholder="메시지 내용"/>
-    <input type="button" id="btnSendMessage" class="btn_normal" value="보내기" />
-  </div>
+<div style="float: left; width: 20%; height:480px; border-right: solid 1px gray; margin-left: 10px; margin-right: 20px;">
+	- 접속자<br><br>
+	<div id="connectingUserList" style="" ></div>
 </div>
-<input type="text" id="to" value=""/>
+  <div id="chatMessage" style="overFlow: auto; max-height: 500px; margin-right: 5px;"></div>
+  <div id="chatMessageMe" style="overFlow: auto; max-height: 500px; margin-right: 5px;"></div>
+</div>
+  <div id="sendmsg" style="margin-left: 10px;">
+  	<span id="toName"></span><button type="button" id="btnAllDialog">⊖</button><br>
+	<input type="text" id="message" size="90" style="height: 35px;"  placeholder="메시지 내용"/>
+    <input type="button" id="btnSendMessage" class="btn_normal" value="보내기" />
+
+ </div> 
+
+<input type="hidden" id="to" value=""/>
 <input type="hidden" id="toId" value="${empId}"/>

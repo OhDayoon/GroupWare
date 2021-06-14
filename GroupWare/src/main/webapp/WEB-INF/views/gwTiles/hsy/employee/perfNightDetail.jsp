@@ -10,6 +10,7 @@
 		margin: 0 auto;
 		position: relative;
 		left: -80px;
+		margin-bottom: 200px;
 	}
 
 	div#salaryDetailTitle{
@@ -61,6 +62,8 @@
 	table#salaryDetailTable1 td {height: 80px;}
 	table#salaryDetailTable2 td {height: 60px;}
 	
+	tr.colorTr{background-color: #ffff99;}
+	
 </style>
 
 <script type="text/javascript">
@@ -71,10 +74,14 @@
 		// 내림차순 기본선택값으로 지정
 		$("select#sortOption").val("desc");
 		
-		
-		// default값은 성과금내역 보기, 내림차순
 		var sortOption= $("select#sortOption").val();
-		getBonusList(sortOption);
+		
+		if("${from}"!=""){ // 홈페이지에서 야근 찍고 넘어온 경우 야간수당 내역이 default
+			getOverNightList(sortOption);
+		}
+		else{ // 사이드메뉴로 넘어온 경우 default값은 성과금내역 보기, 내림차순
+			getBonusList(sortOption);		
+		}
 		
 		// 성과금 내역 또는 야근수당 내역 라디오 버튼을 클릭한 경우 이벤트
 		$("input[name=salaryDetailOption]").click(function(){
@@ -105,7 +112,7 @@
 				getBonusList(sortOption); // 성과금내역 함수 호출
 			}
 			else{ // 야근수당 내역을 클릭한 경우
-				getOverNightList(sortOption); // 야근수당 내역 함수 호출
+				getOverNightList(sortOption);
 			}
 			
 		}); // end of $("select#sortOption").change(function(){-----------------
@@ -146,8 +153,8 @@
 						
 						 var bonus=Number(item.bonus).toLocaleString('en');
 						 
-						 html+= "<tr>"+
-					   				"<td>"+item.date+"</td>"+
+						 html+=	 "<tr>"+   
+							 		"<td>"+item.date+"</td>"+
 					   				"<td style='width:30%'>"+
 					   					item.goalCnt+
 					   					"&nbsp;건<br/><span style='font-size:9pt;'>(&nbsp;목표건:&nbsp;전월실적&nbsp;("+item.prevCnt+"건)&nbsp;+&nbsp;2건&nbsp;)</span>"+
@@ -201,13 +208,16 @@
 				 		    "</tr>";
 				 }
 				 else{ // 야근수당 내역이 존재하는 경우
-				 
+					
 					 $.each(json,function(index,item){
 						
 						 var overnightPay=Number(item.overnightPay).toLocaleString('en');
-						 
-						 html+= "<tr>"+
-					   				"<td>"+item.doLateSysdate+"</td>"+
+						
+						 if(index==0 && sortOption=="desc" && "${from}"!="" )  html+= "<tr class='colorTr'>"; // 홈페이지에서 야근 찍고 넘어온 경우 + 내림차순인 경우
+ 						 else if(index==(json.length-1) && sortOption=="asc" && "${from}"!="" ) html+= "<tr class='colorTr'>"; // 홈페이지에서 야근 찍고 넘어온 경우 + 오름차순인 경우
+						 else	html+= "<tr>";
+					     
+						 html+=		"<td>"+item.doLateSysdate+"</td>"+
 					   				"<td style='font-size: 11pt;'>19시&nbsp;00분&nbsp;부터<br/>"+
 					   					item.endLateTime+"&nbsp;까지"+
 					   				"</td>"+
@@ -238,8 +248,14 @@
 	
 	<div id="salaryDetailTitle">${loginuser.name}님의 성과금/야근수당 내역</div>
 	<div id="salaryDetailOption" style="margin: 50px 0px 30px 50px; border: solid 0px red;">
-		<input type="radio" id="radio1" value="radio1" name="salaryDetailOption" checked /><label for="radio1" style="margin-right: 20px;">성과금&nbsp;내역</label>
-		<input type="radio" id="radio2" value="radio2" name="salaryDetailOption" /><label for="radio2">야근수당&nbsp;내역</label>
+		<c:if test="${from ne ''}">
+			<input type="radio" id="radio1" value="radio1" name="salaryDetailOption" /><label for="radio1" style="margin-right: 20px;">성과금&nbsp;내역</label>
+			<input type="radio" id="radio2" value="radio2" name="salaryDetailOption" checked/><label for="radio2">야근수당&nbsp;내역</label>
+		</c:if>
+		<c:if test="${from eq ''}">
+			<input type="radio" id="radio1" value="radio1" name="salaryDetailOption" checked /><label for="radio1" style="margin-right: 20px;">성과금&nbsp;내역</label>
+			<input type="radio" id="radio2" value="radio2" name="salaryDetailOption" /><label for="radio2">야근수당&nbsp;내역</label>
+		</c:if>
 	</div>
 	<div id="orderOption" style="border:solid 0px blue; width:88.5%;" align="right">
 		<span style="margin-right:15px; font-size: 12pt; color: #4c4c4d;">정렬기준</span>

@@ -24,6 +24,34 @@ public class PaymentJshService implements InterPaymentJshService {
 	@Autowired
 	private InterElectronPayJshDAO dao;
 
+	
+	
+	//공통/////////////////////////////////////////////////////////////////////////////////////
+	
+	
+	
+	// 하나의 문서보기에서 결재로그 보여주기
+	@Override
+	public List<ElectronPayJshVO> oneLogList(Map<String, String> paraMap) {
+		 List<ElectronPayJshVO> alogList = dao.oneLogList(paraMap);
+		return alogList;
+	}
+	
+	
+	// 하나의 문서 수신자정보 받아오기
+	@Override
+	public ElectronPayJshVO receiver(Map<String, String> paraMap) {
+		ElectronPayJshVO receiver = dao.receiver(paraMap);
+		return receiver;
+	}
+
+	
+	
+	
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////
+	
+	
 	// 일반결재내역 목록 보여주기 검색어가 없는
 	@Override
 	public List<ElectronPayJshVO> generalPayment_List() {
@@ -98,7 +126,7 @@ public class PaymentJshService implements InterPaymentJshService {
 		String ano = dao.insertno();
 		epvo.setAno(ano);
 		
-		int n1=0, n2=0, n3=0; 
+		int n1=0, n2=0, n3=0 ,n4=0; 
 		// 2) 전자결재 테이블에 insert
 		 n1 = dao.Electricadd(epvo);
 		 
@@ -111,7 +139,13 @@ public class PaymentJshService implements InterPaymentJshService {
 		 // 4) ncatname 조건에 따라 (회의록,위임장,외부공문,협조공문) 테이블에 insert 시켜줌 
 			 n3 =dao.selectadd(epvo);
 		}
-		return n3;
+		if(n3==1) {
+			
+			//결재로그에 insert
+			n4= dao.logInsert(epvo);
+		}
+		return n4;
+		
 	}
 
 	// 글쓰기( 파일첨부가 있는 글쓰기  ) 
@@ -122,7 +156,7 @@ public class PaymentJshService implements InterPaymentJshService {
 			String ano = dao.insertno();
 			epvo.setAno(ano);
 			
-			int n1=0, n2=0, n3=0; 
+			int n1=0, n2=0, n3=0 ,n4=0; 
 			// 2) 전자결재 테이블에 insert
 			 n1 = dao.Electricadd_withFile(epvo);
 			 
@@ -135,7 +169,13 @@ public class PaymentJshService implements InterPaymentJshService {
 			// 4) ncatname 조건에 따라 (회의록,위임장,외부공문,협조공문) 테이블에 insert 시켜줌 
 				 n3 =dao.selectadd(epvo);
 			}
-			return n3;
+			if(n3==1) {
+				
+				//결재로그에 insert
+				n4= dao.logInsert(epvo);
+			}
+			return n4;
+			
 	}
 
 	//임시저장함 insert-첨부파일X
@@ -234,7 +274,7 @@ public class PaymentJshService implements InterPaymentJshService {
 		String ano = dao.insertno();
 		epvo.setAno(ano);
 					
-		int n1=0, n2=0, n3=0; 
+		int n1=0, n2=0, n3=0 , n4=0; 
 		// 2) 전자결재 테이블에 insert
 		 n1 = dao.ElectricExpadd(epvo);
 		 
@@ -247,7 +287,13 @@ public class PaymentJshService implements InterPaymentJshService {
 		 // 4) scatname 조건에 따라 (지출결의서, 법인카드사용신청서) 테이블에 insert 시켜줌 
 			 n3 =dao.selectExpadd(epvo);
 		}
-		return n3;
+		if(n3==1) {
+			
+			//결재로그에 insert
+			n4= dao.logInsert(epvo);
+		}
+		return n4;
+		
 	}
 	// 파일첨부가 있는 전자결재 문서 글쓰기insert
 	@Override
@@ -258,7 +304,7 @@ public class PaymentJshService implements InterPaymentJshService {
 		String ano = dao.insertno();
 		epvo.setAno(ano);
 					
-		int n1=0, n2=0, n3=0; 
+		int n1=0, n2=0, n3=0 , n4=0; 
 		// 2) 전자결재 테이블에 insert
 		 n1 = dao.ElectricExpadd_withFile(epvo);
 		 
@@ -271,7 +317,13 @@ public class PaymentJshService implements InterPaymentJshService {
 		 // 4) scatname 조건에 따라 (지출결의서, 법인카드사용신청서) 테이블에 insert 시켜줌 
 			 n3 =dao.selectExpadd(epvo);
 		}
-		return n3;
+		if(n3==1) {
+			
+			//결재로그에 insert
+			n4= dao.logInsert(epvo);
+		}
+		return n4;
+		
 	}
 
 	//임시저장함 insert-첨부파일X
@@ -364,20 +416,24 @@ public class PaymentJshService implements InterPaymentJshService {
 			String ano = dao.insertno();
 			epvo.setAno(ano);
 						
-			int n1=0, n2=0, n3=0; 
-			// 2) 전자결재 테이블에 insert
-			 n1 = dao.ElectricExpadd(epvo);
+			int n1=0, n2=0, n3=0, n4=0;
+			// 2) 근태결재 테이블에 insert
+			 n1 = dao.ElectricVacadd(epvo);
 			 
 			if(n1==1) {
-				// 3) scatname 조건에 따라 insert 시켜줌 전자결재테이블에 insert  
+				// 3) vcatname 조건에 따라 insert 시켜줌 전자결재테이블에 insert  
 				 n2 = dao.vacAdd(epvo);
 				
 			  }
 			if(n2==1) {
-			 // 4) scatname 조건에 따라 (지출결의서, 법인카드사용신청서) 테이블에 insert 시켜줌 
+			 // 4) vcatname 조건에 따라 (병가,반차,연차,경조휴가,출장,추가근무) 테이블에 insert 시켜줌 
 				 n3 =dao.selectVacadd(epvo);
 			}
-			return n3;
+			if(n3==1) {
+				//결재로그에 insert
+				n4= dao.logInsert(epvo);
+			}
+			return n4;
 		}
 		// 파일첨부가 있는 근태결재 문서 글쓰기insert
 		@Override
@@ -388,7 +444,7 @@ public class PaymentJshService implements InterPaymentJshService {
 			String ano = dao.insertno();
 			epvo.setAno(ano);
 						
-			int n1=0, n2=0, n3=0; 
+			int n1=0, n2=0, n3=0, n4=0; 
 			// 2) 전자결재 테이블에 insert
 			 n1 = dao.ElectricVacadd_withFile(epvo);
 			 
@@ -401,7 +457,12 @@ public class PaymentJshService implements InterPaymentJshService {
 			 // 4) scatname 조건에 따라 (지출결의서, 법인카드사용신청서) 테이블에 insert 시켜줌 
 				 n3 =dao.selectVacadd(epvo);
 			}
-			return n3;
+			if(n3==1) {
+				
+				//결재로그에 insert
+				n4= dao.logInsert(epvo);
+			}
+			return n4;
 		}
 
 		//임시저장함 insert-첨부파일X
@@ -452,6 +513,21 @@ public class PaymentJshService implements InterPaymentJshService {
 			}
 			return n3;
 		}
+
+		// 하나의 근태결재내역 문서 보여주기
+		@Override
+		public ElectronPayJshVO vacOneView(Map<String, String> paraMap) {
+			ElectronPayJshVO epvo = dao.vacOneView(paraMap);
+			return epvo;
+		}
+
+
+
+
+
+
+		
+		
 		
 	
 	

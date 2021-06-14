@@ -20,7 +20,7 @@ div.content-width{ width: 60%; }
    border-top: solid 3px #0071bd;
    margin-left: auto;
    margin-right: auto;
-   margin-top: 150px;
+   margin-top: 6%;
    background-color: #ffffff;
    box-shadow: 0px 1px 5px 2px #ccc;
 }
@@ -51,6 +51,13 @@ height: auto;
 display:block;
 margin: 60px auto;
 }
+
+@media (max-width: 1540px){
+	div#content-container{
+	height: 28em; 
+	}
+}
+
 </style>
 <script type="text/javascript">
    $(document).ready(function(){
@@ -104,7 +111,7 @@ margin: 60px auto;
 
 <body>
 
-<div id="content-container" class="content-width">
+<div id="content-container" class="content-width" style="height: 35em;">
 
 
 <img id="logo" src="<%=request.getContextPath()%>/resources/images/login/t1works_logo_reverse.jpg" />
@@ -133,7 +140,7 @@ margin: 60px auto;
 </div>
 <div id="footer" style="background-color: #0071bd; margin: 60px 0px 0px 0px; width: 100%; height: 150px;">
 
-<img src="<%=request.getContextPath()%>/resources/images/login/t1works_logo.jpg" style="width: 200px; height: auto; margin: 20px auto 0 auto; display: block; vertical-align: middle;" />
+<img src="<%=request.getContextPath()%>/resources/images/login/t1works_logo.jpg" style="width: 200px; height: auto; margin: 30px auto 0 auto; display: block;" />
 
 </div>
 

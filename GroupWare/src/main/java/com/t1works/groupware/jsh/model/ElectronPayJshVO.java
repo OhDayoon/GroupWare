@@ -143,15 +143,23 @@ public class ElectronPayJshVO {
 //////
 	 //직급
 	   private String pname;  // 직급명
+	   private String pcode;  // 직급명
 	   
 	   
-/////////////전자결재 의견작성
+	
+
+
+
+
+
+	/////////////전자결재 의견작성
 	   private String ono;      // 의견순번
-	   //private String fk_ano;   // 문서번호
-	  // private String fk_employeeid;    // 작성자
 	   private String ocontent; // 의견내용
 	   private String odate;    // 작성일자
 	   
+////////////결재로그
+	  private String logstatus;	// 결재상태
+	  private String logdate;		// 결재일자
 	   
 	   
 	   
@@ -380,8 +388,15 @@ public class ElectronPayJshVO {
 	public void setPname(String pname) {
 		this.pname = pname;
 	}
-	
+	public String getPcode() {
+		return pcode;
+	}
+	public void setPcode(String pcode) {
+		this.pcode = pcode;
+	}
 
+	
+	
 	
 	public String getMno() {
 		return mno;
@@ -697,13 +712,26 @@ public class ElectronPayJshVO {
 
 
 
+// 결재로그
+	public String getLogstatus() {
+		return logstatus;
+	}
+	public void setLogstatus(String logstatus) {
+		this.logstatus = logstatus;
+	}
+	public String getLogdate() {
+		return logdate;
+	}
+	public void setLogdate(String logdate) {
+		this.logdate = logdate;
+	}
+	
+	
 
-
-
-
-
+	
+	
+	//rno 받아오기
 	private String rno;
-
 
 
 	public String getRno() {

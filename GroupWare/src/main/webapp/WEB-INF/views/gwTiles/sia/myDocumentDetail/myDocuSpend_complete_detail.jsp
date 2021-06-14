@@ -73,11 +73,20 @@ td.opinion{
 <script type="text/javascript">
 	$(document).ready(function(){
 		
+		// 의견보기
 		goViewOpinion();
+		
+		// 결재로그 보기
+		goViewLogList();
+		
+		// 도장찍기
+		goViewStamp();
 			
 	});
 	
+	
 	// Function Declaration
+	
 	// 의견보기
 	function goViewOpinion(){
 		$.ajax({
@@ -113,14 +122,15 @@ td.opinion{
 	function goback(){
 		var $myFrm= document.myFrm;
 		$myFrm.method="POST";
-		$myFrm.action="<%=ctxPath%>/t1/myDocuSpend_rec.tw";
+		$myFrm.action="<%=ctxPath%>/t1/myDocuSpend_complete.tw";
 		$myFrm.submit();
 	}
 	
 	
-	function goViewApproval(){
+	// 결재로그 리스트 보기
+	function goViewLogList(){
 		$.ajax({
-			url:"<%= ctxPath%>/t1/approvalList.tw",
+			url:"<%= ctxPath%>/t1/approvalLogList.tw",
 			data:{"parentAno":"${requestScope.avo.ano}"},
 			dataType:"json",
 			success:function(json){				
@@ -128,19 +138,94 @@ td.opinion{
 				var html = "";
 				
 				if(json.length > 0){
-					$.each(json, function(index, item){						
-						html += "<div>["+item.odate+"]&nbsp;"+item.dname+"&nbsp;<span style='font-weight: bold;'>"+item.name+"</span>&nbsp;"+item.pname+"&nbsp;&nbsp;<span style='color: red;'>"+item.astatus+"</span></div>";
+					$.each(json, function(index, item){
+						
+						var logstatus = item.logstatus;
+						if(logstatus == '0'){
+							logstatus = "제출";
+						}
+						else if(logstatus == '1'){
+							logstatus = "승인";
+						}
+						else if(logstatus == '2'){
+							logstatus = "반려";
+						}
+						
+						html += "<div>["+item.logdate+"]&nbsp;"+item.dname+"&nbsp;"+item.name+"&nbsp;"+item.pname+"&nbsp;<span style='color: red; font-weight: bold;'>"+logstatus+"</span></div>";						
+						html += "<hr style='margin: 2px;'>";
 					});
 				}
 				
-				$("span#approvalDisplay").html(html);
+				$("span#logDisplay").html(html);
 				
 			},
 			error: function(request, status, error){
 				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}
 		});
-	}// end of function goViewOpinion(){}--------------------	
+	}// end of function goViewOpinion(){}--------------------
+	
+	
+	// 도장찍기
+	function goViewStamp(){
+		$.ajax({
+			url:"<%= ctxPath%>/t1/approvalLogList.tw",
+			data:{"parentAno":"${requestScope.avo.ano}"},
+			dataType:"json",
+			success:function(json){				
+								
+				var html = "";
+				
+				if(json.length > 0){
+					$.each(json, function(index, item){
+						
+						var approvalImg1 = "<%= ctxPath%>/resources/images/sia/approval_1.png";
+						var approvalImg2 = "<%= ctxPath%>/resources/images/sia/approval_2.png";
+						var approvalImg3 = "<%= ctxPath%>/resources/images/sia/approval_3.png";
+						var rejectedImg1 = "<%= ctxPath%>/resources/images/sia/rejected_1.png";
+						var rejectedImg2 = "<%= ctxPath%>/resources/images/sia/rejected_2.png";
+						var rejectedImg3 = "<%= ctxPath%>/resources/images/sia/rejected_3.png";
+						
+						var html = "";
+						
+						if(item.pcode == '2'){
+							if(item.logstatus == '1'){
+								html += "<img src='"+approvalImg1+"' style='height: 40px;'/>"
+							}
+							else if(item.logstatus == '2'){
+								html += "<img src='"+rejectedImg1+"' style='height: 40px;'/>"
+							}
+							$("td#pcode2").html(html);
+						}
+						
+						if(item.pcode == '3'){
+							if(item.logstatus == '1'){
+								html += "<img src='"+approvalImg2+"' style='height: 40px;'/>"
+							}
+							else if(item.logstatus == '2'){
+								html += "<img src='"+rejectedImg2+"' style='height: 40px;'/>"
+							}
+							$("td#pcode3").html(html);
+						}
+						
+						if(item.pcode == '4'){
+							if(item.logstatus == '1'){
+								html += "<img src='"+approvalImg3+"' style='height: 40px;'/>"
+							}
+							else if(item.logstatus == '2'){
+								html += "<img src='"+rejectedImg3+"' style='height: 40px;'/>"
+							}
+							$("td#pcode4").html(html);
+						}
+						
+					});
+				}				
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		});
+	}	
 </script>
 
 <div id="containerview">	
@@ -155,15 +240,9 @@ td.opinion{
 				<th>사장</th>
 			</tr>
 			<tr>
-				<td id="img_approval_1" style="height:70px;">
-				</td>
-				
-				<td id="img_approval_2" style="height:70px;">
-					
-				</td>
-				<td id="img_approval_3" style="height:70px;">
-					
-				</td>
+				<td style="height:70px;" id="pcode2"></td>
+				<td id="pcode3"></td>
+				<td id="pcode4"></td>
 			</tr>
 		</table>
 		
@@ -236,7 +315,6 @@ td.opinion{
 			<tr>
 				<th>결재로그</th>
 				<td>
-					[${requestScope.avo.asdate}] ${requestScope.avo.dname} ${requestScope.avo.name} ${requestScope.avo.pname} <span style="color: red; font-weight: bold;">제출</span>
 					<span id="logDisplay"></span>
 				</td>
 			</tr>

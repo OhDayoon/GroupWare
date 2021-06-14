@@ -207,8 +207,11 @@
 			else if(periodOption == "month"){
 				$("label#month").css("color","#005c99");
 			}
-			else{
+			else if(periodOption=="3months"){
 				$("label#3months").css("color","#005c99");
+			}
+			else{
+				$("label#all").css("color","#005c99");
 			}
 		}
 
@@ -315,7 +318,12 @@
 				type:"POST",
 				dataType:"JSON",
 				success:function(json){
-					alert(clientname+" 님에게 성공적으로 [여행준비물]메일을 전송했습니다.");	
+					if(json.n==0){
+						alert(clientname+" 님에게 성공적으로 [여행준비물]메일을 전송했습니다.");
+					}	
+					else{
+						alert("메일 전송에 실패했습니다. 다시 시도해주세요.");
+					}
 				},
 				error: function(request, status, error){
 		        	alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -328,7 +336,27 @@
 		// 진행 완료 업무 메일 보내기 버튼 클릭 시 이벤트 => 여행사 홍보 메일 보내기
 		$(document).on('click',('span.sendMailEnd'),function(){
 		
-			alert("진행 완료 메일 보내기 클릭했다.");
+			var clientmobile= $(this).prev().prev().val();
+			var fk_pNo= $(this).prev().val();
+			var clientname= $(this).parent().prev().prev().text();
+			
+			$.ajax({  // 여행사 홍보 메일 보내기
+				url:"<%=ctxPath%>/t1/sendEmailIngDone.tw",
+				data:{"clientmobile":clientmobile, "fk_pNo":fk_pNo},
+				type:"POST",
+				dataType:"JSON",
+				success:function(json){
+					if(json.n==0){
+						alert(clientname+" 님에게 성공적으로 [여행사 홍보]메일을 전송했습니다.");
+					}	
+					else{
+						alert("메일 전송에 실패했습니다. 다시 시도해주세요.");
+					}
+				},
+				error: function(request, status, error){
+		        	alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		        }
+			}); // end of $.ajax({------
 			
 		}); // end of $(document).on('click','(span.sendMailIng)',function(){--------
 			
@@ -585,11 +613,12 @@
 		<span id="doneTodo" onclick="getEmployeeTodo('2')">진행완료업무&nbsp;(${doneTodoCnt}건)</span>
 		
 		<%-- 진행완료업무 클릭시에만 보여지는 날짜선택 옵션 --%>
-		<div style="float: right; margin-left: 240px; padding-top:17px;" id="periodOption">
+		<div style="float: right; margin-left: 190px; padding-top:17px;" id="periodOption">
 			<label style="color: #333; font-size: 10pt;">기간설정&nbsp;|&nbsp;</label>
 			<label class="period" id="week">1주일&nbsp;[${weekCnt}건]</label>&nbsp;&nbsp;
 			<label class="period" id="month">1개월&nbsp;[${monthCnt}건]</label>&nbsp;&nbsp;
-			<label class="period" id="3months">3개월&nbsp;[${threeMonthsCnt}건]</label>
+			<label class="period" id="3months">3개월&nbsp;[${threeMonthsCnt}건]</label>&nbsp;&nbsp;
+			<label class="period" id="all">전체&nbsp;[${doneTodoCnt}건]</label>
 		</div>
 	</div>
 	

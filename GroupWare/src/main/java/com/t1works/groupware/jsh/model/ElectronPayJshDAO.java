@@ -23,7 +23,43 @@ public class ElectronPayJshDAO implements InterElectronPayJshDAO {
 	
 	
 	
-	///////////////////////////////////////////////////////////////////////
+	//공통/////////////////////////////////////////////////////////////////////
+	
+	
+	// 하나의 문서보기에서 결재로그 보여주기
+	@Override
+	public List<ElectronPayJshVO> oneLogList(Map<String, String> paraMap) {
+		List<ElectronPayJshVO> alogList = sqlsession6.selectList("payment_Jsh.oneLogList",paraMap);
+		return alogList;
+	}
+	
+	// 하나의 문서 수신자정보 받아오기
+	@Override
+	public ElectronPayJshVO receiver(Map<String, String> paraMap) {
+		ElectronPayJshVO receiver = sqlsession6.selectOne("payment_Jsh.receiver",paraMap);
+		return receiver;
+	}
+
+
+	// 5) 결재로그에 insert
+	@Override
+	public int logInsert(ElectronPayJshVO epvo) {
+		int n4 = sqlsession6.insert("payment_Jsh.logInsert",epvo);
+		return n4;
+	}
+
+	
+	
+	
+	//////////////////////////////////////////////////////////////////////
+	
+	
+	
+	
+	
+	
+	
+	
 	@Override
 	// 일반결재내역 목록 보여주기
 		public List<ElectronPayJshVO> generalPayment_List() {
@@ -304,6 +340,7 @@ public class ElectronPayJshDAO implements InterElectronPayJshDAO {
 		}
 
 
+
 		// 파일첨부가 있는 전자결재 문서 글쓰기 insert
 		@Override
 		public int ElectricVacadd_withFile(ElectronPayJshVO epvo) {
@@ -326,6 +363,20 @@ public class ElectronPayJshDAO implements InterElectronPayJshDAO {
 			int n1 = sqlsession6.insert("payment_Jsh.saveVacadd_withFile",epvo);
 			return n1;
 		}
+
+		// 하나의 근태결재내역 문서 보여주기
+		@Override
+		public ElectronPayJshVO vacOneView(Map<String, String> paraMap) {
+			ElectronPayJshVO epvo = sqlsession6.selectOne("payment_Jsh.vacOneView",paraMap);
+			return epvo;
+		}
+
+		
+
+		
+
+
+		
 
 
 

@@ -36,6 +36,12 @@
 		margin-top: 15px;
 	}
 	
+	td.mytd{
+		font-weight: bolder;
+		background-color: #94b8b8;
+		margin-left: 10px;
+		width: 120px;
+	}
 </style>
 
 <script type="text/javascript">
@@ -159,39 +165,40 @@
 	}// end of function updatePasswd(){
 
 </script>
-<div id="content"> 
+<div id="content">
+	<span style="position:relative; top:80px; left:100px; font-size:15pt; font-weigth:bolder;">&#60; 마이페이지 &#62;</span> 
 	<table id="mypageInfo">
 		<tr>
 			<c:if test="${loginuser.employeeimg eq 'noimage.png'}">
 				<td rowspan="5" style="width:170px; padding-left:47px;">${loginuser.employeeimg}</td>
 			</c:if>
-			<td>사번</td>
+			<td class="mytd">사번</td>
 			<td>${loginuser.employeeid}</td>
-			<td>이메일</td>
+			<td class="mytd">이메일</td>
 			<td>${loginuser.email}</td>
 		</tr>
 		<tr>
-			<td>성명</td>
+			<td class="mytd">성명</td>
 			<td>${loginuser.name}</td>
-			<td>주민번호</td>
+			<td class="mytd">주민번호</td>
 			<td>${paraMap.fJubun} - ●●●●●●●</td>
 		</tr>
 		<tr>
-			<td>소속</td>
+			<td class="mytd">소속</td>
 			<td>${paraMap.pname}</td>
-			<td>직무</td>
+			<td class="mytd">직무</td>
 			<td>${paraMap.duty}</td>
 		</tr>
 		<tr> 
-			<td>직위</td>
+			<td class="mytd">직위</td>
 			<td>${paraMap.dname}</td>
-			<td>입사일자</td>
+			<td class="mytd">입사일자</td>
 			<td>${fn:substring(loginuser.hiredate, 0, 10)}</td>
 		</tr>
 		<tr>
-			<td>전화번호</td>
+			<td class="mytd">전화번호</td>
 			<td>${fn:substring(loginuser.cmobile,0,2)} - ${fn:substring(loginuser.cmobile,3,6)} - ${fn:substring(loginuser.cmobile,6,10)}</td>
-			<td>핸드폰</td>
+			<td class="mytd">핸드폰</td>
 			<td>${fn:substring(loginuser.mobile,0,3)} - ${fn:substring(loginuser.mobile,3,7)} - ${fn:substring(loginuser.mobile,7,11)}</td>
 		</tr>
 	</table>

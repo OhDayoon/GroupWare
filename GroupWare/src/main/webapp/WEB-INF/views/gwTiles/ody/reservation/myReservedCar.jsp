@@ -8,7 +8,7 @@
 
 div#reserveList{
 	clear: both;
-	margin-top: 150px;
+	margin-top: 60px;
 }
 
 .table th {
@@ -397,12 +397,12 @@ button.btn_r{
 	
 </script>
 
-<div id="myReserved"  style="margin-left: 80px;">
+<div id="myReserved"  style="margin: 30px 0px 30px 50px;">
 	
-	<h3 style="margin-top: 20px !important;">나의 예약내역</h3>
+	<i class='fas fa-tasks fa-lg' style='font-size:24px ;'></i>&nbsp;<span style="font-size: 18pt; font-weight: bold;">나의 예약내역</span>
 	
 
-	<div style="float: left; margin-top: 50px;">
+	<div style="margin-top: 50px;">
 		<ul class="nav nav-pills">
 			 <li><a style="color: black;" href="<%= ctxPath%>/t1/myReservedRoom.tw">회의실 예약 내역</a></li>
 			 <li class="active"><a href="<%= ctxPath%>/t1/myReservedCar.tw" >차량 예약 내역</a></li>
@@ -410,7 +410,7 @@ button.btn_r{
 		</ul>
 	</div>
 
-    <div style="float: right; margin-top: 70px;  margin-right: 175px;">
+    <div style="float: right; margin-top: 15px; margin-right: 179px; display: inline-block;">
     	<form name="searchRoom">
 			<input type="text" id="fromDate" name="startdate" style="width: 90px;" readonly="readonly">&nbsp;&nbsp; 
 		     -&nbsp;&nbsp; <input type="text" id="toDate" name="enddate" style="width: 90px;" readonly="readonly">&nbsp;&nbsp;
@@ -496,7 +496,7 @@ button.btn_r{
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">신청등록</h4>
+          <h4 class="modal-title">예약 변경</h4>
         </div>
         <div class="modal-body">
          	<form name="editCar">

@@ -25,18 +25,21 @@
 	span.rentalSpan {
 		text-decoration: underline;
 		margin-right:20px;
+		cursor:pointer;
 	}
 	
 	table.rentalTable th{
 		border-bottom:solid 1px black;
 		font-weight: bolder;
 		font-size:13pt;
+		background-color: #c2d6d6;
 	}
 	
 	table.rentalTable td{
 		border-bottom:solid 1px black;
 		height:40px;
 	}
+	
 	
 	
 </style>

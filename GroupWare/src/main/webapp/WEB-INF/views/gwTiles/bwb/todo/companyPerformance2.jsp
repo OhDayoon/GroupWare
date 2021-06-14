@@ -60,7 +60,7 @@
 		<select id="siljukMonth">
 		</select>
 	</div>
-    <div id="container" style="margin-left:-50px; width:85%;"></div>
+    <div id="container" style="margin-left:-50px; width:85%; height:600px;"></div>
 </div>
 
 
@@ -240,8 +240,8 @@
 								performanceDeptCntArr.push({type: 'pie',
 							        						name: 'Total consumption',
 							        						data: totalArr,
-							        				        center: [100, 20],
-							        				        size: 60,
+							        				        center: [100, 80],
+							        				        size: 100,
 							        				        showInLegend: false,
 							        				        dataLabels: {enabled: false}});
 								
@@ -256,14 +256,14 @@
 								    }, 
 								    yAxis: {
 
-								    	max: 6,
+								    	max: 15,
 							    	},
 								    labels: {
 								        items: [{
-								            html: '최근 3개월간 부서 실적의 합계',
+								            html: '<span style="font-weight:bolder;">최근 3개월간 부서 실적의 합계</span>',
 								            style: {
 								                left: '50px',
-								                top: '-25px',
+								                top: '20px',
 								                color: ( // theme
 								                    Highcharts.defaultOptions.title.style &&
 								                    Highcharts.defaultOptions.title.style.color

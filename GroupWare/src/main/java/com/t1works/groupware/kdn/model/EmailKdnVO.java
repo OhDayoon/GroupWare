@@ -26,12 +26,17 @@ public class EmailKdnVO {
 	private String groupno; 			// 답변글쓰기에 있어서 그룹번호
     private String parentSeq;		// 답변글의 원글번호. 자신의 글(답변글)에 있어서 원글(부모글)이 누구인지에 대한 정보값
     private String depthno;			// 답변글 등록시 글목록에서 들여쓰기용
+    private String name;			// 이메일 검색용. tbl_employee의 name 컬럼
+    
     private MultipartFile attach;
    
     private String fileName;    // WAS(톰캣)에 저장될 파일명(2020120809271535243254235235234.png) 
     private String orgFilename; // 진짜 파일명(강아지.png)  // 사용자가 파일을 업로드 하거나 파일을 다운로드 할때 사용되어지는 파일명
     private String fileSize;
 	
+    // ======= select용 변수 추가
+    private String receiverCnt; // 받은 사람 수 
+    
 	public EmailKdnVO() {}
 	
 	public EmailKdnVO(String seq,String fk_seq, String fk_employeeid,String senderEmail,String senderName, String receiverName,String receiverEmail,String ccEmail
@@ -253,7 +258,21 @@ public class EmailKdnVO {
 		this.nextsubject = nextsubject;
 	}
 
-	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getReceiverCnt() {
+		return receiverCnt;
+	}
+
+	public void setReceiverCnt(String receiverCnt) {
+		this.receiverCnt = receiverCnt;
+	}
 
 	
 	

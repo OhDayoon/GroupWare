@@ -144,17 +144,16 @@
    td.oneInfoMenu {
    		font-weight: bolder;
    		text-align: center;
+   		background-color: #E9E9ED;
    }
    
    input.updateInfo {
-   		background-color: #ccc;
-   		border: none;
+   		border: solid 1px black;
    		font-size:16px;
    		width:180px;
    }
    
    select.updateInfo {
-   		background-color: #ccc;
    		font-size:15px;
    		width:100px;
    }
@@ -400,7 +399,7 @@
          <button type="button" onclick='javascript:hideAll();'>⊖&nbsp;&nbsp;전체폴더닫기</button>
       </div>
       
-      <div style="float:right; margin-right: 180px;">
+      <div style="float:right; margin-right: 400px;">
          <select id="searchType" style="height: 30px; width: 120px; cursor:pointer;">
             <option value="">&nbsp;&nbsp;선택하세요</option>
             <option value="name">&nbsp;&nbsp;직원명</option>
@@ -449,7 +448,7 @@
          
       </div>
       
-      <div style="border: solid 0px red; float:right; width: 700px; margin-right:180px;">
+      <div style="border: solid 0px red; float:right; width: 700px; margin-right:400px;">
          <div style="margin-bottom:20px;"><h4>직원목록</h4></div>
          <table id="employeeListTable">
             <tr style="height:50px; background-color: #e9e9ed; font-weight: bold;">
@@ -482,13 +481,14 @@
       </div>
   	  </div>
   	  
-  	  <div id="oneInfo" style="clear:both; margin-bottom:100px;">
+  	  <div id="oneInfo" style="clear:both; margin-bottom:100px; margin-left:350px;">
+  	  		<span style="margin-left:260px; margin-bottom:15px; font-size:15pt; font-weight:bolder;">&#60;수정전&#62;</span>
       		<table id="oneInfo">
       			<tbody>
 	      			<tr> 
-	      				<td rowspan="3" style="width:130px"><img id="employeesimg"></td>
+	      				<td rowspan="3" style="width:130px"><img id="employeesimg" style="height:149px; width:130px;"></td>
 	      				<td class="oneInfoMenu" style="width:100px;">사번</td>
-	      				<td id="employeeid" style="padding-left:15px; width:184px;"></td>
+	      				<td id="employeeid" style="padding-left:15px; width:130px;"></td>
 	      				<td class="oneInfoMenu" style="width:100px;">이메일</td>
 	      				<td id="email" colspan="2" style="padding-left:15px;"></td>
 	      				<td style="width:200px;"><button id="goInfoUpdate" style="margin-left:40px;">인사관리</button></td>
@@ -513,27 +513,28 @@
       		</table>
       </div>
       	<form name="goUpdate">
-      	<div id="oneInfoUpdate" style="margin-bottom:150px;">		
-      		<table id="oneInfoUpdate" style="margin-top:50px;">
+      	<div id="oneInfoUpdate" style="margin-bottom:150px; margin-left:600px;">
+      		<span style="margin-left:10px; margin-bottom:15px; font-size:15pt; font-weight:bolder;">&#60;수정후&#62;</span>		
+      		<table id="oneInfoUpdate">
       			<tbody>
 	      			<tr> 
-	      				<td rowspan="3" style="width:160px"> <img id="employeesimg"> </td>
+	      				<td rowspan="3" style="width:130px"> <img id="employeesimg" style="height:140px; width:130px;"> </td>
 	      				<td class="oneInfoMenu" style="width:100px;">사번</td>
-	      				<td style="padding-left:15px; width:138.4px;"> <input id="employeeid" name="employeeid" class="updateInfo" type="text" readonly="readonly" /> </td>
+	      				<td style="padding-left:7px;"> <input id="employeeid" name="employeeid" class="updateInfo" type="text" readonly="readonly" style="width:120px;" /> </td>
 	      				<td class="oneInfoMenu" style="width:100px;">이메일</td>
-	      				<td colspan="3" style="padding-left:15px;"> <input type="email" required size="20" maxlength="20" id="email" name="email" class="updateInfo" type="text" /> </td>
+	      				<td colspan="3" style="padding-left:7px;"> <input type="email" required size="20" maxlength="20" id="email" name="email" class="updateInfo" type="text" /> </td>
 	      			</tr>
 	      			<tr> 
 	      				<td class="oneInfoMenu">성명</td>
-	      				<td style="padding-left:15px;"><input id="name" name="name" class="updateInfo" type="text"/></td>
+	      				<td style="padding-left:7px;"><input id="name" name="name" class="updateInfo" type="text" style="width:120px;" /></td>
 	      				<td class="oneInfoMenu">전화번호</td>
-	      				<td style="padding-left:15px;"><input id="cmobile" name="cmobile" class="updateInfo" type="text"/></td>
+	      				<td style="padding-left:7px;"><input id="cmobile" name="cmobile" class="updateInfo" type="text"/></td>
 	      				<td class="oneInfoMenu" style="width:150px;">핸드폰</td>
-	      				<td style="padding-left:15px;"><input id="mobile" name="mobile" class="updateInfo" type="text"/></td>
+	      				<td style="padding-left:7px;"><input id="mobile" name="mobile" class="updateInfo" type="text"/></td>
 	      			</tr>
 	      			<tr> 
 	      				<td class="oneInfoMenu">소속</td>
-	      				<td style="padding-left:15px;">
+	      				<td style="padding-left:7px;">
 	      					<select id="fk_dcode" name="fk_dcode" class="updateInfo">
 	      						<c:forEach var="Department" items="${departmentList}">
 	      							<option value="${Department.dcode}">${Department.dname}</option>
@@ -541,7 +542,7 @@
 	      					</select>
 	      				</td>
 	      				<td class="oneInfoMenu">직위</td>
-	      				<td style="padding-left:15px;">
+	      				<td style="padding-left:7px;">
 	      					<select id="fk_pcode" name="fk_pcode" class="updateInfo">
 	      						<c:forEach var="position" items="${positionList}">
 	      							<option value="${position.fk_pcode}">${position.pname}</option>
@@ -549,7 +550,7 @@
 	      					</select>
 	      				</td>
 	      				<td class="oneInfoMenu">직무</td>
-	      				<td style="padding-left:15px;"><input id="duty" name="duty" class="updateInfo" type="text" readonly="readonly"/></td>
+	      				<td style="padding-left:7px;"><input id="duty" name="duty" class="updateInfo" type="text" readonly="readonly"/></td>
 	      			</tr>
       			</tbody>
       		</table>

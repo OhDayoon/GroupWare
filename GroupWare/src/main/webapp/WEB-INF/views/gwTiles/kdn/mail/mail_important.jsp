@@ -44,11 +44,14 @@ $(document).ready(function(){
 		console.log("개별체크 후 최종 배열값: "+arrEmailSeq);
 	});
 	
+	var gobackURL = "${requestScope.gobackURL}";
+	gobackURL = gobackURL.replaceAll('&', ' ');
+	
 	//중요표시해제
 	$("button#goStar").click(function(){
 		str_arrEmailSeq = arrEmailSeq.toString();
 		console.log("최종 배열 :"+str_arrEmailSeq);
-		location.href="<%=ctxPath%>/t1/goStar.tw?mailBoxNo=2&checkImportant=0&str_arrEmailSeq="+str_arrEmailSeq;
+		location.href="<%=ctxPath%>/t1/goStar.tw?mailBoxNo=2&checkImportant=0&str_arrEmailSeq="+str_arrEmailSeq+"&gobackURL="+gobackURL;
 		
 	});
 	
@@ -58,14 +61,14 @@ $(document).ready(function(){
 			str_arrEmailSeq = arrEmailSeq.toString();
 			//console.log("최종 배열 :"+str_arrEmailSeq);
 			if(str_arrEmailSeq != "0"){
-				location.href="<%=ctxPath%>/t1/readStatus.tw?mailBoxNo=3&readStatus=0&str_arrEmailSeq="+str_arrEmailSeq;
+				location.href="<%=ctxPath%>/t1/readStatus.tw?mailBoxNo=3&readStatus=0&str_arrEmailSeq="+str_arrEmailSeq+"&gobackURL="+gobackURL;
 			}
 			$(this).val("");
 		} else if($(this).val() == "1") {
 			str_arrEmailSeq = arrEmailSeq.toString();
 			//console.log("최종 배열 :"+str_arrEmailSeq);
 			if(str_arrEmailSeq != ""){
-				location.href="<%=ctxPath%>/t1/readStatus.tw?mailBoxNo=3&readStatus=1&str_arrEmailSeq="+str_arrEmailSeq;
+				location.href="<%=ctxPath%>/t1/readStatus.tw?mailBoxNo=3&readStatus=1&str_arrEmailSeq="+str_arrEmailSeq+"&gobackURL="+gobackURL;
 			}
 			$(this).val("");
 		} else {
@@ -73,6 +76,25 @@ $(document).ready(function(){
 		}
 	});
 
+	// 조건검색
+	$("input#searchWord").keydown(function(){
+		if(event.keyCode == 13){  //엔터 했을 경우
+			goSearch();
+		}
+	});
+	
+	//보기개수 변경
+	$("select#sizePerPage").change(function(){
+			goSearch();
+	});
+	
+	//보기개수 선택시 선택값 유지시키기
+	if(${not empty requestScope.paraMap}){
+		$("select#searchType").val("${requestScope.paraMap.searchType}");
+		$("input#searchWord").val("${requestScope.paraMap.searchWord}");
+	  	$("select#sizePerPage").val("${requestScope.paraMap.sizePerPage}");
+	  }
+	
 });//$(document).ready(function() ---------------------------
 
 
@@ -108,16 +130,25 @@ function goView(seq){
 	    
 		
 	}//end of function goView('${boardvo.seq}') ---------------
-	
+
+// 여러 메일 중요표시/중요표시해제
 function goStar(){
 	str_arrEmailSeq = arrEmailSeq.toString();
 	console.log("최종 배열 :"+str_arrEmailSeq);
 	<%-- location.href="<%=ctxPath%>/t1/goStar.tw?seq=${evo.seq}&str_arrEmailSeq="+str_arrEmailSeq; --%>
-	}
+}
+	
+//조건검색
+function goSearch(){
+	var frm = document.searchFrm;
+	frm.method = "get";
+	frm.action = "<%=ctxPath%>/t1/mail_sent.tw";
+	$("#searchFrm").submit();
+}// end of function goSearch() -----------------------
 	
 </script>
 <div id="mail-header" style="background-color: #e6f2ff; width: 100%; height: 120px; padding: 20px;">
-	 <h4 style="margin-bottom: 20px; font-weight: bold;">중요메일함</h4>
+	 <h4 style="margin-bottom: 20px; font-weight: bold;"><a class="anchor-style" href="<%=ctxPath%>/t1/mail_important.tw">중요메일함</a></h4>
 	 <div id="left-header">
 		 <button type="button" id="goStar" class="btn-style">중요표시해제</button>
 		 <select id="readStatus">
@@ -126,19 +157,20 @@ function goStar(){
 		 	<option value="0">읽지않음</option>
 		 </select>
 	 <div id="right-header" style="float: right;">
-		 <select name="mailSearch">
-		 	<option value="">선택</option>
-		 	<option value="subject">제목</option>
-		 	<option value="sender">받는사람</option>
-		 	<option value="content">내용</option>
-		 </select>
-		<input type="text" />
-	 	<button type="submit">검색</button>
-	 	<select name="numberOfEmails">
-		 	<option value="10">10개보기</option>
-		 	<option value="20">20개보기</option>
-		 	<option value="30">30개보기</option>
-		 </select>
+	 	<form name="searchFrm" id="searchFrm" style="display:inline-block;">
+			 <select name="searchType">
+			 	<option value="subject">제목</option>
+			 	<option value="sender">받는사람</option>
+			 	<option value="content">내용</option>
+			 </select>
+			<input type="text" name="searchWord" id="searchWord"/>
+		 	<button type="submit" onclick="goSearch()" class="btn-style">검색</button>
+		 	<select name="sizePerPage" id="sizePerPage">
+			 	<option value="10">10개보기</option>
+			 	<option value="15">15개보기</option>
+			 	<option value="20">20개보기</option>
+			 </select>
+	 	</form>
 	 </div>
 	 </div>
 </div>

@@ -24,6 +24,7 @@
 		height: 30px;
 		margin-bottom: 20px;
 		margin-top: 50px;
+		cursor: pointer;
 	}
 	
 	div#yesAssign {
@@ -127,8 +128,8 @@
 	
 	<h2>${loginuser.name}님의 업무현황</h2>
 	
-	<div id="noAssign" class="assign" onclick="location.href='<%= ctxPath%>/t1/leaderTodo.tw'">미배정업무[${requestScope.noAssignedProduct}]건</div>
-	<div id="yesAssign" class="assign" onclick="location.href='<%= ctxPath%>/t1/leaderTodo2.tw'">배정업무[${requestScope.assignedProduct}]건</div>
+	<div id="noAssign" class="assign" onclick="location.href='<%= ctxPath%>/t1/leaderTodo.tw'" style="padding-left:25px; padding-top:5px;">미배정업무[${requestScope.noAssignedProduct}]건</div>
+	<div id="yesAssign" class="assign" onclick="location.href='<%= ctxPath%>/t1/leaderTodo2.tw'" style="padding-left:25px; padding-top:5px;">배정업무[${requestScope.assignedProduct}]건</div>
 	
 	<div id="noAssignDetail" class="detail">
 		<div style="border-bottom: solid 1px gray; width:1000px; margin-bottom : 10px;">

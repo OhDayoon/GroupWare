@@ -6,6 +6,27 @@ import java.util.*;
 import com.t1works.groupware.jsh.model.ElectronPayJshVO;
 
 public interface InterPaymentJshService {
+	
+	
+	
+	///////////////////////////////////////////////////////////////////////////////////
+	//공통항목
+	
+	
+	// 하나의 문서보기에서 결재로그 보여주기
+	List<ElectronPayJshVO> oneLogList(Map<String, String> paraMap);
+
+
+	// 하나의 문서 수신자정보 받아오기
+	ElectronPayJshVO receiver(Map<String, String> paraMap);
+   
+	
+	
+	
+	
+	
+	/////////////////////////////////////////////////////////////////////////////////
+	
 
 	// 일반결재내역 목록 보여주기
 	List<ElectronPayJshVO> generalPayment_List();
@@ -99,6 +120,14 @@ public interface InterPaymentJshService {
 	int saveVacPayment(ElectronPayJshVO epvo);
 	//임시저장함 insert-첨부파일O
 	int saveVacPayment_withFile(ElectronPayJshVO epvo);
+
+	// 하나의 근태결재내역 문서 보여주기
+	ElectronPayJshVO vacOneView(Map<String, String> paraMap);
+
+
+
+
+
 
 
 

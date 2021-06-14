@@ -3,19 +3,14 @@
 <%@ taglib prefix='c' uri="http://java.sun.com/jsp/jstl/core" %>   
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %> 
 <% String ctxPath = request.getContextPath(); %>
+<link rel="stylesheet" type="text/css" href="<%=ctxPath%>/resources/css/kdn/board.css"/>
 
 <style type="text/css">
 
-   table, th, td, input, textarea {border: solid gray 1px;}
-   
    #table {border-collapse: collapse;
-          width: 900px;
+          width: 250px;
           }
    #table th, #table td{padding: 5px;}
-   #table th{width: 120px; background-color: #DDDDDD;}
-   #table td{width: 860px;}
-   .long {width: 470px;}
-   .short {width: 120px;}
 
 </style>
 <script type="text/javascript">
@@ -51,25 +46,27 @@
    
 </script>
 
-<div style="padding-left: 10%;">
-   <h1>건의사항 비밀글 조회</h1>
+<div>
 	<c:set var="gobackURL2" value="${fn:replace(requestScope.gobackURL,'&', ' ') }" />
    <form name="viewPrivPostFrm">
-      <table id="table">
+      <table id="table" style="display: block; margin: 15% auto 0 auto;">
          <tr>
-            <th>비밀번호</th>
-            <td>
-               <input type="password" name="pw" id="pw" class="short" /> 
+            <td align="center">비밀번호를 입력하세요</td>
+         </tr>
+         <tr>
+         	<td align="center">
+               <input type="password" name="pw" id="pw" /> 
                <input type="hidden" name="seq" value="${requestScope.boardvo.seq}" />       
             </td>
          </tr>
+         <tr>
+         	<td align="center">
+               <button type="button" id="btnGoView" class="btn-style">완료</button>
+         <button type="button" onclick="javascript:history.back()" class="cmnt-btn-style">취소</button>      
+            </td>
+         </tr>
+        
       </table>
-      
-      <div style="margin: 20px;">
-         <button type="button" id="btnGoView">완료</button>
-         <button type="button" onclick="javascript:history.back()">취소</button>
-      </div>
-         
    </form>
    
 </div>

@@ -18,6 +18,16 @@
    <!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
    <mvc:resources mapping="/resources/**" location="/resources/" />
 
+   <!-- === 엑셀파일다운로드를 위해  BeanNameViewResolver 추가하기 === -->
+   <!-- 스프링 프레임워크(Spring Framework)에서 JSP가 아닌 컨트롤러를 호출하여 파일을 다운로드 하려면 다음과 같은 단계를 거쳐야 한다. 
+        BeanNameViewResolver 뷰 리졸버를 추가한 후 파일 다운로드를 처리해줄 빈을 등록한다.
+                 쉽게 생각해서 파일 다운로드 처리를 해주는 view 페이지 라고 생각하면 된다. -->
+      
+   <beans:bean id="excelDownloadView" class="com.t1works.excel.ExcelDownloadView"/>
+   <beans:bean id="beanNameViewResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver">
+        <beans:property name="order" value="0"/>
+    </beans:bean>
+
    <!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
    <beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
       <beans:property name="prefix" value="/WEB-INF/views/" />

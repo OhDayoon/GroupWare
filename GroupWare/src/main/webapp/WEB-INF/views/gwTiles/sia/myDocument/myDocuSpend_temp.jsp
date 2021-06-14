@@ -54,7 +54,7 @@
 		cursor: pointer;
 		font-weight: normal !important; 
 	}
-	table{
+	table.tbl{
 		margin: 10px 5px;
 		width: 90%;
 	}
@@ -98,20 +98,24 @@ $(document).ready(function(){
 		var checkArres = checkArr.join();	
 		
 		var ano = $(this).children(".ano").text();
-		var scatname = $(this).children(".scatname").text();		
+		var scatname = $(this).children(".scatname").text();
+		var fromDate= $("input#fromDate").val();
+		var toDate= $("input#toDate").val();
 		var scat = checkArres;
 		var sort= $("select#sort").val();		
 		var searchWord= $("input#searchWord").val();
 		
-		goView(ano, scatname, scat, sort, searchWord);
+		goView(ano, scatname, fromDate, toDate, scat, sort, searchWord);
 	});
 	
-	if("${sort}"=="" && "${searchWord}"=="" && "${scat}"==""){
+	if("${sort}"=="" && "${searchWord}"=="" && "${fromDate}"=="" && "${toDate}"=="" && "${scat}"==""){
 		goSearch(1);
 	}
 	else {
 		goSearch2('${currentShowPageNo}');
 		
+		$("input#fromDate").val("${fromDate}");
+		$("input#toDate").val("${toDate}");
 		$("select#sort").val("${sort}");
 		$("input#searchWord").val("${searchWord}");
 		
@@ -128,10 +132,81 @@ $(document).ready(function(){
 			goSearch(1);
 		}
 	});
+	
+	var today = new Date();
+	var dd = today.getDate();
+	var mm = today.getMonth()+1; //January is 0!
+	var yyyy = today.getFullYear();
+
+	if(dd<10) {
+	    dd='0'+dd
+	} 
+
+	if(mm<10) {
+	    mm='0'+mm
+	} 
+
+	today = yyyy+'-'+mm+'-'+dd;
+	//console.log(today);
+	
+	// === 전체 datepicker 옵션 일괄 설정하기 ===  
+    //     한번의 설정으로 $("input#fromDate"), $('input#toDate')의 옵션을 모두 설정할 수 있다.
+	$(function() {
+		// 모든 datepicker에 대한 공통 옵션 설정
+		$.datepicker.setDefaults({
+			dateFormat: 'yy-mm-dd'		// Input Display Format 변경
+			,showOtherMonths: true		// 빈 공간에 현재월의 앞뒤월의 날짜를 표시
+			,showMonthAfterYear:true	// 년도 먼저 나오고, 뒤에 월 표시
+			,changeYear: true			// 콤보박스에서 년 선택 가능
+			,changeMonth: true			// 콤보박스에서 월 선택 가능                
+			,showOn: "both"				// button:버튼을 표시하고,버튼을 눌러야만 달력 표시 ^ both:버튼을 표시하고,버튼을 누르거나 input을 클릭하면 달력 표시  
+			,buttonImage: "http://jqueryui.com/resources/demos/datepicker/images/calendar.gif" // 버튼 이미지 경로
+			,buttonImageOnly: true		// 기본 버튼의 회색 부분을 없애고, 이미지만 보이게 함
+		//	,buttonText: "선택"			// 버튼에 마우스 갖다 댔을 때 표시되는 텍스트                
+			,yearSuffix: "년"			// 달력의 년도 부분 뒤에 붙는 텍스트
+			,monthNamesShort: ['1','2','3','4','5','6','7','8','9','10','11','12'] // 달력의 월 부분 텍스트
+			,monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'] // 달력의 월 부분 Tooltip 텍스트
+			,dayNamesMin: ['일','월','화','수','목','금','토'] // 달력의 요일 부분 텍스트
+			,dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'] // 달력의 요일 부분 Tooltip 텍스트
+		//	,minDate: "-1M"				// 최소 선택일자(-1D:하루전, -1M:한달전, -1Y:일년전)
+		//	,maxDate: "+1M"				// 최대 선택일자(+1D:하루후, -1M:한달후, -1Y:일년후)                    
+		});
+
+		// input을 datepicker로 선언
+		$("input#fromDate").datepicker();                    
+		$("input#toDate").datepicker();		
 		
+	});	
 });// end of $(document).ready(function(){})--------------------
 	
 	// Function Declaration
+	function setSearchDate(start){
+		var num = start.substring(0,1);
+		var str = start.substring(1,2);
+	
+		var today = new Date();
+	
+		var endDate = $.datepicker.formatDate('yy-mm-dd', today);
+		$('#toDate').val(endDate);
+		
+		if(str == 'd'){
+			today.setDate(today.getDate() - num);
+		} else if (str == 'w'){
+			today.setDate(today.getDate() - (num*7));
+		} else if (str == 'm'){
+			today.setMonth(today.getMonth() - num);
+			today.setDate(today.getDate() + 1);
+		}
+		
+		var startDate = $.datepicker.formatDate('yy-mm-dd', today);
+		$('#fromDate').val(startDate);
+		
+		// 종료일은 시작일 이전 날짜 선택하지 못하도록 비활성화
+		$("#toDate").datepicker( "option", "minDate", startDate );
+		
+		// 시작일은 종료일 이후 날짜 선택하지 못하도록 비활성화
+		$("#fromDate").datepicker( "option", "maxDate", endDate );		
+	}
 	
 	// 페이지 로딩 시 해당하는 내역 전체 보여주기(페이징처리)
 	function goSearch(currentShowPageNo){			
@@ -143,13 +218,17 @@ $(document).ready(function(){
 		// console.log(checkArr);
 		
 		var checkArres = checkArr.join();
+		var fromDate= $("input#fromDate").val();
+		var toDate= $("input#toDate").val();		
 		var scat= checkArres;
 		var sort= $("select#sort").val();
 		var searchWord= $("input#searchWord").val();
 		
 		$.ajax({			
 			url:"<%= ctxPath%>/t1/spend_templist.tw",
-			data:{"scat": checkArres
+			data:{"fromDate":$("input#fromDate").val()
+				, "toDate":$("input#toDate").val()
+				, "scat": checkArres
 				, "sort":$("select#sort").val()
 				, "searchWord":$("input#searchWord").val()
 				, "currentShowPageNo":currentShowPageNo},
@@ -161,22 +240,29 @@ $(document).ready(function(){
 				if(json.length > 0){
 					$.each(json, function(index, item){
 						
+						var image = "<%= ctxPath%>/resources/images/sia/disk.gif";
+						
 						html += "<tr class='tr_hover docuInfo'>";
 						html += "<td align='center' style='padding: 5px;'>"+ item.rno +"</td>";
-						html += "<td>&nbsp;"+ item.atitle +"</td>";
+						if(item.fileName != null){
+							html += "<td>&nbsp;"+ item.atitle +"&nbsp;<img src='"+ image +"'/></td>";
+						}
+						else if(item.fileName == null){
+							html += "<td>&nbsp;"+ item.atitle +"</td>";
+						}
 						html += "<td class='scatname' align='center'>"+ item.scatname +"</td>";
 						html += "<td class='ano' align='center'>"+ item.ano +"</td>";						
+						html += "<td align='center'>"+ item.asdate +"</td>";
 						html += "</tr>";
 					});
 				}
 				else{
 					html += "<tr>";
-					html += "<td colspan='4' align='center' style='padding: 5px;'>해당하는 글이 없습니다</td>";
+					html += "<td colspan='5' align='center' style='padding: 5px;'>해당하는 글이 없습니다</td>";
 					html += "</tr>";
 				}
 				
-				$("tbody#approvalDisplay").html(html);
-				
+				$("tbody#approvalDisplay").html(html);				
 				
 				// 페이지바 함수 호출
 				makeApprovalPageBar(currentShowPageNo);
@@ -192,7 +278,9 @@ $(document).ready(function(){
 		
 		$.ajax({
 			url:"<%= ctxPath%>/t1/spend_templist.tw",
-			data:{"scat": "${scat}"
+			data:{"fromDate":"${fromDate}"
+				, "toDate":"${toDate}"
+				, "scat": "${scat}"
 				, "sort":"${sort}"
 				, "searchWord":"${searchWord}"
 				, "currentShowPageNo":currentShowPageNo},
@@ -204,18 +292,26 @@ $(document).ready(function(){
 				if(json.length > 0){
 					$.each(json, function(index, item){
 						
+						var image = "<%= ctxPath%>/resources/images/sia/disk.gif";
+						
 						html += "<tr class='tr_hover docuInfo'>";
 						html += "<td align='center' style='padding: 5px;'>"+ item.rno +"</td>";
-						html += "<td>&nbsp;"+ item.atitle +"</td>";
+						if(item.fileName != null){
+							html += "<td>&nbsp;"+ item.atitle +"&nbsp;<img src='"+ image +"'/></td>";
+						}
+						else if(item.fileName == null){
+							html += "<td>&nbsp;"+ item.atitle +"</td>";
+						}
 						html += "<td class='scatname' align='center'>"+ item.scatname +"</td>";
 						html += "<td class='ano' align='center'>"+ item.ano +"</td>";						
+						html += "<td align='center'>"+ item.asdate +"</td>";
 						html += "</tr>";						
 						
 					});
 				}
 				else{
 					html += "<tr>";
-					html += "<td colspan='4' align='center' style='padding: 5px;'>해당하는 글이 없습니다</td>";
+					html += "<td colspan='5' align='center' style='padding: 5px;'>해당하는 글이 없습니다</td>";
 					html += "</tr>";
 				}
 				
@@ -249,7 +345,9 @@ $(document).ready(function(){
 		// totalPage 수 알아오기
 		$.ajax({
 			url:"<%= ctxPath%>/t1/getSpendTempTotalPage.tw",
-			data:{"scat": checkArres
+			data:{"fromDate":$("input#fromDate").val()
+				, "toDate":$("input#toDate").val()
+				, "scat": checkArres
 				, "sort":$("select#sort").val()
 				, "searchWord":$("input#searchWord").val()
 				, "sizePerPage":"10"},
@@ -310,13 +408,15 @@ $(document).ready(function(){
 		});
 	}	
 		
-	function goView(ano, scatname, scat, sort, searchWord){
+	function goView(ano, scatname, fromDate, toDate, scat, sort, searchWord){
 		var frm = document.goViewFrm;
 		
 		frm.ano.value = ano;
 		frm.sort.value = sort;
 		frm.scatname.value = scatname;
 		frm.searchWord.value = searchWord;
+		frm.fromDate.value = fromDate;
+		frm.toDate.value = toDate;
 		frm.scat.value = scat;
 		
 		frm.method = "get";
@@ -334,10 +434,40 @@ $(document).ready(function(){
 	</div>
 	
 	<form name="searchFrm">
-		<table>
+		<table class="tbl">
 			<tr>
-				<td width="20%" class="th">지출 결재 문서</td>
+			<tr>
+				<td width="20%" class="th">저장일자</td>
 				<td width="80%">&nbsp;&nbsp;
+					<span class="period">
+						<span class="chkbox">
+							<input type="radio" class="dateType" id="dateType1" onclick="setSearchDate('0d')"/>
+							<label for="dateType1">오늘</label>
+						</span>
+						<span class="chkbox">
+							<input type="radio" class="dateType" id="dateType2" onclick="setSearchDate('1w')"/>
+							<label for="dateType2">1주일</label>
+						</span>
+						<span class="chkbox">
+							<input type="radio" class="dateType" id="dateType3" onclick="setSearchDate('1m')"/>
+							<label for="dateType3">1개월</label>
+						</span>
+						<span class="chkbox">
+							<input type="radio" class="dateType" id="dateType4" onclick="setSearchDate('3m')"/>
+							<label for="dateType4">3개월</label>
+						</span>
+						<span class="chkbox">
+							<input type="radio" class="dateType" id="dateType5" onclick="setSearchDate('6m')"/>
+							<label for="dateType5">6개월</label>
+						</span>
+					</span>
+					<input type="hidden" value="${fromDate}" id="hiddendate"/>
+					<input type="hidden" value="${toDate}" id="hiddendate2"/>
+					<input type="text" class="datepicker" id="fromDate" name="fromDate" autocomplete="off" > - <input type="text" class="datepicker" id="toDate" name="toDate" autocomplete="off">					
+				</td>
+			</tr>
+				<td class="th">지출 결재 문서</td>
+				<td>&nbsp;&nbsp;
 					<label for="chx1"><input type="checkbox" name="scat" id="chx1" value="1"> 지출결의서</label>&nbsp;&nbsp;
 					<label for="chx2"><input type="checkbox" name="scat" id="chx2" value="2"> 법인카드사용신청서</label>&nbsp;&nbsp;
 					<label for="chx3"><input type="checkbox" name="scat" id="chx3" value="3"> 출장명세서</label>&nbsp;&nbsp;
@@ -359,13 +489,14 @@ $(document).ready(function(){
 		
 		<br>
 		
-		<table id="table">
+		<table id="table" class="tbl">
 			<thead>
 			<tr>
 				<th style="width: 70px; text-align: center;">번호</th>
 				<th style="width: 300px; text-align: center;">제목</th>
 				<th style="width: 100px; text-align: center;">문서분류</th>
 				<th style="width: 100px; text-align: center;">문서번호</th>				
+				<th style="width: 120px; text-align: center;">저장일</th>		
 			</tr>
 			</thead>		
 			<tbody id="approvalDisplay"></tbody>		
@@ -377,7 +508,9 @@ $(document).ready(function(){
 	
 	<form name="goViewFrm">
 		<input type="hidden" name="ano" value="" />
-		<input type="hidden" name="scatname" value="" />		
+		<input type="hidden" name="scatname" value="" />
+		<input type="hidden" name="fromDate" value="" />
+		<input type="hidden" name="toDate" value="" />		
 		<input type="hidden" name="scat" value="" />
 		<input type="hidden" name="sort" value="" />
 		<input type="hidden" name="searchWord" value="" />

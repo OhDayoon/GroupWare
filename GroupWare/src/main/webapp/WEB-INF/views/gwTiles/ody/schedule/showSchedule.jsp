@@ -65,6 +65,8 @@ button.btn_edit{
 	border: none;
 	background-color: #fff;
 }
+
+
 </style>
 
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -95,7 +97,42 @@ $(document).ready(function(){
 			$("input:checkbox[name=comscno]").prop("checked",true);
 		}
 	});
-	
+	// 사내캘린더 체크박스 체크/ 해제		
+	$(document).on("click","input:checkbox[name=comscno]",function(){	
+		
+		 var ccno = document.querySelectorAll("input.comscno");
+	      ccno.forEach(function (csel) {
+	        csel.addEventListener("change", function () {
+	        	 calendar.refetchEvents();
+	        });
+	      });
+	      
+		var bool = $(this).prop("checked");
+		
+		if(bool){
+			
+			var flag=false;
+						
+			$("input:checkbox[name=comscno]").each(function(index, item){
+				
+				var bChecked = $(item).prop("checked");
+				
+				if(!bChecked){
+					flag=true;
+					return false; 
+				}
+				
+			}); // end of $("input:checkbox[name=person]").each(function(index, item){})---------
+
+			if(!flag){		
+                $("input#allComCal").prop("checked",true);
+			}
+		}
+		else{
+			$("input#allComCal").prop("checked",false);
+		}
+		
+	});
 	
 	// === 체크박스 전체 선택/전체 해제 === //
 	$("input#allMyCal").click(function(){		
@@ -144,42 +181,7 @@ $(document).ready(function(){
 	});
 		
 			
-	// 사내캘린더 체크박스 체크/ 해제		
-	$(document).on("click","input:checkbox[name=comscno]",function(){	
-		
-		 var ccno = document.querySelectorAll("input.comscno");
-	      ccno.forEach(function (csel) {
-	        csel.addEventListener("change", function () {
-	        	 calendar.refetchEvents();
-	        });
-	      });
-	      
-		var bool = $(this).prop("checked");
-		
-		if(bool){
-			
-			var flag=false;
-						
-			$("input:checkbox[name=comscno]").each(function(index, item){
-				
-				var bChecked = $(item).prop("checked");
-				
-				if(!bChecked){
-					flag=true;
-					return false; 
-				}
-				
-			}); // end of $("input:checkbox[name=person]").each(function(index, item){})---------
-
-			if(!flag){		
-                $("input#allComCal").prop("checked",true);
-			}
-		}
-		else{
-			$("input#allComCal").prop("checked",false);
-		}
-		
-	});
+	
 	
 	
 	
@@ -322,7 +324,7 @@ $(document).ready(function(){
 	      	    $("input[name=chooseDate]").val(date);
 	      	    
 	      	    var frm = document.dateFrm;
-	      	    frm.method="POST";
+	      	    frm.method="GET";
 	      	    frm.action="<%= ctxPath%>/t1/insertSchedule.tw";
 	      	    frm.submit();
 	      	    
@@ -628,9 +630,11 @@ $(document).ready(function(){
 
 </script>
 
-	<div style="margin-left: 80px; width: 88%;">
-	<h3>일정 관리</h3>
 	
+	<div style="margin: 30px 0px 30px 50px; ">
+	<i class="far fa-calendar-alt fa-2x"></i>&nbsp;<span style="font-size: 18pt; font-weight: bold;">일정관리</span>
+	
+	<div style="width: 90%;">
 		<div id="wrapper1">
 			<input type="hidden" value="${sessionScope.loginuser.employeeid}" id="fk_employeeid"/>
 			
@@ -671,7 +675,7 @@ $(document).ready(function(){
 		</div>
 
 	</div>
-
+</div>
 <!-- 내 캘린더 추가 Modal -->
   <div class="modal fade" id="addMyCal" role="dialog">
     <div class="modal-dialog modal-sm">

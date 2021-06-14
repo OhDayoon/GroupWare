@@ -82,7 +82,7 @@
     	select rno,pNo,fk_dcode,nvl(assignDate,'-') as assignDate,nvl(startDate,'-') as startDate,nvl(dueDate,'-') as dueDate,nvl(endDate,'-') as endDate,fk_employeeid,hurryno,nvl(ingdetail,'-') as ingdetail,pName,fk_managerid,name,employeeName
 		from
 		(
-		select row_number() over(order by hurryno desc, dueDate asc) as rno, P.pNo,E.name as name,E1.name as employeeName,
+		select row_number() over(order by hurryno desc, dueDate asc) as rno, P.pNo,E.name as name,nvl(E1.name,'-') as employeeName,
 		       T.fk_dcode,to_char(assignDate,'yyyy-mm-dd') as assignDate,
 		       to_char(T.startDate ,'yyyy-mm-dd') as startDate, to_char(dueDate ,'yyyy-mm-dd') as dueDate,
 		       to_char(T.endDate ,'yyyy-mm-dd') as endDate,
@@ -92,9 +92,9 @@
 		on P.pNo = T.fk_pNo
         join tbl_employee E
         on E.employeeid = T.fk_managerid
-        join tbl_employee E1
+        left join tbl_employee E1
         on E1.employeeid = T.fk_employeeid
-		where T.fk_managerid = #{employeeid} and pname like '%' || #{searchProject} || '%' and E1.name like '%' || #{searchWhoCharge} || '%' ${statusChoice}
+		where T.fk_managerid = #{employeeid} and pname like '%' || #{searchProject} || '%' and nvl(E1.name,'-') like '%' || #{searchWhoCharge} || '%' ${statusChoice}
 		<if test='period neq "-1"'>
             and dueDate >= to_date(to_char(sysdate-to_number(#{period}),'yyyy/mm/dd'),'yyyy/mm/dd')
         </if>
@@ -110,9 +110,9 @@
 		on P.pNo = T.fk_pNo
         join tbl_employee E
         on E.employeeid = T.fk_managerid
-        join tbl_employee E1
+        left join tbl_employee E1
         on E1.employeeid = T.fk_employeeid
-		where T.fk_managerid = #{employeeid} and pname like '%' || #{searchProject} || '%' and E1.name like '%' || #{searchWhoCharge} || '%' ${statusChoice}
+		where T.fk_managerid = #{employeeid} and pname like '%' || #{searchProject} || '%' and nvl(E1.name,'-') like '%' || #{searchWhoCharge} || '%' ${statusChoice}
 		<if test='period neq "-1"'>
             and dueDate >= to_date(to_char(sysdate-to_number(#{period}),'yyyy/mm/dd'),'yyyy/mm/dd')
         </if>
@@ -311,5 +311,7 @@
    		update tbl_rsgoods set gstatus = 1
    		where rsgno = #{rsgno}
    </update>
+   
+   
    
 </mapper>

@@ -90,7 +90,7 @@
 </script>
 
 
-<div id="indolenceMenu" style="margin-left:520px; margin-top:30px; font-size:15pt; font-weight:bolder;">
+<div id="indolenceMenu" style="margin-left:610px; margin-top:30px; font-size:20pt; font-weight:bolder;">
 	<span>${dname}의 월별 근태관리</span>
 </div>
 

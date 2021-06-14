@@ -1,5 +1,6 @@
 @charset "UTF-8";
 
+
 div#sideinfo-content-container{
 	height: 100%;
 	width: 132.5em;
@@ -10,9 +11,15 @@ div#sideinfo-content-container{
 	transition: 0.1s;
 }
 
-@media (max-width: 1540px){
+@media (max-width: 1540px){	/* 가장 작은 노트북 화면용 */
 	div#sideinfo-content-container{
-		width: 103.9em;
+		width: 105em;
+	} 
+}
+
+@media (max-width: 1750px){  /* 일반 노트북 화면기준용 */
+	div#sideinfo-content-container{
+		width: 128em;
 	} 
 }
 
@@ -148,3 +155,8 @@ span#closebtn-style{
 	color: #a3a5a6;
 }
 span#closebtn-style:hover {color: white;}
+
+
+
+
+

@@ -193,6 +193,12 @@ public interface InterMyDocumentSiaService {
 	// 내문서함 - 수신함 - 결재완료 - 근태결재문서 한 개 상세보기
 	ApprovalSiaVO myDocuVacation_complete_detail(Map<String, String> paraMap);
 
+	// 결재의견 삭제하기
+	int delMyOpinion(Map<String, String> paraMap);
+
+	// 결재로그 리스트보기
+	List<ApprovalSiaVO> approvalLogList(String parentAno);
+
 	
 
 	

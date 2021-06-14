@@ -44,6 +44,12 @@ body > table > thead > tr > th{
 	color: white;
 }
 
+@media screen and (max-width: 1540px) {
+	div#mail-list{
+		width: 80%;
+	} 
+}
+
 
 /* new_mail.jsp 메일쓰기 페이지 css */
 
@@ -54,3 +60,60 @@ input, textarea {border: solid #ccc 1px;}
 #table th{width: 45em;}
 #table td{width: 500em;}
 
+/* 메일 열람 페이지 css */
+div#viewmail-container{
+	margin: 15px;
+}
+
+.icon-transition{
+	transition: .15s;
+}
+.viewmail-icon{
+	margin-left: 10px;
+	margin-bottom: 10px;
+}
+
+/* 메일쓰기 new_mail.jsp css */
+
+span.email-ids {
+    float: left;
+    /* padding: 4px; */
+    border: 1px solid #ccc;
+    margin: 2px 5px 0 2px;
+    padding-left: 7px;
+    padding-right: 7px;
+    margin-bottom: 5px;
+    background: #f5f5f5;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    border-radius: 2px;
+    font-size: 9pt;
+}
+span.cancel-email {
+    /* border: 1px solid #ccc; */
+    width: 15px;
+    display: block;
+    float: right;
+    text-align: center;
+    margin-left: 8px;
+    /* border-radius: 49%; */
+    height: 13px;
+    line-height: 15px;
+    margin-top: 1px;    cursor: pointer;
+}
+.col-sm-12.email-id-row {
+    border: 1px solid #ccc;
+}
+.col-sm-12.email-id-row input {
+    border: 0px; outline:0px;
+}
+span.to-input {
+    display: block;
+    float: left;
+    padding-right: 11px;
+}
+.col-sm-12.email-id-row {
+    padding-top: 6px;
+    padding-bottom: 7px;
+    margin-top: 23px;
+}

@@ -11,22 +11,25 @@
 	
 	table#newInfo {
 		margin-left: 200px;
-		border:solid 1px black;
+		border:solid 0px black;
 		margin-top:100px;
 		width: 1150px;
 		height: 150px;
 		font-size:13pt;
 		text-align: center;
+		border-collapse: collapse;
 		
 	}
 	
 	table#newInfo td {
 		border:solid 1px black;
 		vertical-align: middle;
+		border-collapse: collapse;
 	}
 	
 	td.InfoMenu {
 		font-weight: bolder;
+		background-color: #e9e9ed;
 	}
 	
 	div#button{
@@ -256,6 +259,7 @@
 
 	<div id="sebuInfo2">
 		<form name="newPerson">
+		<span style="position:relative; top:80px; left:200px; font-size:15pt; font-weigth:bolder;">&#60; T1WORKS 신입사원등록 &#62;</span>
    		<table id="newInfo">
   			<tbody>
    			<tr>

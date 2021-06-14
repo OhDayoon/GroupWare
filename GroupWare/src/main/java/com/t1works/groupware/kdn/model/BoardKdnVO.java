@@ -14,6 +14,7 @@ public class BoardKdnVO {
 	   private String readCount;    // 글조회수
 	   private String regDate;      // 글쓴시간
 	   private String status;       // 글삭제여부   1:사용가능한 글,  0:삭제된글 
+	   private String readStatus;    // 읽음여부
 	   private String previousseq;      // 이전글번호
 	   private String previoussubject;  // 이전글제목
 	   private String nextseq;          // 다음글번호
@@ -246,6 +247,14 @@ public class BoardKdnVO {
 
 	public void setAttach(MultipartFile attach) {
 		this.attach = attach;
+	}
+
+	public String getReadStatus() {
+		return readStatus;
+	}
+
+	public void setReadStatus(String readStatus) {
+		this.readStatus = readStatus;
 	}
 
 	

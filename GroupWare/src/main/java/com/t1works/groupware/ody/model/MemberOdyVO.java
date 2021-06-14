@@ -10,7 +10,14 @@ public class MemberOdyVO {
 	   private String fk_dcode; 
 	   private String fk_pcode;
 	   
-	   public String getDcode() {
+	   ///////////////////////////////////
+	   private boolean chattingAttend = false;
+	   
+	   ////////////////////
+	   
+
+
+	public String getDcode() {
 		   return dcode;
 	   }
 	
@@ -57,9 +64,17 @@ public class MemberOdyVO {
 	   public void setDname(String dname) {
 			this.dname = dname;
 	   }
+	  ///////////////////////////////////////////////
+	   //채팅 참여자 유무
 	   
-	 
+	   public boolean isChattingAttend() {
+		   	return chattingAttend;
+	   }
 
+	   public void setChattingAttend(boolean chattingAttend) {
+		   this.chattingAttend = chattingAttend;
+	   }
+///////////////////////////////////////////////////////
 	   
 	
 }

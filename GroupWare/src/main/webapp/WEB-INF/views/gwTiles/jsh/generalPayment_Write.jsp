@@ -6,53 +6,81 @@
 <% String ctxPath = request.getContextPath(); %>
 
 <style>
-
-table, th, td {border: solid 1px gray;}
-
-#containerall{
-color:#666;
+div#radio{
+margin: 50px 50px;
+font-size: 16px;
 }
+
+h3{
+	font-weight:bold;
+}
+div#containerview{
+	margin: 30px 0px 30px 50px;
+	width: 80%;
+}
+div.section table, div.section th, div.section td{
+	border: solid 1px #ccc;
+	border-collapse: collapse;
+}
+
 #table1 {
-    float:right; 
-    width: 300px; 
-    border-collapse: collapse;
-    margin-right: 200px;
-    margin-bottom: 80px;
+	float: right; 
+	width: 300px; 
+	border-collapse: collapse;
+	margin-right: 200px;
+	margin-bottom: 50px;
 }
-    
+
+#table1 th, #table1 td{
+	text-align: center;
+}
+#table1 th {
+	background-color: #395673; 
+	color: #ffffff;
+}
+#table2 th, #table3 th, #table4 th, #table5 th {
+	width: 150px;
+}
+
 th{
-    background-color: #DDD;
+	background-color: #ccd9e6;
+	padding: 7px;
+}
+td{
+	padding: 7px;
 }
 
 #table2 {
-	width: 80%;
-	height: 900px;
+	width: 70%;
 	margin: 50px auto;
 }
-
-.log {
-	width: 80%;
-	height: 100px;
-	margin: 50px auto;
+#table3 {
+	width: 70%;
+	margin: 10px auto;
+}
+#table4 {
+	width: 70%;
+	margin: 10px auto;
+}
+#table5 {
+	width: 70%;
+	margin: 10px auto;
+}
+input.btn {
+	width: 70px;
+	border-radius: 0;
+	font-weight: bold;
 }
 
-#radio{
-	width: 80%;
-	height: 150px;
-	margin-top:30px;
-	margin: 50px auto;
-	font-size: 20px;
-
+td.opinion{
+	border: solid 1px white;
 }
-
-
-hr.hr{
-   border: solid 2px gray;
-   width:80%;
+textarea{
+width:99%;
+height:350px;
 }
-
-#containerall{
-	padding:50px 50px;
+button.btn1:hover{
+ background-color: #c3c6c9;
 }
 </style>
 
@@ -62,7 +90,7 @@ hr.hr{
 			$("div#submenu3").show();
 			
 			$("div#containerview").hide();
-			var obj = []; //전역변수 //이거때문은 아니겠지? 아 맞을 수도있겠다 이게 if 문 안에 들어가 있어서..함해볼게 ㅋㅋㅋㅋ 이걸 밖으로 빼니까 된거보면...
+			var obj = []; //전역변수 
 					
 			//일반결재내역 문서 카테고리 라디오 클릭 이벤트
 			$("input[name=ncatname]").click(function(){
@@ -70,7 +98,27 @@ hr.hr{
 				$("td#smarteditor").empty();
 				$("td#smarteditor").html('<textarea rows="30" cols="160" name="acontent" id="acontent"></textarea>');
 				
-				
+				//오늘날짜 알아오기
+			   	var date = new Date();
+			   	var year = date.getFullYear();
+			   	var month = date.getMonth()+1;
+			   	var date = date.getDate();
+			   	if(month <10){
+			   		month = '0'+month;
+			   	}
+			   	else{
+			   		month=month;
+			   	}
+			   	if(date <10){
+			   		date = '0'+day;
+			   	}
+			   	else{
+			   		date=date;
+			   	}
+			   	
+			   	
+			   	 var today = (year+"년 "+month+"월 "+date+"일");
+			     //	console.log(today);
 				 var ncat;
 				 var html;
 				 var html1;
@@ -141,7 +189,8 @@ hr.hr{
 					$("tr#changeNcat").hide();
 				}
 				
-				
+				$("div#today").html(today);
+				$("span#ncat").html(ncat);
 				$("h3#ncat").html(ncat);
 				$("div#containerview").show();
 				
@@ -171,8 +220,8 @@ hr.hr{
 	         
 		    // 회의록 회의시간 유효성 검사
 		    if(ncat =="회의록"){     
-		         var mdate1 = $("input#mdate1").val().trim();
-		         var mdate2 = $("input#mdate2").val().trim();
+		         var mdate1 = $("input#mdate1").val();
+		         var mdate2 = $("input#mdate2").val();
 		         var mdate3 = $("input#mdate3").val().trim();
 		         if(mdate1 == "" || mdate2 == "" || mdate3 == "") {
 		            alert("회의시간을 입력하세요!!");
@@ -182,8 +231,8 @@ hr.hr{
 		    }
 		    else if(ncat =="위임장"){
 		         // 위임기간 유효성 검사
-		         var fk_wiimdate1 = $("input#fk_wiimdate1").val().trim();
-		         var fk_wiimdate2 = $("input#fk_wiimdate2").val().trim();
+		         var fk_wiimdate1 = $("input#fk_wiimdate1").val();
+		         var fk_wiimdate2 = $("input#fk_wiimdate2").val();
 		         if(fk_wiimdate1 == "" || fk_wiimdate2 == "" ) {
 		            alert("위임기간을 입력하세요!!");
 		            return;
@@ -252,12 +301,12 @@ hr.hr{
 	         var frm = document.writeGFrm;
 	         frm.method = "POST";
 	         frm.action = "<%= ctxPath%>/t1/generalPayment_WriteEnd.tw";
-	      //   frm.submit();   
+	         frm.submit();   
 	         
 		  }
 		  else{
 			  alert(ncatname+" 제출을 취소하셨습니다.");
-			  location.href="javascript:history.back()";
+			  location.href="<%=ctxPath %>/t1/generalPayment_Write.tw";
 		  }
 	  });	
 		
@@ -321,7 +370,7 @@ hr.hr{
 			  }
 			  else{
 				  alert(ncatname+" 저장을 취소하셨습니다.");
-				  location.href="javascript:history.back()";
+				  location.href="<%=ctxPath %>/t1/generalPayment_Write.tw";
 			  }
 	         
 	          
@@ -347,20 +396,17 @@ hr.hr{
 				</span>
  	</div>
 	<div id="containerview">
- 	
 	<hr class="hr">
 		<h3 id="ncat" align="center"></h3>
 	<hr class="hr">
 	<br>
-	<div id="astatus" >
+	<div class="section" >
 		<table id="table1">
-		
 			<tr>
 				<th style="width:100px; height:70px; ">대리</th>
 				<th>부장</th>
 				<th>사장</th>
 			</tr>
-			
 			<tr>
 				<td style="height:70px;"></td>
 				<td></td>
@@ -368,12 +414,10 @@ hr.hr{
 			</tr>
 		</table>
 		
-		
 		<table id="table2">
 			<tr>
-				<th style="width:200px;">수신참조</th>
+				<th>수신참조</th>
 				<td><input type="hidden" name="arecipient1" value="${requestScope.write_view.managerid}"/>${requestScope.write_mview.name} ${requestScope.write_mview.pname} (${requestScope.write_view.dname})</td>
-				<%-- <td><button type="button" >수신자찾기</button><span id="arecipient1" name="arecipient1"></span></td>--%>
 			</tr>
 			
 			<tr>
@@ -404,12 +448,9 @@ hr.hr{
 				<td><input type="hidden" name="astatus" value="0"/>작성중..</td>
 			</tr>
 			
-			
-			
 			<tr>
 				<th style="height:350px;">글내용</th>
 				<td id="smarteditor"> 
-				<%--   <textarea rows="30" cols="160" name="acontent" id="acontent"></textarea> --%>
 				</td>
 			</tr>
 			
@@ -419,15 +460,31 @@ hr.hr{
 					<input type="file" name="attach"/>
 				</td>
 			</tr>
-			
-	
 		</table>
 		
-		<button type="button" onclick="javascript:location.href='<%=ctxPath %>/t1/generalPayment_Write.tw'" >취소</button>
-    	<button type="button" id="insertWrite" >제출하기</button>
-    	<button type="button" id="saveWrite" >저장하기</button>
-	</div>
-</div>
-</div>
+		
+		<div align="center">상기와 같은 내용으로 <span id="ncat" style="font-weight: bold;"></span>을(를) 제출하오니 재가바랍니다.</div>
+		<div align="right" id="today" style="margin: 4px 0; margin-right: 15%;">기안일:</div>
+		<div align="right" style="margin-right: 15%;">신청자: <span style="font-weight:bold;">${sessionScope.loginuser.name} </span> ${requestScope.write_view.pname} (${requestScope.write_view.dname})</div>
+		
+		
+		
+		
+		<div style="margin-top: 20px;">
+			<span style="margin-left: 15%">
+			    <button type="button"  class="btn btn1" onclick="javascript:location.href='<%=ctxPath %>/t1/generalPayment_Write.tw'" >취소</button>
+				
+			</span>
+			<span style="margin-left: 55%;">
+				<button type="button" class="btn btn-primary" id="insertWrite" >제출하기</button>
+    			<button type="button" class="btn btn-danger" id="saveWrite" >저장하기</button>
+			</span>
+		</div>
+		
+		<br><br>
+		
+	  </div>
+    </div>
+   </div>
 </form>
 		

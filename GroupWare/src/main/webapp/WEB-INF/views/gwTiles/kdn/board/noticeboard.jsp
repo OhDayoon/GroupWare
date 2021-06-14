@@ -123,9 +123,14 @@ $(document).ready(function(){
 						</c:otherwise>
 					</c:choose>
 					<td>
-					<%-- === 댓글쓰기가 없는 게시판 === --%>
-      				<%-- <span class="subject" onclick="goView('${boardvo.seq}')">${boardvo.subject}</span> --%> 
-					<a class="anchor-style" href="javascript:goView('${boardvo.seq}')" >${boardvo.subject}</a>
+					<input type="hidden" class="readStatus" value="${boardvo.readStatus}" />
+					<c:if test="${boardvo.readStatus eq '0' }">
+						<a class="anchor-style" href="javascript:goView('${boardvo.seq}')" style="font-weight: bold;">${boardvo.subject}</a>
+					</c:if>
+					<c:if test="${boardvo.readStatus eq '1' }">
+						<a class="anchor-style" href="javascript:goView('${boardvo.seq}')" >${boardvo.subject}</a>
+					</c:if>
+					
 					</td>
 					<td>${boardvo.name}</td>
 					<td>${boardvo.regDate}</td>

@@ -134,6 +134,14 @@ public class MemberHsyDAO implements InterMemberHsyDAO {
 	} // end of public int isTwoBefore() {----------------
 
 	
+	// 특정 직원의 읽지않은 메일수, 결재중인 문서 수, 14일 이내에 결재완료된 문서 수 가져오기
+	@Override
+	public Map<String, Integer> getquickMenuInfo(Map<String,String> paraMap) {
+		Map<String,Integer> quickMenuInfoMap= sqlsession2.selectOne("memberHsy.getquickMenuInfo", paraMap);
+		return quickMenuInfoMap;
+	} // end of public Map<String, Integer> getquickMenuInfo(String employeeid) {--------
+
+	
 
 
 }

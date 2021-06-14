@@ -1,9 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <% String ctxPath = request.getContextPath(); %>
 <link rel="stylesheet" type="text/css" href="<%=ctxPath %>/resources/css/kdn/mail.css" />
 <script type="text/javascript">
 $(document).ready(function(){
+	
+	//console.log("${requestScope.gobackURL}");
+	
 	var arrEmailSeq = [];
 	var str_arrEmailSeq = ""; 
 	// 체크박스 전체선택/전체해제
@@ -42,12 +46,16 @@ $(document).ready(function(){
 		console.log("최종 배열 :"+arrEmailSeq);
 	});
 	
+	
+	var gobackURL = "${requestScope.gobackURL}";
+	gobackURL = gobackURL.replaceAll('&', ' ');
+	
 	// 완전삭제 버튼 클릭시
 	$("button#delImmed").click(function(){
 		str_arrEmailSeq = arrEmailSeq.toString();
 		// console.log("최종 배열 string :"+str_arrEmailSeq);
-		if (confirm("선택하신 메일을 완전히 삭제하시겠습니까?") == true){    //확인
-			location.href="<%=ctxPath%>/t1/delImmed.tw?mailBoxNo=1&str_arrEmailSeq="+str_arrEmailSeq+"&gobackURL=${requestScope.gobackURL}";
+		if (confirm("선택하신 메일을 영구삭제하시겠습니까?") == true){    //확인
+			location.href="<%=ctxPath%>/t1/delImmed.tw?mailBoxNo=1&str_arrEmailSeq="+str_arrEmailSeq+"&gobackURL="+gobackURL;
 		 }else{   //취소
 		     return false;
 		 }
@@ -57,7 +65,7 @@ $(document).ready(function(){
 	$("button#del").click(function(){
 		str_arrEmailSeq = arrEmailSeq.toString();
 		console.log("최종 배열 string :"+str_arrEmailSeq);
-		location.href="<%=ctxPath%>/t1/moveToTrash.tw?str_arrEmailSeq="+str_arrEmailSeq;
+		location.href="<%=ctxPath%>/t1/moveToTrash.tw?str_arrEmailSeq="+str_arrEmailSeq+"&gobackURL="+gobackURL;
 	});
 	
 	//중요표시 변경
@@ -66,14 +74,14 @@ $(document).ready(function(){
 			str_arrEmailSeq = arrEmailSeq.toString();
 			//console.log("최종 배열 :"+str_arrEmailSeq);
 			if(str_arrEmailSeq != ""){
-				location.href="<%=ctxPath%>/t1/goStar.tw?mailBoxNo=1&checkImportant=1&str_arrEmailSeq="+str_arrEmailSeq;
+				location.href="<%=ctxPath%>/t1/goStar.tw?mailBoxNo=1&checkImportant=1&str_arrEmailSeq="+str_arrEmailSeq+"&gobackURL="+gobackURL;
 			}
 			$(this).val("");
 		} else if($(this).val() == "unstar") {
 			str_arrEmailSeq = arrEmailSeq.toString();
 			//console.log("최종 배열 :"+str_arrEmailSeq);
 			if(str_arrEmailSeq != ""){
-				location.href="<%=ctxPath%>/t1/goStar.tw?mailBoxNo=1&checkImportant=0&str_arrEmailSeq="+str_arrEmailSeq;
+				location.href="<%=ctxPath%>/t1/goStar.tw?mailBoxNo=1&checkImportant=0&str_arrEmailSeq="+str_arrEmailSeq+"&gobackURL="+gobackURL;
 			}
 			$(this).val("");
 		} else {
@@ -86,15 +94,17 @@ $(document).ready(function(){
 		if($(this).val() == "0"){
 			str_arrEmailSeq = arrEmailSeq.toString();
 			//console.log("최종 배열 :"+str_arrEmailSeq);
-			if(str_arrEmailSeq != "0"){
-				location.href="<%=ctxPath%>/t1/readStatus.tw?mailBoxNo=1&readStatus=0&str_arrEmailSeq="+str_arrEmailSeq;
+			if(str_arrEmailSeq != ""){
+				//console.log("바꾸기 전:"+gobackURL);
+				//console.log(gobackURL);
+				location.href="<%=ctxPath%>/t1/readStatus.tw?mailBoxNo=1&readStatus=0&str_arrEmailSeq="+str_arrEmailSeq+"&gobackURL="+gobackURL;
 			}
 			$(this).val("");
 		} else if($(this).val() == "1") {
 			str_arrEmailSeq = arrEmailSeq.toString();
 			//console.log("최종 배열 :"+str_arrEmailSeq);
 			if(str_arrEmailSeq != ""){
-				location.href="<%=ctxPath%>/t1/readStatus.tw?mailBoxNo=1&readStatus=1&str_arrEmailSeq="+str_arrEmailSeq;
+				location.href="<%=ctxPath%>/t1/readStatus.tw?mailBoxNo=1&readStatus=1&str_arrEmailSeq="+str_arrEmailSeq+"&gobackURL="+gobackURL;
 			}
 			$(this).val("");
 		} else {
@@ -102,9 +112,26 @@ $(document).ready(function(){
 		}
 	});
 	
+	// 조건검색
+	$("input#searchWord").keydown(function(){
+		if(event.keyCode == 13){  //엔터 했을 경우
+			goSearch();
+		}
+	});
 	
+	//보기개수 변경
+	$("select#sizePerPage").change(function(){
+			goSearch();
+	});
 	
-});
+	//보기개수 선택시 선택값 유지시키기
+	if(${not empty requestScope.paraMap}){
+		$("select#searchType").val("${requestScope.paraMap.searchType}");
+		$("input#searchWord").val("${requestScope.paraMap.searchWord}");
+	  	$("select#sizePerPage").val("${requestScope.paraMap.sizePerPage}");
+	  }
+	
+});//end of $(document).ready(function() -------------------
 
 //체크박스 체크유무검사
 function check_checkbox(){
@@ -138,16 +165,19 @@ function goView(seq){
 		frm.submit();
 		
 	}//end of function goView('${boardvo.seq}') ---------------
+
+function goSearch(){
+	var frm = document.searchFrm;
+	frm.method = "get";
+	frm.action = "<%=ctxPath%>/t1/mail.tw";
+	$("#searchFrm").submit();
+}// end of function goSearch() -----------------------
 	
-	
-function moveToTrash(){
-		
-}
 	
 </script>
 
 <div id="mail-header" style="background-color: #e6f2ff; width: 100%; height: 120px; padding: 20px;">
-	 <h4 style="margin-bottom: 20px; font-weight: bold;"><i class="fas fa-mailbox"></i>받은메일함</h4>
+	 <h4 style="margin-bottom: 20px; font-weight: bold;"><a class="anchor-style" href="<%=ctxPath%>/t1/mail.tw">받은메일함</a></h4>
 	 <div id="left-header">
 		 <button type="button" id="del" class="btn-style"><i class="far fa-trash-alt fa-lg"></i>&nbsp;삭제</button>
 		 <button id="delImmed" type="button" class="btn-style"><i class="fas fa-times fa-lg"></i>&nbsp;완전삭제</button>
@@ -162,25 +192,26 @@ function moveToTrash(){
 		 	<option value="0">읽지않음</option>
 		 </select>
 	 <div id="right-header" style="float: right;">
-		 <select name="searchType">
-		 	<option value="">선택</option>
-		 	<option value="subject">제목</option>
-		 	<option value="senderName">보낸사람</option>
-		 	<option value="content">내용</option>
-		 </select>
-		<input type="text" name="searchWord" />
-	 	<button type="submit" class="btn-style">검색</button>
-	 	<select name="numberOfEmails">
-		 	<option value="10">10개보기</option>
-		 	<option value="20">20개보기</option>
-		 	<option value="30">30개보기</option>
-		 </select>
+	 	<form name="searchFrm" id="searchFrm" style="display:inline-block;">
+			 <select name="searchType">
+			 	<option value="subject">제목</option>
+			 	<option value="name">보낸사람</option>
+			 	<option value="content">내용</option>
+			 </select>
+			<input type="text" name="searchWord" id="searchWord"/>
+		 	<button type="button" onclick="goSearch()" class="btn-style">검색</button>
+		 	<select name="sizePerPage" id="sizePerPage">
+			 	<option value="10">10개보기</option>
+			 	<option value="15">15개보기</option>
+			 	<option value="20">20개보기</option>
+			 </select>
+	 	</form>
 	 </div>
 	 </div>
 </div>
 
  <div id="mail-list">
- 	<table class="table" >
+ 	<table class="table" id="inbox-table" >
  		<thead>
  			<tr>
  				<th width=3%><input type="checkbox" name="selectAll" id="selectAll" style="margin-left: 10px;"/></th>
@@ -236,6 +267,8 @@ function moveToTrash(){
  	<div align="center" style="width: 70%; margin: 20px auto;">
      	${requestScope.pageBar}
      </div>
+ 
+ <c:set var="gobackURL2" value="${fn:replace(requestScope.gobackURL,'&', ' ') }" />
  
  <form name="goViewFrm">
  		<input type="hidden" name="mailBoxNo" value="1">

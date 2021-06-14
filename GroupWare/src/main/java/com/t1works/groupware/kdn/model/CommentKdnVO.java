@@ -8,6 +8,8 @@ public class CommentKdnVO {
 	private String name;		 	//작성자
 	private String content;		 	//댓글내용
 	private String regDate;		 	//작성일시
+	private String countUpdate;		// 댓글 수 업데이트용 +1: 증가, -1:감소
+
 	public CommentKdnVO() {}
 	
 	public CommentKdnVO(String seq,String fk_seq,String fk_employeeid,String name,String content,String regDate) {
@@ -57,5 +59,16 @@ public class CommentKdnVO {
 		this.regDate = regDate;
 	}
 
+	public String getCountUpdate() {
+		return countUpdate;
+	}
+
+	public void setCountUpdate(String countUpdate) {
+		this.countUpdate = countUpdate;
+	}
+
+
+	
+	
 	
 }

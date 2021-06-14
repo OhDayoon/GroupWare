@@ -46,7 +46,9 @@ public class BoardKdnDAO implements InterBoardKdnDAO {
 	// 공지사항 글1개 조회하기
 	@Override
 	public BoardKdnVO getView(Map<String, String> paraMap) {
+		System.out.println("DAO 메소드 호출됨");
 		BoardKdnVO boardvo = sqlsession3.selectOne("board.getView", paraMap);
+		System.out.println("boardvo 유무: "+boardvo);
 		return boardvo;
 	}
 	
@@ -136,7 +138,7 @@ public class BoardKdnDAO implements InterBoardKdnDAO {
 		return n;
 	}
 
-	// 건의사항 tbl_suggestionboard 테이블에 commentCount 컬럼의 값을 1증가(update) 
+	// 건의사항 tbl_suggestionboard 테이블에 commentCount 컬럼의 값을 증가(update) 
 	@Override
 	public int updateSuggCmntCount(String fk_seq) {
 		int n = sqlsession3.update("board.updateSuggCmntCount",fk_seq);
@@ -166,15 +168,24 @@ public class BoardKdnDAO implements InterBoardKdnDAO {
 	
 	// 건의사항 댓글 삭제
 	@Override
-	public int delSuggComment(String seq) {
-		int n = sqlsession3.delete("board.delSuggComment", seq);
+	public int delSuggComment(CommentKdnVO commentvo) {
+		int n = sqlsession3.delete("board.delSuggComment", commentvo);
+		return n;
+	}
+	
+	// 건의사항 댓글 삭제시 tbl_suggestionboard commentCount 감소시키기
+	@Override
+	public int updateSuggCmntCountOneDown(String fk_seq) {
+		int n =sqlsession3.update("board.updateSuggCmntCountOneDown", fk_seq);
 		return n;
 	}
 	
 	// 건의사항 댓글 수정
 	@Override
-	public int editSuggComment(String seq) {
-		int n = sqlsession3.update("board.editSuggComment", seq);
+	public int editSuggComment(CommentKdnVO commentvo) {
+		//System.out.println("댓글수정 DAO 메소드 호출됨");
+		int n = sqlsession3.update("board.editSuggComment", commentvo);
+		//System.out.println("댓글수정성공여부 DAO : "+n);
 		return n;
 	}
 
@@ -185,6 +196,12 @@ public class BoardKdnDAO implements InterBoardKdnDAO {
 		return n;
 	}
 
+	// 건의사항 특정 글 1개의 총 댓글 수 구해오기
+	@Override
+	public int getSuggCmntTotalCnt(String seq) {
+		int n = sqlsession3.selectOne("board.getSuggCmntTotalCnt", seq);
+		return n;
+	}
 	
 	// =========== 자유게시판  =============
 	
@@ -244,10 +261,10 @@ public class BoardKdnDAO implements InterBoardKdnDAO {
 		return n;
 	}
 
-	// tbl_generalboard 테이블에 commentCount 컬럼의 값을 1증가(update)
+	// 댓글쓰기 성공 후 tbl_generalboard 테이블에 commentCount 컬럼의 값을 1증가(update)
 	@Override
-	public int updateCommentCount(String fk_seq) {
-		int n = sqlsession3.update("board.updateCommentCount",fk_seq);
+	public int updateGenCmntCount(String fk_seq) {
+		int n = sqlsession3.update("board.updateGenCmntCount",fk_seq);
 		return n;
 	}
 
@@ -265,13 +282,6 @@ public class BoardKdnDAO implements InterBoardKdnDAO {
 		return totalPage;
 	}
 
-	// 자유게시판 댓글 삭제하기
-	@Override
-	public int delGenComment(String seq) {
-		int n = sqlsession3.delete("board.delGenComment", seq);
-		return n;
-	}
-
 	// (자유게시판) 파일첨부가 있는 글쓰기
 	@Override
 	public int genUploadWithFile(BoardKdnVO boardvo) {
@@ -285,6 +295,54 @@ public class BoardKdnDAO implements InterBoardKdnDAO {
 		int n = sqlsession3.update("board.generalEditNewAttach", boardvo);
 		return n;
 	}
+
+	// 자유게시판 댓글 삭제
+	@Override
+	public int delGenComment(CommentKdnVO commentvo) {
+		int n = sqlsession3.delete("board.delGenComment", commentvo);
+		return n;
+	}
+
+	// 자유게시판 댓글 삭제시 tbl_generalboard commentCount 감소시키기
+	@Override
+	public int updateGenCmntCountOneDown(String fk_seq) {
+		int n =sqlsession3.update("board.updateGenCmntCountOneDown", fk_seq);
+		return n;
+	}
+
+	// 자유게시판 댓글 수정하기
+	@Override
+	public int editGenComment(CommentKdnVO commentvo) {
+		int n = sqlsession3.update("board.editGenComment", commentvo);
+		return n;
+	}
+
+	// 자유게시판 특정 글 1개의 총 댓글 수 구해오기
+	@Override
+	public int getGenCmntTotalCnt(String seq) {
+		int n = sqlsession3.selectOne("board.getGenCmntTotalCnt", seq);
+		return n;
+	}
+
+	// 공지사항 읽음 처리 하기
+	@Override
+	public int markAsRead(String seq) {
+		int n = sqlsession3.update("board.markAsRead", seq);
+		return n;
+	}
+
+	// 신규 공지사항 유무 확인하기
+	@Override
+	public int checkNewNotice() {
+		int n = sqlsession3.selectOne("board.checkNewNotice");
+		return n;
+	}
+
+	
+
+	
+
+	
 
 	
 	

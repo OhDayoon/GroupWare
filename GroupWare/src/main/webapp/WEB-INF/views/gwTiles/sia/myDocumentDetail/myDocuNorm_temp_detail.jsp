@@ -148,10 +148,7 @@ input.btn {
 		<%-- === 스마트 에디터 구현 시작 === --%>
 		// id가 content인 textarea에 에디터에서 대입
 		obj.getById["acontent"].exec("UPDATE_CONTENTS_FIELD", []);
-		<%-- === 스마트 에디터 구현 끝 === --%>
-		
-		
-		
+		<%-- === 스마트 에디터 구현 끝 === --%>	
 		
 		<%-- === 스마트 에디터 구현 시작 === --%>
 		// 스마트에디터 사용시 무의미하게 생기는 p태그 제거
@@ -187,7 +184,45 @@ input.btn {
 		<%-- === 스마트 에디터 구현 시작 === --%>
 		// id가 content인 textarea에 에디터에서 대입
 		obj.getById["acontent"].exec("UPDATE_CONTENTS_FIELD", []);
+		<%-- === 스마트 에디터 구현 끝 === --%>
 		
+		var atitle = $("input#atitle").val().trim();
+		if(atitle == ""){
+			alert("문서 제목을 입력하세요!");
+			return;
+		}
+			
+		if(${requestScope.avo.ncat == '1'}){
+			var mdate1 = $("input#mdate1").val();
+			var mdate2 = $("input#mdate2").val();
+			var mdate3 = $("input#mdate3").val();
+			
+			if(mdate1 == "" || mdate2 == "" || mdate3 == ""){
+				alert("회의 시간을 입력하세요!");
+				return;
+			}
+		}
+		
+		if(${requestScope.avo.ncat == '2'}){
+			var fk_wiimdate1 = $("input#fk_wiimdate1").val();
+			var fk_wiimdate2 = $("input#fk_wiimdate2").val();
+			
+			if(fk_wiimdate1 == "" || fk_wiimdate2 == ""){
+				alert("위임 시간을 입력하세요!");
+				return;
+			}
+		}
+		
+		if(${requestScope.avo.ncat == '4'}){
+			var comname = $("input#comname").val();			
+			
+			if(comname == "" || comname == "없습니다."){
+				alert("타회사명을 입력하세요!");
+				return;
+			}
+		}		
+		
+		<%-- === 스마트 에디터 구현 시작 === --%>
 		// 스마트에디터 사용시 무의미하게 생기는 p태그 제거
 		var contentval = $("textarea#acontent").val();
 		
@@ -198,8 +233,7 @@ input.btn {
 		contentval = contentval.replace(/(<\/p><br>|<p><br>)/gi, "<br><br>"); //</p><br>, <p><br> -> <br><br>로 변환
 		contentval = contentval.replace(/(<p>|<\/p>)/gi, ""); //<p> 또는 </p> 모두 제거시
 		
-		$("textarea#acontent").val(contentval);
-		
+		$("textarea#acontent").val(contentval);		
 		<%-- === 스마트 에디터 구현 끝 === --%>		
 		
 		var bool = confirm("제출하시겠습니까?");
@@ -278,7 +312,7 @@ input.btn {
 				
 				<tr>
 					<th>제목</th>
-					<td colspan="3"><input type="text" name="atitle" style="width: 370px;" value="${requestScope.avo.atitle}"/></td>
+					<td colspan="3"><input type="text" name="atitle" id="atitle" style="width: 370px;" value="${requestScope.avo.atitle}"/></td>
 				</tr>
 						
 				<c:if test="${requestScope.avo.ncat eq '1'}">				
@@ -352,6 +386,8 @@ input.btn {
 	<form name="myFrm">
 		<input type="hidden" name="ano" value="${ano}" />
 		<input type="hidden" name="ncatname" value="${ncatname}" />
+		<input type="hidden" name="fromDate" value="${fromDate}" />
+		<input type="hidden" name="toDate" value="${toDate}" />
 		<input type="hidden" name="ncat" value="${ncat}" />
 		<input type="hidden" name="sort" value="${sort}" />
 		<input type="hidden" name="searchWord" value="${searchWord}" />

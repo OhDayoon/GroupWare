@@ -54,6 +54,9 @@ public interface InterMemberHsyService {
 	// 현재시간이 14시 이전인지 이후인지 알아오기
 	int isTwoBefore();
 
+	// 특정 직원의 읽지않은 메일수, 결재중인 문서 수, 14일 이내에 결재완료된 문서 수 가져오기
+	Map<String, Integer> getquickMenuInfo(Map<String,String> paraMap);
+
 	
 
 }

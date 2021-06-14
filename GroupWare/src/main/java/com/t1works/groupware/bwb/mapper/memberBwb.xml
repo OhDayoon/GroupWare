@@ -194,7 +194,7 @@
 		<result property="outtime"   column="outtime" javaType="String" />
    </resultMap>
    
-   
+
    <select id="selectDepMonthIndolence" parameterType="String" resultMap="depMonthMap">
    		select name,intime,outtime
 		from tbl_employee E
@@ -203,5 +203,104 @@
 		where fk_dcode = #{fk_dcode} 
    </select>
    
+   <!-- 여행상품들의 일정 뽑아오기 -->
    
+   <resultMap type="HashMap" id="productScheduleMap">
+   		<result property="pname"        column="pname"      javaType="String" /> 
+		<result property="startdate"    column="startdate"  javaType="String" />
+		<result property="enddate"      column="enddate"    javaType="String" />
+   </resultMap>
+   
+
+   <select id="productSchedule" resultMap="productScheduleMap">
+   		select pname, startdate, enddate
+		from tbl_product
+   </select>
+   
+   
+   <!-- 이용자의 1주일치 날짜 가져오기 -->
+   
+   <resultMap type="HashMap" id="weekMap">
+   		<result property="pday"        column="pday"       javaType="String" /> 
+		<result property="ppday"       column="ppday"      javaType="String" />
+		<result property="pppday"      column="pppday"     javaType="String" />
+   		<result property="ppppday"     column="ppppday"    javaType="String" />
+   		<result property="pppppday"    column="pppppday"   javaType="String" />
+   		<result property="ppppppday"   column="ppppppday"  javaType="String" />
+   		<result property="pppppppday"  column="pppppppday" javaType="String" />
+   </resultMap>
+   
+   <select id="selectWeekDay" parameterType="String" resultMap="weekMap">
+   	   select to_char(to_date(#{today},'yyyy-mm-dd')-1,'yyyy-mm-dd') as pday,
+       		  to_char(to_date(#{today},'yyyy-mm-dd')-2,'yyyy-mm-dd') as ppday,
+       		  to_char(to_date(#{today},'yyyy-mm-dd')-3,'yyyy-mm-dd') as pppday,
+       		  to_char(to_date(#{today},'yyyy-mm-dd')-4,'yyyy-mm-dd') as ppppday,
+       		  to_char(to_date(#{today},'yyyy-mm-dd')-5,'yyyy-mm-dd') as pppppday,
+       		  to_char(to_date(#{today},'yyyy-mm-dd')-6,'yyyy-mm-dd') as ppppppday,
+       		  to_char(to_date(#{today},'yyyy-mm-dd')-7,'yyyy-mm-dd') as pppppppday
+	   from dual
+   </select>
+   
+   
+   
+   <!-- 이용자의 1주일치 근로시간 가지고오기 -->
+   <resultMap type="HashMap" id="hourListMap">
+		<result property="intime"       column="intime"     javaType="String" />
+		<result property="outtime"      column="outtime"    javaType="String" />
+   </resultMap>
+   
+   <select id="selecthourMap" parameterType="HashMap" resultMap="hourListMap">
+   		select 
+        	  to_char(intime,'hh24:mi:ss') as intime,
+        	  to_char(outtime,'hh24:mi:ss') as outtime
+		from tbl_inout
+		where fk_employeeid = #{fk_employeeid} and to_char(gooutdate,'yyyy-mm-dd') = #{doneDay}
+   </select>
+   
+   
+   <!-- word-cloud 차트를 위해 데이터 뽑아오기 -->
+   <select id="selectWordList" resultType="String">
+   		select searchword
+		from tbl_word
+   </select>
+   
+   <select id="wordSearch" resultType="String">
+   		select sebuName
+		from   tbl_sebuMenu
+		where  sebuName like '%'||#{searchword}||'%'
+   </select>
+   
+   <!-- 검색어 입력 후 URL주소 뽑아오기 -->
+   <select id="goSebuMenu" parameterType="String" resultType="String">
+   		select sebuAddress
+		from tbl_sebuMenu
+		where sebuName = #{searchWord}
+   </select>
+	
+	
+   <!-- 해당 검색어 tbl_word에 insert시켜주기 -->
+   <insert id="insertWord" parameterType="String">
+   		insert into tbl_word(seq,searchword)
+	    values(tbl_word_seq.nextval,#{searchWord})
+   </insert>
+   
+   <!-- 고객 여행일정 가지고 오기 -->
+   
+   <resultMap type="HashMap" id="scheduleMap">
+   		<result property="pname"         column="pname"       javaType="String" />
+   		<result property="cnumber"       column="cnumber"     javaType="String" />
+   		<result property="clientname"    column="clientname"  javaType="String" />
+   		<result property="startdate"     column="startdate"   javaType="String" />
+   		<result property="enddate"       column="enddate"     javaType="String" />
+   		<result property="price"         column="price"       javaType="String" />
+   </resultMap>
+   
+   <select id="selectScheduleList" parameterType="String" resultMap="scheduleMap">
+   		select pname, cnumber, clientname, to_char(startdate,'yyyy-mm-dd') as startdate,
+        to_char(enddate,'yyyy-mm-dd') as enddate, (to_number(price)*to_number(cnumber)) as price
+		from tbl_client C
+		join tbl_product P
+		on C.fk_pno = P.pno
+		where clientname =#{clientname} and startdate > sysdate
+   </select>	
 </mapper>

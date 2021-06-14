@@ -24,6 +24,9 @@
 <script src="<%=ctxPath%>/resources/js/kdn/app.js"></script>
 <script src="<%=ctxPath%>/resources/js/kdn/header_sideinfo.js"></script>
 <script type="text/javascript" src="<%=ctxPath%>/resources/smarteditor/js/HuskyEZCreator.js" charset="utf-8"></script>
+<!-- Google Font -->
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300&display=swap" rel="stylesheet">
 
 <%--  =====  스피너를 사용하기 위해  jquery-ui 사용하기 ===== --%>
   <link rel="stylesheet" type="text/css" href="<%= ctxPath%>/resources/jquery-ui-1.11.4.custom/jquery-ui.css" />
@@ -31,7 +34,13 @@
   
 <%-- *** ajax로 파일을 업로드할때 가장 널리 사용하는 방법 ==> ajaxForm *** --%>
 <script type="text/javascript" src="<%= ctxPath%>/resources/js/jquery.form.min.js"></script>
-  
+<style type="text/css">
+body{
+	font-family: 'Noto Sans KR', sans-serif;
+}
+
+</style>
+
 
 </head>
 <body>

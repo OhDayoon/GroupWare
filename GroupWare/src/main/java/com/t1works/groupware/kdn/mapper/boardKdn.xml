@@ -7,13 +7,13 @@
 <mapper namespace="board">
 	<!-- 파일 첨부가 없는 글쓰기 하기 -->
 	<insert id="noticePostUpload" parameterType="com.t1works.groupware.kdn.model.BoardKdnVO">
-		insert into tbl_noticeboard(seq, fk_categnum, fk_employeeid, name, subject, content, pw, readCount, regDate, status)
-		values(seq_noticeboard.nextval, #{fk_categnum}, #{fk_employeeid}, #{name}, #{subject},#{content},#{pw}, default, default, default)
+		insert into tbl_noticeboard(seq, fk_categnum, fk_employeeid, name, subject, content, pw, readCount, regDate, status, readStatus)
+		values(seq_noticeboard.nextval, #{fk_categnum}, #{fk_employeeid}, #{name}, #{subject},#{content},#{pw}, default, default, default, default)
 	</insert>
 	
 	<!-- === 파일첨부가 있는 글쓰기 === --> 
 	<insert id="noticeUploadwithFile" parameterType="com.t1works.groupware.kdn.model.BoardKdnVO">
-		insert into tbl_noticeboard(seq, fk_categnum, fk_employeeid, name, subject, content, pw, readCount, regDate, status, fileName, orgFilename, fileSize)
+		insert into tbl_noticeboard(seq, fk_categnum, fk_employeeid, name, subject, content, pw, readCount, regDate, status, fileName, orgFilename, fileSize, readStatus)
 		values(seq_noticeboard.nextval, #{fk_categnum}, #{fk_employeeid}, #{name}, #{subject},#{content},#{pw}, default, default, default, #{fileName}, #{orgFilename}, #{fileSize})
 	</insert>
 	
@@ -33,12 +33,12 @@
 
 	<!-- 페이징 처리한 글목록 가져오기(검색어 유무 상관없이 모두 다 포함한것, 파일첨부기능 있음) -->
 	<select id="noticeBoardListSearchWithPaging" parameterType="HashMap" resultType="com.t1works.groupware.kdn.model.BoardKdnVO">
-		select rno, seq, fk_categnum, fk_employeeid, name, subject, readCount, regDate, fileName
+		select rno, seq, fk_categnum, fk_employeeid, name, subject, readCount, regDate, fileName, readStatus
 		from
 		(
 		select row_number() over(order by seq desc) as rno,
 		       seq, fk_categnum, fk_employeeid, name, subject, readCount,
-		       to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, fileName
+		       to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, fileName, readStatus
 		from tbl_noticeboard
 		where status = 1
 		<if test='fk_categnum != ""'>
@@ -60,7 +60,7 @@
 	<!--  (댓글쓰기가 없는 게시판에서) 공지사항 글 1개 보여주기  ==  -->
 	<select id="getView" parameterType="String" resultType="com.t1works.groupware.kdn.model.BoardKdnVO">
 		select previousseq, previoussubject, seq, fk_categnum, fk_employeeid, name, subject, content, readcount, regDate, nextseq,nextsubject,
-		fileName, orgFilename, fileSize
+		fileName, orgFilename, fileSize, readStatus
 		from
 		(
 			select lag(seq,1) over(order by seq desc) as previousseq
@@ -71,7 +71,7 @@
 			     
 			     ,lead(seq,1) over(order by seq desc) as nextseq
 			     ,lead(subject,1) over(order by seq desc) as nextsubject
-			     ,fileName, orgFilename, fileSize
+			     ,fileName, orgFilename, fileSize, readStatus
 			from tbl_noticeboard
 			where status = 1
 			<if test='searchType != "" and searchWord != ""'>
@@ -188,13 +188,13 @@
 	<!--  건의사항(댓글쓰기&답변글 기능&파일첨부 기능 있음) 글 1개 보여주기  ==  -->
 	<select id="getSuggPostView" parameterType="String" resultType="com.t1works.groupware.kdn.model.BoardKdnVO">
 		select previousseq, previoussubject, seq, fk_employeeid, name, subject, content, readcount, regDate,privatePost, nextseq,nextsubject,
-				groupno, parentSeq, depthno, fileName, orgFilename, fileSize
+				groupno, parentSeq, depthno, fileName, orgFilename, fileSize, commentCount
 		from
 		(
 			select lag(seq,1) over(order by seq desc) as previousseq
 			     , lag(subject,1) over(order by seq desc) as previoussubject
 			     
-			     , seq, fk_employeeid, name, subject, content, privatePost  
+			     , seq, fk_employeeid, name, subject, content, privatePost, commentCount  
 			     , readcount, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate
 			     
 			     ,lead(seq,1) over(order by seq desc) as nextseq
@@ -235,7 +235,7 @@
 	</insert>
 	
 	<!--  ===  건의사항 tbl_generalboard 테이블에 commentCount 컬럼의 값을 1증가(update) === -->
-	<update id="updateSuggCmntCount" parameterType="String">
+	<update id="updateSuggCmntCount" parameterType="com.t1works.groupware.kdn.model.CommentKdnVO">
 		update tbl_suggestionboard set commentCount = commentCount + 1
 		where seq = #{fk_seq} 
 	</update>
@@ -253,6 +253,13 @@
 		where rno between #{startRno} and #{endRno}
 	</select>
 	
+	<!-- === 건의사항 원글 글번호(fk_seq)에 해당하는 댓글의 총 개수를 알아오기 === -->
+	<select id="getSuggCmntTotalCnt" parameterType="String" resultType="int">
+		select count(*)
+		from tbl_suggestionboardcomment
+		where fk_seq=#{seq}
+	</select>
+	
 	<!-- === 건의사항 원글 글번호(fk_seq)에 해당하는 댓글의 총 페이지수를 알아오기 === -->
 	<select id="getSuggCmntTotalPage" parameterType="HashMap" resultType="int">
 		select ceil(count(*)/#{sizePerPage})
@@ -267,13 +274,19 @@
 	</select>
 	
 	<!-- 건의사항 댓글 삭제 -->
-	<delete id="delSuggComment" parameterType="String">
+	<delete id="delSuggComment" parameterType="com.t1works.groupware.kdn.model.CommentKdnVO">
 		delete from tbl_suggestionboardcomment
 		where seq = #{seq}
 	</delete>
 	
+	<!--  건의사항 댓글 삭제시 tbl_suggestionboard commentCount 감소시키기(update) === -->
+	<update id="updateSuggCmntCountOneDown" parameterType="String">
+		update tbl_suggestionboard set commentCount = commentCount - 1
+		where seq = #{fk_seq} 
+	</update>
+	
 	<!-- 건의사항 댓글 수정 -->
-	<update id="editSuggComment" parameterType="String">
+	<update id="editSuggComment" parameterType="com.t1works.groupware.kdn.model.CommentKdnVO">
 		update tbl_suggestionboardcomment set content=#{content}
 		where seq = #{seq}
 	</update>
@@ -306,10 +319,10 @@
 	
 	<!-- (자유게시판)페이징 처리한 글목록 가져오기(검색어 유무 상관없이 모두 다 포함한것) -->
 	<select id="genListSearchWithPaging" parameterType="HashMap" resultType="com.t1works.groupware.kdn.model.BoardKdnVO">
-		select rno, seq, fk_employeeid, name, subject, readCount, regDate, fileName
+		select rno, seq, fk_employeeid, name, subject, readCount, regDate, fileName, commentCount
 		from
 		(
-		select row_number() over(order by seq desc) as rno,
+		select row_number() over(order by seq desc) as rno, commentCount,
 		       seq, fk_employeeid, name, subject, readCount, fileName,
 		       to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate
 		from tbl_generalboard
@@ -324,13 +337,13 @@
 	<!--  (댓글쓰기가 없는 게시판에서) 자유게시판 글 1개 보여주기  ==  -->
 	<select id="getGenPostView" parameterType="String" resultType="com.t1works.groupware.kdn.model.BoardKdnVO">
 		select previousseq, previoussubject, seq, fk_employeeid, name, subject, content, readcount, regDate, nextseq,nextsubject
-			 , fileName, orgFilename, fileSize
+			 , fileName, orgFilename, fileSize, commentCount 
 		from
 		(
 			select lag(seq,1) over(order by seq desc) as previousseq
 			     , lag(subject,1) over(order by seq desc) as previoussubject
 			     
-			     , seq, fk_employeeid, name, subject, content, fileName, orgFilename, fileSize  
+			     , seq, fk_employeeid, name, subject, content, fileName, orgFilename, fileSize, commentCount 
 			     , readcount, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate
 			     
 			     ,lead(seq,1) over(order by seq desc) as nextseq
@@ -374,8 +387,8 @@
 		values(seq_generalboardcomment.nextval, #{fk_employeeid}, #{name}, #{content}, default, #{fk_seq})
 	</insert>
 	
-	<!--  ===  자유게시판 tbl_generalboard 테이블에 commentCount 컬럼의 값을 1증가(update) === -->
-	<update id="updateCommentCount" parameterType="String">
+	<!-- 댓글쓰기 성공 후 자유게시판 tbl_generalboard 테이블에 commentCount 컬럼의 값을 1증가(update) -->
+	<update id="updateGenCmntCount" parameterType="String">
 		update tbl_generalboard set commentCount = commentCount + 1
 		where seq = #{fk_seq} 
 	</update>
@@ -401,13 +414,41 @@
 	</select>
 	
 	<!-- 자유게시판 댓글 삭제 -->
-	<delete id="delGenComment" parameterType="String">
+	<delete id="delGenComment" parameterType="com.t1works.groupware.kdn.model.CommentKdnVO">
 		delete from tbl_generalboardcomment
 		where seq = #{seq}
 	</delete>
 	
+	<!--  자유게시판 댓글 삭제시 tbl_generalboard commentCount 감소시키기(update) === -->
+	<update id="updateGenCmntCountOneDown" parameterType="String">
+		update tbl_generalboard set commentCount = commentCount - 1
+		where seq = #{fk_seq} 
+	</update>
 	
+	<!-- 자유게시판 댓글 수정 -->
+	<update id="editGenComment" parameterType="com.t1works.groupware.kdn.model.CommentKdnVO">
+		update tbl_generalboardcomment set content=#{content}
+		where seq = #{seq}
+	</update>
 	
+	<!-- 자유게시판 원글 글번호(fk_seq)에 해당하는 댓글의 총 개수를 알아오기 === -->
+	<select id="getGenCmntTotalCnt" parameterType="String" resultType="int">
+		select count(*)
+		from tbl_generalboardcomment
+		where fk_seq=#{seq}
+	</select>
+	
+	<!-- 공지사항 게시글 읽음으로 변경 -->
+	<update id="markAsRead" parameterType="String">
+		update tbl_noticeboard set readStatus = '1'
+		where seq = #{seq}
+	</update>
+	
+	<!-- 새 공지사항 유무 알아오기 -->
+	<select id="checkNewNotice" resultType="int">
+		select count(*)
+		from tbl_noticeboard where readStatus = '0'
+	</select>
 	
 
 </mapper>

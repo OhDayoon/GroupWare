@@ -404,11 +404,21 @@ public class MemberBwbController {
 		String dcode = loginuser.getFk_dcode();
 		String pcode = loginuser.getFk_pcode();
 		
-		// 부서명 가져오기
-		String dname = service2.selectdname(dcode);
+		String dname="";
+		String duty =""; 
 		
-		// 직무 가져오기
-		String duty = service2.selectDuty(dname);
+		if(dcode==null) {
+			dcode="-";
+			dname="-";
+			duty="-";
+		}
+		else {
+			// 부서명 가져오기
+			dname = service2.selectdname(dcode);
+			// 직무 가져오기
+			duty = service2.selectDuty(dname);
+		}
+		
 		
 		// 직위 가져오기
 		String pname = service2.selectpname(pcode);
@@ -500,7 +510,7 @@ public class MemberBwbController {
 	}
 	
 	
-	// CS팀장 로그인시 업무관리 => 나의업무현황 => 미배정업무 보여주기
+	// CS부장 로그인시 업무관리 => 나의업무현황 => 미배정업무 보여주기
 	@RequestMapping(value="/t1/leaderTodo.tw")
 	public ModelAndView requiredLogin_leaderTodo_1(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		
@@ -815,19 +825,20 @@ public class MemberBwbController {
 		mav.addObject("dname", dname);
 		
 		String currentShowPageNo_str = request.getParameter("currentShowPageNo");
-		String period = request.getParameter("period");
-		String statusChoice_es = request.getParameter("statusChoice_es");
-		String searchProject = request.getParameter("searchProject");
-		String searchWhoCharge = request.getParameter("searchWhoCharge");
+		String period = request.getParameter("period"); // 라디오박스 기간
+		String statusChoice_es = request.getParameter("statusChoice_es"); // 체크박스 업무상태("1,2,3")
+		String searchProject = request.getParameter("searchProject"); // 프로젝트명
+		String searchWhoCharge = request.getParameter("searchWhoCharge"); // 담당자명
 		
 		// 기간에서 선택한 period get방식 처리
 		if(period == null || period.equalsIgnoreCase("undefined")) {
-			period ="-1";
+			period ="7";
 		}
 		else if(!(period.equalsIgnoreCase("7")||period.equalsIgnoreCase("30")||period.equalsIgnoreCase("-1")||period.equalsIgnoreCase("90"))) {
 			period ="7";
 		}
 		
+
 		String statusChoice ="";
 		
 		// 상태값에서 선택한 statusChoice_es get방식 처리, 1:미배정, 2:미시작 3:진행중 4:보류 5:지연 6:완료  
@@ -861,6 +872,8 @@ public class MemberBwbController {
 				else if(statusChoiceArr[i].equalsIgnoreCase("6")) statusChoice+=status6+str;
 
 			} // end of for(int i=0; i<len; i++) {-------------------
+			
+			
 		}
 		
 		
@@ -882,7 +895,9 @@ public class MemberBwbController {
 		paraMap.put("searchProject", searchProject);
 		paraMap.put("searchWhoCharge", searchWhoCharge);
 		paraMap.put("statusChoice", statusChoice);
+		paraMap.put("statusChoice_es", statusChoice_es);
 		
+		mav.addObject("paraMap", paraMap);
 		
 		int totalTodo = 0;	        // 부서 총 업무 갯수
 		int sizePerPage = 3;	    // 한페이지당 보여주는 갯수

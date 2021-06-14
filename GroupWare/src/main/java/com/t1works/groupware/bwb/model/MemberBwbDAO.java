@@ -237,6 +237,69 @@ public class MemberBwbDAO implements InterMemberBwbDAO {
 		List<Map<String,String>> depIndolenceList = sqlsession.selectList("memberBwb.selectDepMonthIndolence", fk_dcode);
 		return depIndolenceList;
 	}
+
+	// 여행상품들의 일정 뽑아오기
+	@Override
+	public List<Map<String, String>> productSchedule() {
+		List<Map<String, String>> productList = sqlsession.selectList("memberBwb.productSchedule");
+		return productList;
+	}
+
+	
+	// 이용자의 최근1주일 근로시간 가지고오기
+	@Override
+	public Map<String, String> selecthourMap(Map<String, String> searchMap) {
+		
+		Map<String, String> hourMap = sqlsession.selectOne("memberBwb.selecthourMap", searchMap);
+		return hourMap;
+	}
+	
+	
+	// 일주일치 날짜 가지고오기
+	@Override
+	public Map<String, String> selectWeekDay(String today) {
+		Map<String, String> weekMap = sqlsession.selectOne("memberBwb.selectWeekDay", today);
+		return weekMap;
+	}
+
+	// word-cloud 차트를 위해 데이터 뽑아오기
+	@Override
+	public List<String> selectWordList() {
+		List<String> wordList = sqlsession.selectList("memberBwb.selectWordList");
+		
+		return wordList;
+	}
+
+	
+	// 검색어 입력 시 자동검색기능(ajax처리)
+	@Override
+	public List<String> wordSearch(String searchWord) {
+		
+		List<String> wordList = sqlsession.selectList("memberBwb.wordSearch", searchWord);
+		return wordList;
+	}
+
+	// 검색어 입력 후 URL주소 뽑아오기
+	@Override
+	public String goSebuMenu(String searchWord) {
+		String sebuAddress = sqlsession.selectOne("memberBwb.goSebuMenu", searchWord);
+		return sebuAddress;
+	}
+
+	
+	// 해당 검색어 tbl_word에 insert시켜주기
+	@Override
+	public void insertWord(String searchWord) {
+		sqlsession.insert("memberBwb.insertWord", searchWord);
+	}
+
+	
+	// 고객여행일정 가지고오기
+	@Override
+	public List<Map<String, String>> selectScheduleList(String clientname) {
+		List<Map<String, String>> scheduleList = sqlsession.selectList("memberBwb.selectScheduleList", clientname);
+		return scheduleList;
+	}
 	
 	
    

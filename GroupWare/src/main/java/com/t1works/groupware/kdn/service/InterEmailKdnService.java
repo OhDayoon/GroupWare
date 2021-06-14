@@ -17,6 +17,8 @@ public interface InterEmailKdnService {
 	int sendWithFile(EmailKdnVO evo, String checkSaveSentMail); // 파일 첨부가 있는 이메일 쓰기
 
 	int getTotalCount(Map<String, String> paraMap); // 받은메일함 총 이메일 건수 구해오기
+	
+	int getTotalUnreadEmail(Map<String, String> paraMap); // 읽지않은 메일 총 건수 구해오기
 
 	List<EmailKdnVO> emailListSearchWithPaging(Map<String, String> paraMap); // (받은메일함, 중요메일함) 페이징 처리한 이메일목록 가져오기(검색어 유무 상관없이 모두 다 포함한것)
 
@@ -25,6 +27,8 @@ public interface InterEmailKdnService {
 	EmailKdnVO getSentMailView(Map<String, String> paraMap); // 보낸메일함의 이메일 열람하기
 
 	EmailKdnVO getImportantMailView(Map<String, String> paraMap); // 중요메일함의 이메일 열람하기 
+	
+	EmailKdnVO getTrashView(Map<String, String> paraMap); // 휴지통 이메일 열람하기
 	
 	int getMailSentTotalCount(Map<String, String> paraMap); // 보낸메일함 총 이메일 건수 구해오기 
 
@@ -51,6 +55,26 @@ public interface InterEmailKdnService {
 	int markAsUnread(List<String> emailSeqList); //읽지않음으로 변경
 
 	int markAsRead(List<String> emailSeqList); //읽음으로 변경
+
+	int markAsUnreadSentMail(List<String> emailSeqList); // 보낸메일함 메일 읽지 않음으로 변경
+
+	int markAsReadSentMail(List<String> emailSeqList); // 보낸메일함 메일 읽음으로 변경
+
+	int emptyTrash(String email); // 휴지통 비우기
+
+	String receiverEmail(String seq); // 해당 seq의 수신자이메일 가져오기 (여러명일수도 있고 한명일 수도 있다 + null 일 수는 없다)
+
+	String getName(String receiverEmail); // 한개의 email에 해당하는 사원명 가져오기
+
+	String ccEmail(String seq);// 해당 seq의 수신자이메일 가져오기 (여러명일수도 있고 한명일 수도 있다 + null 일 수도 있다)
+
+	
+	// int getPreviousMail(); // 회신한 이전 메일 가져오기
+	
+	
+
+
+	
 
 
 

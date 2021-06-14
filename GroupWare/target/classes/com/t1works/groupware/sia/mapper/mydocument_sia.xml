@@ -6,10 +6,10 @@
 
 	<!-- 내문서함 - 수신함 - 일반결재문서에 해당하는 문서 조회하기  -->
 	<select id="getnorm_reclist" parameterType="HashMap" resultType="com.t1works.groupware.sia.model.ApprovalSiaVO">
-		select rno, atitle, ano, astatus, asdate, ncat, ncatname 
+		select rno, atitle, ano, astatus, asdate, ncat, ncatname, fileName
 		from
 		(
-			select row_number() over(order by asdate desc) as rno, atitle, ano, astatus, to_char(asdate, 'yyyy-mm-dd') AS asdate, ncat, ncatname
+			select row_number() over(order by asdate desc) as rno, atitle, ano, astatus, to_char(asdate, 'yyyy-mm-dd') AS asdate, ncat, ncatname, fileName
 			from tbl_approval A join tbl_norapproval B
 			on A.ano = B.fk_ano
 			where apaper = '0'
@@ -26,7 +26,7 @@
 				and astatus = #{astatus}
 			</if>
 			<if test='sort == "" and searchWord != ""'>
-				and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
+				and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
 			</if>
 			<if test='sort != "" and searchWord != ""'>
 				and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
@@ -34,7 +34,7 @@
 			<if test='a != ""'>
 				and ncat in(${a})
 			</if>
-			and (arecipient1 = #{userid} and approvaldate1 is null) or (arecipient2 = #{userid} and approvaldate2 is null) or (arecipient3 = #{userid} and approvaldate3 is null)
+			and ((arecipient1 = #{userid} and approvaldate1 is null) or (arecipient2 = #{userid} and approvaldate2 is null) or (arecipient3 = #{userid} and approvaldate3 is null))
 		) V
 		where rno between #{startRno} and #{endRno}
 		order by asdate desc, rno
@@ -47,7 +47,7 @@
 		from tbl_approval A join tbl_norapproval B
 		on A.ano = B.fk_ano
 		where apaper = '0'
-		and (arecipient1 = #{userid} and approvaldate1 is null) or (arecipient2 = #{userid} and approvaldate2 is null) or (arecipient3 = #{userid} and approvaldate3 is null)
+		and ((arecipient1 = #{userid} and approvaldate1 is null) or (arecipient2 = #{userid} and approvaldate2 is null) or (arecipient3 = #{userid} and approvaldate3 is null))
 		<if test='fromDate != "" and toDate != ""'>
 			and to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') between to_date(#{fromDate}, 'yyyy-mm-dd') and to_date(#{toDate}, 'yyyy-mm-dd')
 		</if>
@@ -61,7 +61,7 @@
 			and astatus = #{astatus}
 		</if>
 		<if test='sort == "" and searchWord != ""'>
-			and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
+			and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
 		</if>
 		<if test='sort != "" and searchWord != ""'>
 			and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
@@ -127,14 +127,14 @@
 	
 	<!-- 내문서함 - 수신함 - 지출결재문서에 해당하는 문서 조회하기 -->
 	<select id="getSpend_reclist" parameterType="HashMap" resultType="com.t1works.groupware.sia.model.ApprovalSiaVO">
-		select rno, atitle, ano, astatus, asdate, scat, scatname 
+		select rno, atitle, ano, astatus, asdate, scat, scatname, fileName
 		from
 		(
-			select row_number() over(order by asdate desc) as rno, atitle, ano, astatus, to_char(asdate, 'yyyy-mm-dd') AS asdate, scat, scatname
+			select row_number() over(order by asdate desc) as rno, atitle, ano, astatus, to_char(asdate, 'yyyy-mm-dd') AS asdate, scat, scatname, fileName
 			from tbl_approval A join tbl_spenda B
 			on A.ano = B.fk_ano
 			where apaper = '0'
-			and (arecipient1 = #{userid} and approvaldate1 is null) or (arecipient2 = #{userid} and approvaldate2 is null) or (arecipient3 = #{userid} and approvaldate3 is null)
+			and ((arecipient1 = #{userid} and approvaldate1 is null) or (arecipient2 = #{userid} and approvaldate2 is null) or (arecipient3 = #{userid} and approvaldate3 is null))
 			<if test='fromDate != "" and toDate != ""'>
 				and to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') between to_date(#{fromDate}, 'yyyy-mm-dd') and to_date(#{toDate}, 'yyyy-mm-dd')
 			</if>
@@ -148,7 +148,7 @@
 				and astatus = #{astatus}
 			</if>
 			<if test='sort == "" and searchWord != ""'>
-				and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
+				and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
 			</if>
 			<if test='sort != "" and searchWord != ""'>
 				and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
@@ -168,7 +168,7 @@
 		from tbl_approval A join tbl_spenda B
 		on A.ano = B.fk_ano
 		where apaper = '0'
-		and (arecipient1 = #{userid} and approvaldate1 is null) or (arecipient2 = #{userid} and approvaldate2 is null) or (arecipient3 = #{userid} and approvaldate3 is null)
+		and ((arecipient1 = #{userid} and approvaldate1 is null) or (arecipient2 = #{userid} and approvaldate2 is null) or (arecipient3 = #{userid} and approvaldate3 is null))
 		<if test='fromDate != "" and toDate != ""'>
 			and to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') between to_date(#{fromDate}, 'yyyy-mm-dd') and to_date(#{toDate}, 'yyyy-mm-dd')
 		</if>
@@ -182,7 +182,7 @@
 			and astatus = #{astatus}
 		</if>
 		<if test='sort == "" and searchWord != ""'>
-			and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
+			and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
 		</if>
 		<if test='sort != "" and searchWord != ""'>
 			and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
@@ -237,14 +237,14 @@
 	
 	<!-- 내문서함 - 수신함 - 근태결재문서에 해당하는 문서 조회하기 -->
 	<select id="getVacation_reclist" parameterType="HashMap" resultType="com.t1works.groupware.sia.model.ApprovalSiaVO">
-		select rno, atitle, ano, astatus, asdate, vno, vcatname 
+		select rno, atitle, ano, astatus, asdate, vno, vcatname, fileName 
 		from
 		(
-			select row_number() over(order by asdate desc) as rno, atitle, ano, astatus, to_char(asdate, 'yyyy-mm-dd') AS asdate, vno, vcatname
+			select row_number() over(order by asdate desc) as rno, atitle, ano, astatus, to_char(asdate, 'yyyy-mm-dd') AS asdate, vno, vcatname, fileName
 			from tbl_approval A join tbl_vacation B
 			on A.ano = B.fk_ano
 			where apaper = '0'
-			and (arecipient1 = #{userid} and approvaldate1 is null) or (arecipient2 = #{userid} and approvaldate2 is null) or (arecipient3 = #{userid} and approvaldate3 is null)
+			and ((arecipient1 = #{userid} and approvaldate1 is null) or (arecipient2 = #{userid} and approvaldate2 is null) or (arecipient3 = #{userid} and approvaldate3 is null))
 			<if test='fromDate != "" and toDate != ""'>
 				and to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') between to_date(#{fromDate}, 'yyyy-mm-dd') and to_date(#{toDate}, 'yyyy-mm-dd')
 			</if>
@@ -258,7 +258,7 @@
 				and astatus = #{astatus}
 			</if>
 			<if test='sort == "" and searchWord != ""'>
-				and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
+				and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
 			</if>
 			<if test='sort != "" and searchWord != ""'>
 				and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
@@ -278,7 +278,7 @@
 		from tbl_approval A join tbl_vacation B
 		on A.ano = B.fk_ano
 		where apaper = '0'
-		and (arecipient1 = #{userid} and approvaldate1 is null) or (arecipient2 = #{userid} and approvaldate2 is null) or (arecipient3 = #{userid} and approvaldate3 is null)
+		and ((arecipient1 = #{userid} and approvaldate1 is null) or (arecipient2 = #{userid} and approvaldate2 is null) or (arecipient3 = #{userid} and approvaldate3 is null))
 		<if test='fromDate != "" and toDate != ""'>
 			and to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') between to_date(#{fromDate}, 'yyyy-mm-dd') and to_date(#{toDate}, 'yyyy-mm-dd')
 		</if>
@@ -292,7 +292,7 @@
 			and astatus = #{astatus}
 		</if>
 		<if test='sort == "" and searchWord != ""'>
-			and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
+			and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
 		</if>
 		<if test='sort != "" and searchWord != ""'>
 			and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
@@ -323,7 +323,7 @@
 				, to_char(bustart, 'yyyy/mm/dd') AS bustart, to_char(buend, 'yyyy/mm/dd') AS buend, budates, buplace, bupeople
 			</when>
 			<when test="vcatname eq '추가근무'">
-				, ewdate, ewhours
+				, to_char(ewdate, 'yyyy/mm/dd') AS ewdate, ewhours
 			</when>
 		</choose>
 		from tbl_approval a
@@ -382,7 +382,7 @@
 	
 	<!-- 내문서함 - 결재의견 조회하기 -->
 	<select id="getOpinionList" parameterType="String" resultType="com.t1works.groupware.sia.model.ApprovalSiaVO">
-		select dname, name, pname, to_char(odate, 'yyyy-mm-dd hh24:mi:ss') AS odate, ocontent
+		select nvl(dname, ' ') AS dname, name, pname, to_char(odate, 'yyyy-mm-dd hh24:mi:ss') AS odate, ocontent, employeeid, ono
 		from tbl_aopinion a left join tbl_employee e
 		on a.fk_employeeid = e.employeeid
 		left join tbl_department d
@@ -426,6 +426,14 @@
 		</if>
 	</update>
 	
+	
+	<!-- 결재로그 테이블에 insert 하기(결재승인) -->
+	<insert id="approvalLog" parameterType="HashMap">
+		insert into tbl_alog(logno, fk_ano, fk_employeeid, logstatus, logdate)
+		values(seq_tbl_alog.nextval, #{ano}, #{employeeid}, 1, sysdate)
+	</insert>
+	
+	
 	<!-- 내문서함 - 수신함 반려버튼 클릭 -->
 	<update id="reject" parameterType="HashMap">
 		update tbl_approval set astatus = '2'
@@ -443,16 +451,36 @@
 		where ano = #{ano}
 	</update>
 	
+	
+	<!-- 근태 테이블(연차, 반차) 반려버튼 클릭 시 차감 연차 복구하기 --> 
+	<update id="subtract" parameterType="HashMap">
+		<if test='vcatname eq "반차"'>
+			update tbl_afternoonoff set afdates = -0.5
+			where fk_ano = #{ano}
+		</if>
+		<if test='vcatname eq "연차"'>
+			update tbl_dayoff set daystart = #{daystart}, dayend = #{dayend}, daydates = (select (to_date(#{daystart}, 'yyyy-mm-dd') - to_date(#{dayend}, 'yyyy-mm-dd') - 1) as daydates from dual)
+			where fk_ano = #{ano}
+		</if>
+	</update>
+	
+	
+	<!-- 결재로그 테이블에 insert 하기(반려) -->
+	<insert id="rejectLog" parameterType="HashMap">
+		insert into tbl_alog(logno, fk_ano, fk_employeeid, logstatus, logdate)
+		values(seq_tbl_alog.nextval, #{ano}, #{employeeid}, 2, sysdate)
+	</insert>
+	
 	<!-- ///////////////////////////////////////////////////////////////////// -->
 	<!-- ///////////////////////////////////////////////////////////////////// -->
 	
 	
 	<!-- 내문서함 - 발신함 - 일반결재문서에 해당하는 문서 조회하기  -->
 	<select id="getnorm_sendlist" parameterType="HashMap" resultType="com.t1works.groupware.sia.model.ApprovalSiaVO">
-		select rno, atitle, ano, astatus, asdate, ncat, ncatname 
+		select rno, atitle, ano, astatus, asdate, ncat, ncatname, fileName 
 		from
 		(
-			select row_number() over(order by asdate desc) as rno, atitle, ano, astatus, to_char(asdate, 'yyyy-mm-dd') AS asdate, ncat, ncatname
+			select row_number() over(order by asdate desc) as rno, atitle, ano, astatus, to_char(asdate, 'yyyy-mm-dd') AS asdate, ncat, ncatname, fileName
 			from tbl_approval A join tbl_norapproval B
 			on A.ano = B.fk_ano
 			where fk_employeeid = #{userid}
@@ -470,7 +498,7 @@
 				and astatus = #{astatus}
 			</if>
 			<if test='sort == "" and searchWord != ""'>
-				and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
+				and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
 			</if>
 			<if test='sort != "" and searchWord != ""'>
 				and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
@@ -504,7 +532,7 @@
 			and astatus = #{astatus}
 		</if>
 		<if test='sort == "" and searchWord != ""'>
-			and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
+			and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
 		</if>
 		<if test='sort != "" and searchWord != ""'>
 			and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
@@ -570,10 +598,10 @@
 	
 	<!-- 내문서함 - 발신함 - 지출결재문서에 해당하는 문서 조회하기 -->
 	<select id="getSpend_sendlist" parameterType="HashMap" resultType="com.t1works.groupware.sia.model.ApprovalSiaVO">
-		select rno, atitle, ano, astatus, asdate, scat, scatname 
+		select rno, atitle, ano, astatus, asdate, scat, scatname, fileName 
 		from
 		(
-			select row_number() over(order by asdate desc) as rno, atitle, ano, astatus, to_char(asdate, 'yyyy-mm-dd') AS asdate, scat, scatname
+			select row_number() over(order by asdate desc) as rno, atitle, ano, astatus, to_char(asdate, 'yyyy-mm-dd') AS asdate, scat, scatname, fileName
 			from tbl_approval A join tbl_spenda B
 			on A.ano = B.fk_ano
 			where fk_employeeid = #{userid}
@@ -591,7 +619,7 @@
 				and astatus = #{astatus}
 			</if>
 			<if test='sort == "" and searchWord != ""'>
-				and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
+				and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
 			</if>
 			<if test='sort != "" and searchWord != ""'>
 				and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
@@ -625,7 +653,7 @@
 			and astatus = #{astatus}
 		</if>
 		<if test='sort == "" and searchWord != ""'>
-			and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
+			and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
 		</if>
 		<if test='sort != "" and searchWord != ""'>
 			and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
@@ -680,10 +708,10 @@
 	
 	<!-- 내문서함 - 발신함 - 근태결재문서에 해당하는 문서 조회하기 -->
 	<select id="getVacation_sendlist" parameterType="HashMap" resultType="com.t1works.groupware.sia.model.ApprovalSiaVO">
-		select rno, atitle, ano, astatus, asdate, vno, vcatname 
+		select rno, atitle, ano, astatus, asdate, vno, vcatname, fileName 
 		from
 		(
-			select row_number() over(order by asdate desc) as rno, atitle, ano, astatus, to_char(asdate, 'yyyy-mm-dd') AS asdate, vno, vcatname
+			select row_number() over(order by asdate desc) as rno, atitle, ano, astatus, to_char(asdate, 'yyyy-mm-dd') AS asdate, vno, vcatname, fileName
 			from tbl_approval A join tbl_vacation B
 			on A.ano = B.fk_ano
 			where fk_employeeid = #{userid}
@@ -701,7 +729,7 @@
 				and astatus = #{astatus}
 			</if>
 			<if test='sort == "" and searchWord != ""'>
-				and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
+				and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
 			</if>
 			<if test='sort != "" and searchWord != ""'>
 				and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
@@ -735,7 +763,7 @@
 			and astatus = #{astatus}
 		</if>
 		<if test='sort == "" and searchWord != ""'>
-			and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
+			and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
 		</if>
 		<if test='sort != "" and searchWord != ""'>
 			and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
@@ -766,7 +794,7 @@
 				, to_char(bustart, 'yyyy/mm/dd') AS bustart, to_char(buend, 'yyyy/mm/dd') AS buend, budates, buplace, bupeople
 			</when>
 			<when test="vcatname eq '추가근무'">
-				, ewdate, ewhours
+				, to_char(ewdate, 'yyyy/mm/dd') AS ewdate, ewhours
 			</when>
 		</choose>
 		from tbl_approval a
@@ -821,16 +849,25 @@
 	
 	<!-- 내문서함 - 임시저장함 - 일반결재문서에 해당하는 문서 조회하기  -->
 	<select id="getnorm_templist" parameterType="HashMap" resultType="com.t1works.groupware.sia.model.ApprovalSiaVO">
-		select rno, atitle, ano, ncat, ncatname 
+		select rno, atitle, ano, asdate, ncat, ncatname, fileName 
 		from
 		(
-			select row_number() over(order by asdate desc) as rno, atitle, ano, ncat, ncatname
+			select row_number() over(order by asdate desc) as rno, atitle, ano, to_char(asdate, 'yyyy-mm-dd') AS asdate, ncat, ncatname, fileName
 			from tbl_approval A join tbl_norapproval B
 			on A.ano = B.fk_ano
 			where fk_employeeid = #{userid}
 			and apaper = '2'
+			<if test='fromDate != "" and toDate != ""'>
+				and to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') between to_date(#{fromDate}, 'yyyy-mm-dd') and to_date(#{toDate}, 'yyyy-mm-dd')
+			</if>
+			<if test='fromDate != "" and toDate == ""'>
+				and to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') >= to_date(#{fromDate}, 'yyyy-mm-dd') 
+			</if>
+			<if test='fromDate == "" and toDate != ""'>
+				and to_date(#{toDate}, 'yyyy-mm-dd') >= to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd')
+			</if>
 			<if test='sort == "" and searchWord != ""'>
-				and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
+				and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
 			</if>
 			<if test='sort != "" and searchWord != ""'>
 				and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
@@ -851,8 +888,17 @@
 		on A.ano = B.fk_ano
 		where fk_employeeid = #{userid}
 		and apaper = '2'
+		<if test='fromDate != "" and toDate != ""'>
+			and to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') between to_date(#{fromDate}, 'yyyy-mm-dd') and to_date(#{toDate}, 'yyyy-mm-dd')
+		</if>
+		<if test='fromDate != "" and toDate == ""'>
+			and to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') >= to_date(#{fromDate}, 'yyyy-mm-dd') 
+		</if>
+		<if test='fromDate == "" and toDate != ""'>
+			and to_date(#{toDate}, 'yyyy-mm-dd') >= to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd')
+		</if>
 		<if test='sort == "" and searchWord != ""'>
-			and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
+			and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
 		</if>
 		<if test='sort != "" and searchWord != ""'>
 			and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
@@ -918,16 +964,25 @@
 	
 	<!-- 내문서함 - 임시저장함 - 지출결재문서에 해당하는 문서 조회하기 -->
 	<select id="getSpend_templist" parameterType="HashMap" resultType="com.t1works.groupware.sia.model.ApprovalSiaVO">
-		select rno, atitle, ano, scat, scatname 
+		select rno, atitle, ano, asdate, scat, scatname, fileName 
 		from
 		(
-			select row_number() over(order by asdate desc) as rno, atitle, ano, scat, scatname
+			select row_number() over(order by asdate desc) as rno, atitle, ano, to_char(asdate, 'yyyy-mm-dd') AS asdate, scat, scatname, fileName
 			from tbl_approval A join tbl_spenda B
 			on A.ano = B.fk_ano
 			where fk_employeeid = #{userid}
 			and apaper = '2'
+			<if test='fromDate != "" and toDate != ""'>
+				and to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') between to_date(#{fromDate}, 'yyyy-mm-dd') and to_date(#{toDate}, 'yyyy-mm-dd')
+			</if>
+			<if test='fromDate != "" and toDate == ""'>
+				and to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') >= to_date(#{fromDate}, 'yyyy-mm-dd') 
+			</if>
+			<if test='fromDate == "" and toDate != ""'>
+				and to_date(#{toDate}, 'yyyy-mm-dd') >= to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd')
+			</if>
 			<if test='sort == "" and searchWord != ""'>
-				and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
+				and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
 			</if>
 			<if test='sort != "" and searchWord != ""'>
 				and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
@@ -948,8 +1003,17 @@
 		on A.ano = B.fk_ano
 		where fk_employeeid = #{userid}
 		and apaper = '2'
+		<if test='fromDate != "" and toDate != ""'>
+			and to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') between to_date(#{fromDate}, 'yyyy-mm-dd') and to_date(#{toDate}, 'yyyy-mm-dd')
+		</if>
+		<if test='fromDate != "" and toDate == ""'>
+			and to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') >= to_date(#{fromDate}, 'yyyy-mm-dd') 
+		</if>
+		<if test='fromDate == "" and toDate != ""'>
+			and to_date(#{toDate}, 'yyyy-mm-dd') >= to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd')
+		</if>
 		<if test='sort == "" and searchWord != ""'>
-			and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
+			and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
 		</if>
 		<if test='sort != "" and searchWord != ""'>
 			and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
@@ -1004,16 +1068,25 @@
 	
 	<!-- 내문서함 - 임시저장함 - 근태결재문서에 해당하는 문서 조회하기 -->
 	<select id="getVacation_templist" parameterType="HashMap" resultType="com.t1works.groupware.sia.model.ApprovalSiaVO">
-		select rno, atitle, ano, vno, vcatname 
+		select rno, atitle, ano, asdate, vno, vcatname, fileName 
 		from
 		(
-			select row_number() over(order by asdate desc) as rno, atitle, ano, vno, vcatname
+			select row_number() over(order by asdate desc) as rno, atitle, ano, to_char(asdate, 'yyyy-mm-dd') AS asdate, vno, vcatname, fileName
 			from tbl_approval A join tbl_vacation B
 			on A.ano = B.fk_ano
 			where fk_employeeid = #{userid}
 			and apaper = '2'
+			<if test='fromDate != "" and toDate != ""'>
+				and to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') between to_date(#{fromDate}, 'yyyy-mm-dd') and to_date(#{toDate}, 'yyyy-mm-dd')
+			</if>
+			<if test='fromDate != "" and toDate == ""'>
+				and to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') >= to_date(#{fromDate}, 'yyyy-mm-dd') 
+			</if>
+			<if test='fromDate == "" and toDate != ""'>
+				and to_date(#{toDate}, 'yyyy-mm-dd') >= to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd')
+			</if>
 			<if test='sort == "" and searchWord != ""'>
-				and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
+				and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
 			</if>
 			<if test='sort != "" and searchWord != ""'>
 				and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
@@ -1026,6 +1099,106 @@
 		order by ano desc, rno
 	</select>
 	
+	
+	<!-- 검색에 해당하는 임시저장함 - 근태결재 글의 총 페이지수를 알아오기 -->
+	<select id="getVacationTempTotalPage" parameterType="HashMap" resultType="int">
+		select ceil(count(*) / #{sizePerPage})
+		from tbl_approval A join tbl_vacation B
+		on A.ano = B.fk_ano
+		where fk_employeeid = #{userid}
+		and apaper = '2'
+		<if test='fromDate != "" and toDate != ""'>
+			and to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') between to_date(#{fromDate}, 'yyyy-mm-dd') and to_date(#{toDate}, 'yyyy-mm-dd')
+		</if>
+		<if test='fromDate != "" and toDate == ""'>
+			and to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') >= to_date(#{fromDate}, 'yyyy-mm-dd') 
+		</if>
+		<if test='fromDate == "" and toDate != ""'>
+			and to_date(#{toDate}, 'yyyy-mm-dd') >= to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd')
+		</if>
+		<if test='sort == "" and searchWord != ""'>
+			and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
+		</if>
+		<if test='sort != "" and searchWord != ""'>
+			and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
+		</if>
+		<if test='a != ""'>
+			and vno in(${a})
+		</if>
+	</select>
+	
+	
+	<!-- 내문서함 - 임시저장함 - 근태결재문서 한 개 상세보기 -->
+	<select id="myDocuVacation_temp_detail" parameterType="HashMap" resultType="com.t1works.groupware.sia.model.ApprovalSiaVO">
+		select vcatname, arecipient1, atitle, name, dname, apaper, a.ano, acontent, fileName, orgFilename, fileSize, astatus, vno, pname 
+		<choose>
+			<when test="vcatname eq '병가'">
+				, to_char(slstart, 'yyyy-mm-dd') AS slstart, to_char(slend, 'yyyy-mm-dd') AS slend, sldates
+			</when>
+			<when test="vcatname eq '반차'">
+				, to_char(afdate, 'yyyy-mm-dd') AS afdate, afdan, afdates
+			</when>
+			<when test="vcatname eq '연차'">
+				, to_char(daystart, 'yyyy-mm-dd') AS daystart, to_char(dayend, 'yyyy-mm-dd') AS dayend, daydates
+			</when>
+			<when test="vcatname eq '경조휴가'">
+				, to_char(congstart, 'yyyy-mm-dd') AS congstart, to_char(congend, 'yyyy-mm-dd') AS congend, congdates
+			</when>
+			<when test="vcatname eq '출장'">
+				, to_char(bustart, 'yyyy-mm-dd') AS bustart, to_char(buend, 'yyyy-mm-dd') AS buend, budates, buplace, bupeople
+			</when>
+			<when test="vcatname eq '추가근무'">
+				, to_char(ewdate, 'yyyy-mm-dd') AS ewdate, ewhours
+			</when>
+		</choose>
+		from tbl_approval a
+		<choose>
+			<when test="vcatname eq '병가'">
+				left join tbl_sickleave b 
+				on b.fk_ano = a.ano
+			</when>
+			<when test="vcatname eq '반차'">
+				left join tbl_afternoonoff c
+				on c.fk_ano = a.ano
+			</when>
+			<when test="vcatname eq '연차'">
+				left join tbl_dayoff d
+				on d.fk_ano = a.ano
+			</when>
+			<when test="vcatname eq '경조휴가'">
+				left join tbl_congoff e
+				on e.fk_ano = a.ano
+			</when>
+			<when test="vcatname eq '출장'">
+				left join tbl_businesstrip f
+				on f.fk_ano = a.ano
+			</when>
+			<when test="vcatname eq '추가근무'">
+				left join tbl_extrawork g
+				on g.fk_ano = a.ano
+			</when>			
+		</choose>		
+		left join tbl_vacation h
+		on a.ano = h.fk_ano
+		left join 
+		(
+			select employeeid, name, fk_dcode, fk_pcode
+			from tbl_employee 
+		) i
+		on a.fk_employeeid = i.employeeid
+		left join 
+		(
+			select dcode, dname
+			from tbl_department
+		) j
+		on i.fk_dcode = j.dcode
+		left join tbl_position p
+		on i.fk_pcode = p.pcode
+		where anocode = 3 and ano = #{ano}
+	</select>
+		
+	<!-- ///////////////////////////////////////////////////////////////////// -->
+	<!-- ///////////////////////////////////////////////////////////////////// -->
 	
 	<!-- 수신자 정보 select해오기 -->
 	<select id="viewMng" parameterType="HashMap" resultType="com.t1works.groupware.sia.model.ApprovalSiaVO">
@@ -1074,12 +1247,12 @@
 	
 	
 	<!-- 내문서함 - 임시저장함 - 제출버튼 클릭 -->	
-	<!-- 전자결재 테이블 update 첨부파일 없는 경우 - 임시저장 상태 -->
+	<!-- 전자결재 테이블 update 첨부파일 없는 경우 - 제출 -->
 	<update id="approvalSubmit" parameterType="com.t1works.groupware.sia.model.ApprovalSiaVO">
 		update tbl_approval set atitle = #{atitle}, asdate = sysdate, acontent = #{acontent}, apaper = 0 
 		where ano = #{ano}
 	</update>	
-	<!-- 전자결재 테이블 update 첨부파일 있는 경우 - 임시저장 상태 -->	
+	<!-- 전자결재 테이블 update 첨부파일 있는 경우 - 제출 -->	
 	<update id="approvalSubmit_withFile" parameterType="com.t1works.groupware.sia.model.ApprovalSiaVO">
 		update tbl_approval set atitle = #{atitle}, asdate = sysdate, acontent = #{acontent}, fileName = #{fileName}, orgFilename = #{orgFilename}, fileSize = #{fileSize}, apaper = 0
 		where ano = #{ano}
@@ -1121,23 +1294,23 @@
 	<!-- 근태결재 문서종류에 따라 테이블에 update -->
 	<update id="optionSaveVacation" parameterType="com.t1works.groupware.sia.model.ApprovalSiaVO">
 		<if test='vcatname eq "병가"'>			
-			update tbl_sickleave set slstart = #{slstart}, slend = #{slend}, sldates = #{sldates}
+			update tbl_sickleave set slstart = #{slstart}, slend = #{slend}, sldates = (select (to_date(#{slend}, 'yyyy-mm-dd') - to_date(#{slstart}, 'yyyy-mm-dd') + 1) as sldates from dual)
 			where fk_ano = #{ano}
 		</if>
 		<if test='vcatname eq "반차"'>
-			update tbl_afternoonoff set afdate = #{afdate}, afdan = #{afdan}, afdates = #{afdates}
+			update tbl_afternoonoff set afdate = #{afdate}, afdan = #{afdan}, afdates = 0.5
 			where fk_ano = #{ano}
 		</if>
 		<if test='vcatname eq "연차"'>
-			update tbl_dayoff set daystart = #{daystart}, dayend = #{dayend}, daydates = #{daydates}
+			update tbl_dayoff set daystart = #{daystart}, dayend = #{dayend}, daydates = (select (to_date(#{dayend}, 'yyyy-mm-dd') - to_date(#{daystart}, 'yyyy-mm-dd') + 1) as daydates from dual)
 			where fk_ano = #{ano}
 		</if>
 		<if test='vcatname eq "경조휴가"'>
-			update tbl_congoff set congstart = #{congstart}, congend = #{congend}, congdates = #{congdates}
+			update tbl_congoff set congstart = #{congstart}, congend = #{congend}, congdates = (select (to_date(#{congend}, 'yyyy-mm-dd') - to_date(#{congstart}, 'yyyy-mm-dd') + 1) as congdates from dual)
 			where fk_ano = #{ano}
 		</if>
 		<if test='vcatname eq "출장"'>
-			update tbl_businesstrip set bustart = #{bustart}, buend = #{buend}, budates = #{budates}, buplace = #{buplace}, bupeople = #{bupeople} 
+			update tbl_businesstrip set bustart = #{bustart}, buend = #{buend}, budates = (select (to_date(#{buend}, 'yyyy-mm-dd') - to_date(#{bustart}, 'yyyy-mm-dd') + 1) as budates from dual), buplace = #{buplace}, bupeople = #{bupeople} 
 			where fk_ano = #{ano}
 		</if>
 		<if test='vcatname eq "추가근무"'>
@@ -1146,109 +1319,26 @@
 		</if>
 	</update>
 	
+	
+	<!-- 결재로그 테이블에 insert하기 (제출) -->
+	<insert id="submitLog" parameterType="HashMap">
+		insert into tbl_alog(logno, fk_ano, fk_employeeid, logstatus, logdate)
+		values(seq_tbl_alog.nextval, #{ano}, #{userid}, 0, sysdate)	
+	</insert>
+	
+	
 	<!-- ////////////////////////////////////////////////////////////////////// -->
-	<!-- ////////////////////////////////////////////////////////////////////// -->
-	
-	<!-- 검색에 해당하는 임시저장함 - 근태결재 글의 총 페이지수를 알아오기 -->
-	<select id="getVacationTempTotalPage" parameterType="HashMap" resultType="int">
-		select ceil(count(*) / #{sizePerPage})
-		from tbl_approval A join tbl_vacation B
-		on A.ano = B.fk_ano
-		where fk_employeeid = #{userid}
-		and apaper = '2'
-		<if test='sort == "" and searchWord != ""'>
-			and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
-		</if>
-		<if test='sort != "" and searchWord != ""'>
-			and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
-		</if>
-		<if test='a != ""'>
-			and vno in(${a})
-		</if>
-	</select>
-	
-	
-	<!-- 내문서함 - 임시저장함 - 근태결재문서 한 개 상세보기 -->
-	<select id="myDocuVacation_temp_detail" parameterType="HashMap" resultType="com.t1works.groupware.sia.model.ApprovalSiaVO">
-		select vcatname, arecipient1, atitle, name, dname, apaper, a.ano, acontent, fileName, orgFilename, fileSize, astatus, vno, pname 
-		<choose>
-			<when test="vcatname eq '병가'">
-				, to_char(slstart, 'yyyy/mm/dd') AS slstart, to_char(slend, 'yyyy/mm/dd') AS slend, sldates
-			</when>
-			<when test="vcatname eq '반차'">
-				, to_char(afdate, 'yyyy/mm/dd') AS afdate, afdan, afdates
-			</when>
-			<when test="vcatname eq '연차'">
-				, to_char(daystart, 'yyyy/mm/dd') AS daystart, to_char(dayend, 'yyyy/mm/dd') AS dayend, daydates
-			</when>
-			<when test="vcatname eq '경조휴가'">
-				, to_char(congstart, 'yyyy/mm/dd') AS congstart, to_char(congend, 'yyyy/mm/dd') AS congend, congdates
-			</when>
-			<when test="vcatname eq '출장'">
-				, to_char(bustart, 'yyyy/mm/dd') AS bustart, to_char(buend, 'yyyy/mm/dd') AS buend, budates, buplace, bupeople
-			</when>
-			<when test="vcatname eq '추가근무'">
-				, ewdate, ewhours
-			</when>
-		</choose>
-		from tbl_approval a
-		<choose>
-			<when test="vcatname eq '병가'">
-				left join tbl_sickleave b 
-				on b.fk_ano = a.ano
-			</when>
-			<when test="vcatname eq '반차'">
-				left join tbl_afternoonoff c
-				on c.fk_ano = a.ano
-			</when>
-			<when test="vcatname eq '연차'">
-				left join tbl_dayoff d
-				on d.fk_ano = a.ano
-			</when>
-			<when test="vcatname eq '경조휴가'">
-				left join tbl_congoff e
-				on e.fk_ano = a.ano
-			</when>
-			<when test="vcatname eq '출장'">
-				left join tbl_businesstrip f
-				on f.fk_ano = a.ano
-			</when>
-			<when test="vcatname eq '추가근무'">
-				left join tbl_extrawork g
-				on g.fk_ano = a.ano
-			</when>			
-		</choose>		
-		left join tbl_vacation h
-		on a.ano = h.fk_ano
-		left join 
-		(
-			select employeeid, name, fk_dcode, fk_pcode
-			from tbl_employee 
-		) i
-		on a.fk_employeeid = i.employeeid
-		left join 
-		(
-			select dcode, dname
-			from tbl_department
-		) j
-		on i.fk_dcode = j.dcode
-		left join tbl_position p
-		on i.fk_pcode = p.pcode
-		where anocode = 3 and ano = #{ano}
-	</select>
-	
-	<!-- ///////////////////////////////////////////////////////////////////// -->
-	<!-- ///////////////////////////////////////////////////////////////////// -->	
+	<!-- ////////////////////////////////////////////////////////////////////// -->	
 	
 	<!-- 내문서함 - 수신함 - 결재완료 - 일반결재문서에 해당하는 문서 조회하기  -->
 	<select id="getnorm_completelist" parameterType="HashMap" resultType="com.t1works.groupware.sia.model.ApprovalSiaVO">
-		select rno, atitle, ano, astatus, asdate, ncat, ncatname 
+		select rno, atitle, ano, astatus, asdate, ncat, ncatname, fileName 
 		from
 		(
-			select row_number() over(order by asdate desc) as rno, atitle, ano, astatus, to_char(asdate, 'yyyy-mm-dd') AS asdate, ncat, ncatname
+			select row_number() over(order by asdate desc) as rno, atitle, ano, astatus, to_char(asdate, 'yyyy-mm-dd') AS asdate, ncat, ncatname, fileName
 			from tbl_approval A join tbl_norapproval B
 			on A.ano = B.fk_ano
-			where (arecipient1 = #{userid} and approvaldate1 is not null) or (arecipient2 = #{userid} and approvaldate2 is not null) or (arecipient3 = #{userid} and approvaldate3 is not null)
+			where ((arecipient1 = #{userid} and approvaldate1 is not null) or (arecipient2 = #{userid} and approvaldate2 is not null) or (arecipient3 = #{userid} and approvaldate3 is not null))
 			<if test='fromDate != "" and toDate != ""'>
 				and to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') between to_date(#{fromDate}, 'yyyy-mm-dd') and to_date(#{toDate}, 'yyyy-mm-dd')
 			</if>
@@ -1262,7 +1352,7 @@
 				and astatus = #{astatus}
 			</if>
 			<if test='sort == "" and searchWord != ""'>
-				and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
+				and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
 			</if>
 			<if test='sort != "" and searchWord != ""'>
 				and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
@@ -1281,7 +1371,7 @@
 		select ceil(count(*) / #{sizePerPage})
 		from tbl_approval A join tbl_norapproval B
 		on A.ano = B.fk_ano
-		where (arecipient1 = #{userid} and approvaldate1 is not null) or (arecipient2 = #{userid} and approvaldate2 is not null) or (arecipient3 = #{userid} and approvaldate3 is not null)
+		where ((arecipient1 = #{userid} and approvaldate1 is not null) or (arecipient2 = #{userid} and approvaldate2 is not null) or (arecipient3 = #{userid} and approvaldate3 is not null))
 		<if test='fromDate != "" and toDate != ""'>
 			and to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') between to_date(#{fromDate}, 'yyyy-mm-dd') and to_date(#{toDate}, 'yyyy-mm-dd')
 		</if>
@@ -1295,7 +1385,7 @@
 			and astatus = #{astatus}
 		</if>
 		<if test='sort == "" and searchWord != ""'>
-			and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
+			and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
 		</if>
 		<if test='sort != "" and searchWord != ""'>
 			and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
@@ -1361,13 +1451,13 @@
 	
 	<!-- 내문서함 - 수신함 - 결재완료 - 지출결재문서에 해당하는 문서 조회하기 -->
 	<select id="getSpend_completelist" parameterType="HashMap" resultType="com.t1works.groupware.sia.model.ApprovalSiaVO">
-		select rno, atitle, ano, astatus, asdate, scat, scatname 
+		select rno, atitle, ano, astatus, asdate, scat, scatname, fileName 
 		from
 		(
-			select row_number() over(order by asdate desc) as rno, atitle, ano, astatus, to_char(asdate, 'yyyy-mm-dd') AS asdate, scat, scatname
+			select row_number() over(order by asdate desc) as rno, atitle, ano, astatus, to_char(asdate, 'yyyy-mm-dd') AS asdate, scat, scatname, fileName
 			from tbl_approval A join tbl_spenda B
 			on A.ano = B.fk_ano
-			where (arecipient1 = #{userid} and approvaldate1 is not null) or (arecipient2 = #{userid} and approvaldate2 is not null) or (arecipient3 = #{userid} and approvaldate3 is not null)
+			where ((arecipient1 = #{userid} and approvaldate1 is not null) or (arecipient2 = #{userid} and approvaldate2 is not null) or (arecipient3 = #{userid} and approvaldate3 is not null))
 			<if test='fromDate != "" and toDate != ""'>
 				and to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') between to_date(#{fromDate}, 'yyyy-mm-dd') and to_date(#{toDate}, 'yyyy-mm-dd')
 			</if>
@@ -1381,7 +1471,7 @@
 				and astatus = #{astatus}
 			</if>
 			<if test='sort == "" and searchWord != ""'>
-				and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
+				and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
 			</if>
 			<if test='sort != "" and searchWord != ""'>
 				and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
@@ -1400,7 +1490,7 @@
 		select ceil(count(*) / #{sizePerPage})
 		from tbl_approval A join tbl_spenda B
 		on A.ano = B.fk_ano
-		where (arecipient1 = #{userid} and approvaldate1 is not null) or (arecipient2 = #{userid} and approvaldate2 is not null) or (arecipient3 = #{userid} and approvaldate3 is not null)
+		where ((arecipient1 = #{userid} and approvaldate1 is not null) or (arecipient2 = #{userid} and approvaldate2 is not null) or (arecipient3 = #{userid} and approvaldate3 is not null))
 		<if test='fromDate != "" and toDate != ""'>
 			and to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') between to_date(#{fromDate}, 'yyyy-mm-dd') and to_date(#{toDate}, 'yyyy-mm-dd')
 		</if>
@@ -1414,7 +1504,7 @@
 			and astatus = #{astatus}
 		</if>
 		<if test='sort == "" and searchWord != ""'>
-			and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
+			and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
 		</if>
 		<if test='sort != "" and searchWord != ""'>
 			and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
@@ -1469,13 +1559,13 @@
 	
 	<!-- 내문서함 - 수신함 - 결재완료 - 근태결재문서에 해당하는 문서 조회하기 -->
 	<select id="getVacation_completelist" parameterType="HashMap" resultType="com.t1works.groupware.sia.model.ApprovalSiaVO">
-		select rno, atitle, ano, astatus, asdate, vno, vcatname 
+		select rno, atitle, ano, astatus, asdate, vno, vcatname, fileName 
 		from
 		(
-			select row_number() over(order by asdate desc) as rno, atitle, ano, astatus, to_char(asdate, 'yyyy-mm-dd') AS asdate, vno, vcatname
+			select row_number() over(order by asdate desc) as rno, atitle, ano, astatus, to_char(asdate, 'yyyy-mm-dd') AS asdate, vno, vcatname, fileName
 			from tbl_approval A join tbl_vacation B
 			on A.ano = B.fk_ano
-			where (arecipient1 = #{userid} and approvaldate1 is not null) or (arecipient2 = #{userid} and approvaldate2 is not null) or (arecipient3 = #{userid} and approvaldate3 is not null)
+			where ((arecipient1 = #{userid} and approvaldate1 is not null) or (arecipient2 = #{userid} and approvaldate2 is not null) or (arecipient3 = #{userid} and approvaldate3 is not null))
 			<if test='fromDate != "" and toDate != ""'>
 				and to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') between to_date(#{fromDate}, 'yyyy-mm-dd') and to_date(#{toDate}, 'yyyy-mm-dd')
 			</if>
@@ -1489,7 +1579,7 @@
 				and astatus = #{astatus}
 			</if>
 			<if test='sort == "" and searchWord != ""'>
-				and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
+				and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
 			</if>
 			<if test='sort != "" and searchWord != ""'>
 				and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
@@ -1508,7 +1598,7 @@
 		select ceil(count(*) / #{sizePerPage})
 		from tbl_approval A join tbl_vacation B
 		on A.ano = B.fk_ano
-		where (arecipient1 = #{userid} and approvaldate1 is not null) or (arecipient2 = #{userid} and approvaldate2 is not null) or (arecipient3 = #{userid} and approvaldate3 is not null)
+		where ((arecipient1 = #{userid} and approvaldate1 is not null) or (arecipient2 = #{userid} and approvaldate2 is not null) or (arecipient3 = #{userid} and approvaldate3 is not null))
 		<if test='fromDate != "" and toDate != ""'>
 			and to_date(to_char(asdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') between to_date(#{fromDate}, 'yyyy-mm-dd') and to_date(#{toDate}, 'yyyy-mm-dd')
 		</if>
@@ -1522,7 +1612,7 @@
 			and astatus = #{astatus}
 		</if>
 		<if test='sort == "" and searchWord != ""'>
-			and atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%'
+			and (atitle like '%'|| lower(#{searchWord}) ||'%' or ano like '%'|| lower(#{searchWord}) ||'%')
 		</if>
 		<if test='sort != "" and searchWord != ""'>
 			and lower(${sort}) like '%'|| lower(#{searchWord}) ||'%'
@@ -1553,7 +1643,7 @@
 				, to_char(bustart, 'yyyy/mm/dd') AS bustart, to_char(buend, 'yyyy/mm/dd') AS buend, budates, buplace, bupeople
 			</when>
 			<when test="vcatname eq '추가근무'">
-				, ewdate, ewhours
+				, to_char(ewdate, 'yyyy/mm/dd') AS ewdate, ewhours
 			</when>
 		</choose>
 		from tbl_approval a
@@ -1601,5 +1691,30 @@
 		on i.fk_pcode = p.pcode
 		where anocode = 3 and ano = #{ano}
 	</select>	
+	
+	
+	<!-- 결재의견 삭제하기 -->
+	<delete id="delMyOpinion" parameterType="HashMap">
+		delete from tbl_aopinion
+		where ono = #{ono}	
+	</delete>
+	
+	
+	<!-- 결재로그 리스트보기 -->
+	<select id="approvalLogList" parameterType="String" resultType="com.t1works.groupware.sia.model.ApprovalSiaVO">
+		select dname, name, pname, to_char(logdate, 'yyyy-mm-dd') as logdate, logstatus, employeeid, pcode
+		from
+		(
+			select nvl(dname, ' ') as dname, name, pname, logdate, logstatus, employeeid, pcode
+			from tbl_alog a join tbl_employee e
+			on a.fk_employeeid = e.employeeid
+			left join tbl_department d
+			on e.fk_dcode = d.dcode
+			join tbl_position p
+			on e.fk_pcode = p.pcode
+			where fk_ano = #{parentAno}
+			order by logdate
+		)
+	</select>
 	
 </mapper>

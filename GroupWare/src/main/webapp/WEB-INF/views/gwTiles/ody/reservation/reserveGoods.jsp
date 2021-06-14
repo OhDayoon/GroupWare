@@ -83,13 +83,10 @@ div.room{
 	background-color: #b1b8cd;
 }
 
-button#btn_show{
-	float: right;
-	margin-top: 20px;
-	margin-bottom: 20px;
-	margin-right: 50px;
+.info{
+	background-color: #b1b8cd;
+	cursor: pointer;
 }
-
 
 </style>
 
@@ -117,7 +114,7 @@ if(curDay.toString().length < 2){
 var curYear = curDate.getFullYear();
 var curTime = curYear + "" + curMonth + "" + curDay;
 
-
+var cgtime= curYear + "-" + curMonth + "-" + curDay;
 
 $(document).ready(function(){
 	
@@ -127,12 +124,20 @@ $(document).ready(function(){
 	var gno="";
 	var chgdate="";
 
+	// 변경 날짜에 현재 날짜 넣어주기
+	 $("input#chgdate").val(cgtime); 
+	 
 	// 사무용품 마우스 오버시
-	$("tr.selectGoods").hover(function(){
-		$(this).css("cursor", "pointer");
+	$("tr.selectGoods").bind("mouseover",function(){			
+		$(this).addClass("info");			
+	}); 
+	
+	$("tr.selectGoods").bind("mouseout",function(){
+		$(this).removeClass("info");
 	});
 	
-	// 사무용품 클릭 했을 때
+	
+	// 사무용품 종류 클릭 했을 때
 	$("tr.selectGoods").click(function(){
 		$("tr.selectGoods").removeClass("goodsClick");
 		var gno = $(this).find("td#findno").html();
@@ -141,69 +146,46 @@ $(document).ready(function(){
 		$("input#gno").val(gno);
 		$("input#goodsname").val(goodsname);
 		$(this).addClass("goodsClick");
+		ajaxReserve();
 	});
 	
-	// full calendar
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'dayGridMonth',
-          locale: 'ko',
-          selectable: true,
-	      editable: false,
-	      headerToolbar: {
-	    	    left: 'prev',
-	    	    center: 'title',
-	    	    right: 'next' 
-	    	  },
-	    	  
-          dateClick: function(info) {
-        	    $(".fc-day").css('background','none'); // 현재 날짜 배경색 없애기
-        	    info.dayEl.style.backgroundColor = '#b1b8cd';
-        	    chgdate=info.dateStr;
-        	    $("input#chgdate").val(chgdate);
-        	  }
-        });
-        
-        
+	 <%-- full calendar API 시작--%>
+     var calendarEl = document.getElementById('calendar');
+     var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'ko',
+        selectable: true,
+	    editable: false,
+	    headerToolbar: {
+   	    left: 'prev',
+   	    center: 'title',
+   	    right: 'next' 
+   	  },
+      dateClick: function(info) { // 날짜 선택시
+      	    $(".fc-day").css('background','none'); // 현재 날짜 배경색 없애기
+      	    info.dayEl.style.backgroundColor = '#b1b8cd';
+      	    chgdate=info.dateStr;
+      	    $("input#chgdate").val(chgdate);
+      	
+      	    if($("input#gno").val().trim()!=""){
+      	    	ajaxReserve();
+      	    }
+        }
+      });
         calendar.render();
-        calendar.setOption('height', 510);
+        calendar.setOption('height', 510); // full calendar 크기
+        <%-- full calendar API 끝--%>
+	
         
-		// 예약현황보기 클릭
-        $("button#btn_show").click(function(){
-        	
-        	var gno=$("input#gno").val();
-        	var chgdate=$("input#chgdate").val();
-        	 if( gno!= "" && chgdate != "" ){
-             	$.ajax({
-             		url:"<%= ctxPath%>/t1/rsGoods/reserveGoods.tw",
-             		data:{"gno":gno, "chgdate":chgdate},
-             		dataType: "json",
-             		success:function(json){
-             		 //	console.log("json:"+json);
-             		 	
-             		 // 불러온 배열을 함수에 값 지정해주기
-             		 	showReserve(json);
-             		}
-             		, error: function(request, status, error){
-        	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-          	      }
-             	});
-             	
-             }
-        	 else{
-        		 alert("시간 및 사무용품을 올바르게 선택하세요");
-        	 }
-        });
-        
-        // '등록' 버튼 클릭 이벤트
-    	$("button#btn_Reserve").click(function(){
+      // 시간 선택 후 '등록' 버튼 클릭 이벤트 함수 
+      $("button#btn_Reserve").click(function(){
     		func_reserve();
-    	});
+      });
     
-    	$("div#myModal").modal('hide');
+ 
     	
-        // 모달창에서 예약 버튼 클릭
-    	$("button#realReserve").click(function(event){
+      // 모달창에서 예약 버튼 클릭
+      $("button#realReserve").click(function(event){
     		 event.stopPropagation();
        		 event.preventDefault();
              
@@ -213,18 +195,54 @@ $(document).ready(function(){
             	 alert("목적을 입력하세요");
              }
              else{
-            	 <%-- form으로 값 넘겨주기--%>
-            	 var frm = document.reserveGoods;
-            	 frm.method = "POST";
-                 frm.action = "<%= ctxPath%>/t1/addReserveGoods.tw";
-                 frm.submit();
+            	
+                 $.ajax({
+                	url: "<%= ctxPath%>/t1/addReserveGoods.tw",
+                	type: "post",
+                	data: $("form[name=reserveGoods]").serialize(),
+                	dataType: "json",
+                	success:function(json){
+                		if(json.n>0){
+                			alert("예약되었습니다.");
+                			$("#myModal").modal('hide');
+                			ajaxReserve();
+                		}
+                		
+                	},
+                	error: function(request, status, error){
+        	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+                	}
+                 });
              }
-    	});
+    });
     	
 }); // end of $(document).ready(function(){}------
 
+	// 선택한 날짜와 사무용품 종류를 ajax를 이용하여 예약 가능한 시간 보여주기	
+	function ajaxReserve(){
+		var gno=$("input#gno").val();
+    	var chgdate=$("input#chgdate").val();
+    	 if( gno!= "" && chgdate != "" ){
+         	$.ajax({
+         		url:"<%= ctxPath%>/t1/rsGoods/reserveGoods.tw",
+         		data:{"gno":gno, "chgdate":chgdate},
+         		dataType: "json",
+         		success:function(json){
+         		 	
+         		 // 불러온 배열을 showReserve 함수에 값 지정해주기
+         		 	showReserve(json);
+         		}
+         		, error: function(request, status, error){
+    	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+      	      }
+         	});
+    	 }
+	}	
+		
+		
+		
+	// ajaxReserve() 에서 받은 json 데이터 값으로 예약 가능한 시간 보여주기
 	function showReserve(json){
-	//	console.log("개수:"+json.length); 
 		
 		var chgdate=$("input#chgdate").val();
 
@@ -264,8 +282,8 @@ $(document).ready(function(){
 			var fontType="";
 			var clickEvent="";
 			var chkBox="";
-			var index=jQuery.inArray(i,rgtime); // 시간배열에 i가 존재하는지 index값을 설정  i에 맞는 시간대가 있다면 index의 값은 무조건 0이상이된다. 
-		//	console.log(i+"인덱스값: "+index);
+			var index=jQuery.inArray(i,rgtime); 
+			// 시간배열에 i가 존재하는지 index값을 설정  i에 맞는 시간대가 있다면 index의 값은 무조건 0이상이된다. 
 			
 			// 선택한 날짜와 오늘날짜가 같을 때
 			if(parseInt(curTime)==parseInt(chgdate)){ 
@@ -429,7 +447,7 @@ $(document).ready(function(){
 			
 			showTime(chkTime);
 			
-			// 등로 버튼 클릭시 모달창 띄움
+			// 등록 버튼 클릭시 모달창 보여줌
 			$("button[id='btn_Reserve']").attr("data-target","#myModal");
 			$("td#goodsname").html(goodsname);
 			
@@ -469,7 +487,7 @@ $(document).ready(function(){
 			dataType: "json",
 			success:function(json){
 				alert("예약내역이 삭제되었습니다.");
-     		 	location.href="javascript:history.go(0);"; 
+				ajaxReserve(); 
 			}
 			, error: function(request, status, error){
 	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -477,51 +495,35 @@ $(document).ready(function(){
 		});
 	}
 	
-	// 반납하기 버튼 클릭
-	function returnGoods(rsgno){
-		$.ajax({
-			url: "<%= ctxPath%>/t1/rsGoods/returnReserveGoods.tw",
-			type: "post",
-			data: {"rsgno":rsgno},
-			dataType: "json",
-			success:function(json){
-				alert("물품을 반납하였습니다.");
-     		 	location.href="javascript:history.go(0);"; 
-			}
-			, error: function(request, status, error){
-	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-  	      }
-		});
-	 }
 	
 </script>
 
-<div class="rsGoodsContainer" style="margin-left: 80px;"> 
-	<h3 style="margin-top: 20px !important;">사무용품 대여신청</h3>
+<div class="rsGoodsContainer"  style="margin: 30px 0px 30px 50px;"> 
+	<i class='fas fa-tasks fa-lg' style='font-size:24px'></i>&nbsp;<span style="font-size: 18pt; font-weight: bold;">사무용품 대여신청</span>
 	
+	<div>
 	<div id="calendarWrapper">
 		<div id="calendar" style="width: 450px; margin-top: 50px; margin-bottom: 80px; margin-left: 200px;" ></div>
 	</div>
 	
-  
-	<div class="room" >
-		<table style="width: 90%; margin-top: 200px;" class="table table-bordered">
-            <tr><td colspan="2">사무용품 목록</td></tr>
-            	<c:if test="${empty requestScope.goodsList}">
-	            		<tr><td colspan="2">사무용품이 존재하지 않습니다.</td></tr>
-	            </c:if>
-	            <c:if test="${not empty requestScope.goodsList}">
-		        	<c:forEach var="goodsvo" items="${requestScope.goodsList}">
-				        	<tr class="selectGoods">
-				            <td id="findno" style="display: none;">${goodsvo.gno}</td>
-				            <td id="findname"  style="width: 30%; text-align: left; padding-left: 15px;">${goodsvo.goodsname}</td>
-		            	</tr>
-        		 	</c:forEach>
-          		</c:if>
-         </table>
-         <button id="btn_show" class="btn_r" style="width: 120px;">예약현황보기</button>
+	
+		<div class="room" >
+			<table style="width: 90%; margin-top: 200px;" class="table table-bordered">
+	            <tr><td colspan="2">사무용품 목록</td></tr>
+	            	<c:if test="${empty requestScope.goodsList}">
+		            		<tr><td colspan="2">사무용품이 존재하지 않습니다.</td></tr>
+		            </c:if>
+		            <c:if test="${not empty requestScope.goodsList}">
+			        	<c:forEach var="goodsvo" items="${requestScope.goodsList}">
+					        	<tr class="selectGoods">
+					            <td id="findno" style="display: none;">${goodsvo.gno}</td>
+					            <td id="findname"  style="width: 30%; text-align: left; padding-left: 15px;">${goodsvo.goodsname}</td>
+			            	</tr>
+	        		 	</c:forEach>
+	          		</c:if>
+	         </table>
+		</div>
 	</div>
-
 	
 	<div class="middle">
 		<table  style="width: 92%; " id="rsgoods" class="table table-bordered" >

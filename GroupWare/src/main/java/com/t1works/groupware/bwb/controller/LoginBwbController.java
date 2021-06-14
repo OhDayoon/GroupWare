@@ -48,8 +48,8 @@ public class LoginBwbController {
         	// 이용자의 사용연차수 가지고 오기
         	String useOffCnt = service.selectUseoffCnt(fk_employeeid);
         	
-        	int itotalOffCnt = Integer.parseInt(totalOffCnt);
-        	int iuseOffCnt = Integer.parseInt(useOffCnt);
+        	Double itotalOffCnt = Double.parseDouble(totalOffCnt);
+        	Double iuseOffCnt = Double.parseDouble(useOffCnt);
         	
         	// 이용자의 남은연차수
         	String leftOffCnt = String.valueOf(itotalOffCnt-iuseOffCnt);
@@ -59,7 +59,77 @@ public class LoginBwbController {
         	offMap.put("useOffCnt", useOffCnt);
         	offMap.put("leftOffCnt", leftOffCnt);
         	
+        	Calendar now = Calendar.getInstance();
+        	
+        	String currentYear = String.valueOf(now.get(Calendar.YEAR)); // 현재년도 나옴
+        	
+        	int imonth = now.get(Calendar.MONTH)+1; // 0~11까지 나옴
+        	String month = imonth<10?"0"+imonth:String.valueOf(imonth); // 현재 월 나옴
+        	
+        	int iday = now.get(Calendar.DATE);
+    	    String day = iday<10?"0"+iday:String.valueOf(iday);
+    	    
+    	    String today = currentYear+"-"+month+"-"+day; // 2021-05-31
+    	    
+    	    // 일주일치 날짜 가지고오기
+    	    Map<String,String> weekMap = service.selectWeekDay(today);
+    	    List<String> weekList= new ArrayList<>();
+    
+    	    weekList.add(weekMap.get("pppppppday"));     // 2021-05-30
+    	    weekList.add(weekMap.get("ppppppday"));
+    	    weekList.add(weekMap.get("pppppday"));
+    	    weekList.add(weekMap.get("ppppday"));
+    	    weekList.add(weekMap.get("pppday"));
+    	    weekList.add(weekMap.get("ppday"));      
+    	    weekList.add(weekMap.get("pday"));
+    	    
+    	    List<Map<String,String>> hourList = new ArrayList<>();
+    	    
+    	    // 해당날짜에 근무한 시간 뽑아오기
+    	    for(String doneDay :weekList) {
+    	    	// 아래 메소드의 파라미터에 들어갈 MAP생성
+    	    	Map<String,String> searchMap = new HashMap<>();
+    	    	searchMap.put("fk_employeeid", fk_employeeid);
+    	    	searchMap.put("doneDay", doneDay);
+    	    	
+    	    	 // 날짜와 사번가지고 일하는 시간 가지고 오기
+    	    	Map<String,String> hourMap = service.selecthourMap(searchMap); // 3시간 , 6시간 , 
+    	    	hourList.add(hourMap);
+    	    	
+        	}
+    	    
+    	    mav.addObject("hourList", hourList);
+    	            	
+        	
+          //일주일치 총 근무시간 뽑아내기
+        	int itotalhour = 0;
+        	for(Map<String,String> resultMap :hourList) {
+        		itotalhour += Integer.parseInt(resultMap.get("doneHour"));
+        	}
+        	
+        	String totalhour = String.valueOf(itotalhour);
+        	
+        	mav.addObject("totalhour", totalhour);
+        	
+            // word-cloud 차트를 위해 데이터 뽑아오기
+        	List<String> wordList = service.selectWordList();
+        	String word = "";
+        	
+        	for(int i=0; i<wordList.size(); i++) {
+
+        		if(i<wordList.size()-1) {
+        			word+=wordList.get(i)+",";
+        		}
+        		else {
+        			word+=wordList.get(i);
+        		}
+        	}// end of for ---
+        	
+        	
+        	mav.addObject("word", word);
+        	
         	mav.addObject("offMap", offMap); 
+        	
             mav.setViewName("/bwb/homepage.gwTiles");
          }
          else {

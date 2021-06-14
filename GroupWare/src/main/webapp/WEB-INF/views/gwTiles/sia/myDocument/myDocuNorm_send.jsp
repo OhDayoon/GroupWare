@@ -56,7 +56,7 @@
 		cursor: pointer;
 		font-weight: normal !important; 
 	}
-	table{
+	table.tbl{
 		margin: 10px 5px;
 		width: 90%;
 	}
@@ -261,9 +261,16 @@ $(document).ready(function(){
 							status = "승인완료";
 						}
 						
+						var image = "<%= ctxPath%>/resources/images/sia/disk.gif";
+						
 						html += "<tr class='tr_hover docuInfo'>";
 						html += "<td align='center' style='padding: 5px;'>"+ item.rno +"</td>";
-						html += "<td>&nbsp;"+ item.atitle +"</td>";
+						if(item.fileName != null){
+							html += "<td>&nbsp;"+ item.atitle +"&nbsp;<img src='"+ image +"'/></td>";
+						}
+						else if(item.fileName == null){
+							html += "<td>&nbsp;"+ item.atitle +"</td>";
+						}
 						html += "<td class='ncatname' align='center'>"+ item.ncatname +"</td>";
 						html += "<td class='ano' align='center'>"+ item.ano +"</td>";						
 						html += "<td align='center'>"+ status +"</td>";
@@ -323,9 +330,16 @@ $(document).ready(function(){
 							status = "승인완료";
 						}
 						
+						var image = "<%= ctxPath%>/resources/images/sia/disk.gif";
+						
 						html += "<tr class='tr_hover docuInfo'>";
 						html += "<td align='center' style='padding: 5px;'>"+ item.rno +"</td>";
-						html += "<td>&nbsp;"+ item.atitle +"</td>";
+						if(item.fileName != null){
+							html += "<td>&nbsp;"+ item.atitle +"&nbsp;<img src='"+ image +"'/></td>";
+						}
+						else if(item.fileName == null){
+							html += "<td>&nbsp;"+ item.atitle +"</td>";
+						}
 						html += "<td class='ncatname' align='center'>"+ item.ncatname +"</td>";
 						html += "<td class='ano' align='center'>"+ item.ano +"</td>";						
 						html += "<td align='center'>"+ status +"</td>";
@@ -461,7 +475,7 @@ $(document).ready(function(){
 	</div>
 	
 	<form name="searchFrm">	
-		<table>
+		<table class="tbl">
 			<tr>
 				<td width="20%" class="th">결재상태</td>
 				<td width="80%">&nbsp;&nbsp;
@@ -521,14 +535,14 @@ $(document).ready(function(){
 						<option value="atitle">제목</option>
 						<option value="ano">문서번호</option>												
 					</select>&nbsp;
-					<input type="text" name="searchWord" id="searchWord" style="height: 20px;"/> <button type="button">검색</button>
+					<input type="text" name="searchWord" id="searchWord" style="height: 20px;"/> <button type="button" onclick="goSearch(1)">검색</button>
 				</td>
 			</tr>		
 		</table>
 		
 		<br>
 		
-		<table id="table">
+		<table id="table" class="tbl">
 			<thead>
 			<tr>
 				<th style="width: 70px; text-align: center;">번호</th>

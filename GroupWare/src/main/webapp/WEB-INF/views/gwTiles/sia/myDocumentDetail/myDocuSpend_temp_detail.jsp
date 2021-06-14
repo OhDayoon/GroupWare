@@ -78,7 +78,19 @@ input.btn {
 				bUseModeChanger : true,
 			}
 		});
-		<%-- === 스마트 에디터 구현 끝 === --%>		
+		<%-- === 스마트 에디터 구현 끝 === --%>
+		
+		
+		$('.numOnly').keyup(function(e){ 
+			regNumber = /^[0-9]*$/;
+
+			var str = $(this).val(); 
+			if(!regNumber.test(str)) { 
+				var res = str.substring(0, str.length-1); 
+				$(this).val(res);
+			} 
+		});		
+		
 	});
 	
 	// Function Declaration	
@@ -179,7 +191,49 @@ input.btn {
 		<%-- === 스마트 에디터 구현 시작 === --%>
 		// id가 content인 textarea에 에디터에서 대입
 		obj.getById["acontent"].exec("UPDATE_CONTENTS_FIELD", []);
+		<%-- === 스마트 에디터 구현 끝 === --%>	
 		
+		// 유효성 검사
+		var atitle = $("input#atitle").val().trim();
+		if(atitle == ""){
+			alert("문서제목을 입력하세요!");
+			return;
+		}
+			
+		if(${requestScope.avo.scat == '1'}){
+			var exdate = $("input#exdate").val();			
+			var exprice = $("input#exprice").val().trim();
+			
+			if(exdate == ""){
+				alert("지출일자를 입력하세요!");
+				return;
+			}
+			if(exprice == "" || exprice == "0"){
+				alert("지출금액을 입력하세요! (숫자만 입력 가능합니다)");
+				return;
+			}			
+		}
+		
+		if(${requestScope.avo.scat == '2'}){
+			var codate = $("input#codate").val();
+			var cocardnum = $("input#cocardnum").val().trim();
+			var coprice = $("input#coprice").val().trim();			
+			
+			if(codate == ""){
+				alert("사용예정일을 입력하세요!");
+				return;
+			}
+			if(cocardnum == ""){
+				alert("카드번호를 입력하세요!");
+				return;
+			}
+			if(coprice == "" || coprice == "0"){
+				alert("예상금액을 입력하세요! (숫자만 입력 가능합니다)");
+				return;
+			}			
+		}		
+		
+		<%-- === 스마트 에디터 구현 시작 === --%>
 		// 스마트에디터 사용시 무의미하게 생기는 p태그 제거
 		var contentval = $("textarea#acontent").val();
 		
@@ -190,8 +244,7 @@ input.btn {
 		contentval = contentval.replace(/(<\/p><br>|<p><br>)/gi, "<br><br>"); //</p><br>, <p><br> -> <br><br>로 변환
 		contentval = contentval.replace(/(<p>|<\/p>)/gi, ""); //<p> 또는 </p> 모두 제거시
 		
-		$("textarea#acontent").val(contentval);
-		
+		$("textarea#acontent").val(contentval);		
 		<%-- === 스마트 에디터 구현 끝 === --%>		
 		
 		var bool = confirm("제출하시겠습니까?");
@@ -250,14 +303,11 @@ input.btn {
 				<th>사장</th>
 			</tr>
 			<tr>
-				<td id="img_approval_1" style="height:70px;">
+				<td style="height:70px;">
+				</td>				
+				<td>					
 				</td>
-				
-				<td id="img_approval_2" style="height:70px;">
-					
-				</td>
-				<td id="img_approval_3" style="height:70px;">
-					
+				<td>					
 				</td>
 			</tr>
 		</table>
@@ -280,11 +330,11 @@ input.btn {
 			<c:if test="${requestScope.avo.scat eq '1'}">
 				<tr>
 					<th>지출일자</th>
-					<td colspan="3"><input type="text" value="${requestScope.avo.exdate}"><input type="date" name="exdate" id="exdate" value="${requestScope.avo.exdate}"/></td>
+					<td colspan="3"><input type="date" name="exdate" id="exdate"  value="${requestScope.avo.exdate}"/></td>
 				</tr>
 				<tr>
 					<th>지출금액</th>
-					<td colspan="3"><input type="text" name="exprice" id="exprice" style="width: 370px;" value="${requestScope.avo.exprice}"/></td>
+					<td colspan="3"><input type="number" class="numOnly" name="exprice" id="exprice" style="width: 370px;" value="${requestScope.avo.exprice}"/></td>
 				</tr>
 			</c:if>
 			<c:if test="${requestScope.avo.scat eq '2'}">
@@ -298,7 +348,7 @@ input.btn {
 				</tr>
 				<tr>
 					<th>예상금액</th>
-					<td><input type="text" style="width: 370px;" name="coprice" id="coprice" value="${requestScope.avo.coprice}"/></td>					
+					<td><input type="number" class="numOnly" style="width: 370px;" name="coprice" id="coprice" value="${requestScope.avo.coprice}"/></td>					
 					<th>지출목적</th>
 					<td>												
 						<select name="copurpose" id="copurpose">
@@ -408,7 +458,9 @@ input.btn {
 	
 	<form name="myFrm">
 		<input type="hidden" name="ano" value="${ano}" />
-		<input type="hidden" name="scatname" value="${scatname}" />		
+		<input type="hidden" name="scatname" value="${scatname}" />
+		<input type="hidden" name="fromDate" value="${fromDate}" />
+		<input type="hidden" name="toDate" value="${toDate}" />		
 		<input type="hidden" name="scat" value="${scat}" />
 		<input type="hidden" name="sort" value="${sort}" />
 		<input type="hidden" name="searchWord" value="${searchWord}" />

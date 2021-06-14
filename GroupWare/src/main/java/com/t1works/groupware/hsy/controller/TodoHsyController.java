@@ -38,6 +38,9 @@ public class TodoHsyController {
 	@Autowired 
 	private InterProductHsyService service2;
 	
+	@Autowired
+	private GoogleMail mail;
+	
 	// 사원 업무관리 페이지 매핑 url
 	@RequestMapping(value="/t1/employeeTodo.tw")    // 로그인이 필요한 url
 	public ModelAndView requiredLogin_employeeTodo(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
@@ -57,7 +60,7 @@ public class TodoHsyController {
 		// 2) 업무완료 페이지가 로드되면 처음에는 1주일 기간을 보여주기 위함
 		if(periodOption==null) periodOption="week"; 
 		
-		if(!("week".equals(periodOption) || "month".equals(periodOption) || "3months".equals(periodOption))) {
+		if(!("week".equals(periodOption) || "month".equals(periodOption) || "3months".equals(periodOption)||"all".equals(periodOption))) {
 			periodOption="week";
 		}
 			
@@ -487,7 +490,6 @@ public class TodoHsyController {
 	@RequestMapping(value="/t1/sendEmailIngTodo.tw",method= {RequestMethod.POST},produces="text/plain;charset=UTF-8")
 	public String sendEmailIngTodo(HttpServletRequest request) {
 		
-		
 		// 고객 테이블의 pk인 clientmobile, fk_pNo를 통해 메일 보낼 때 사용 될 정보 가져오기
 		String clientmobile= request.getParameter("clientmobile");
 		String fk_pNo= request.getParameter("fk_pNo");
@@ -497,8 +499,6 @@ public class TodoHsyController {
 		paraMap.put("fk_pNo", fk_pNo);
 		
 		ClientHsyVO cvo= service.getInfoForSendEmailIngTodo(paraMap);
-		
-		GoogleMail mail = new GoogleMail();
 		
 		int n=0;
 		try {

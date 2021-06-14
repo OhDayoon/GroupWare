@@ -19,7 +19,10 @@
 
 $(document).ready(function(){
 	
-	goViewComment(1); // 페이징처리 한 댓글 읽어오기
+	$("span#totalCmntCount").hide();
+    $("span#updateCmntCnt").hide();
+    $("span#cmntCount").hide();
+	displayComment(1);
 	
 	$("span.move").hover(function(){
 		                    $(this).addClass("moveColor");
@@ -28,8 +31,34 @@ $(document).ready(function(){
                         	$(this).removeClass("moveColor");
                         });
 	
+	// 댓글쓰기창에 엔터친 경우
+	$("input#commentContent").keydown(function(){
+		if(event.keyCode == 13){  //엔터 했을 경우
+			//alert('댓글썼따');
+			goWriteComment();
+		}
+	});
+	
+	// 더보기 버튼을 누르면 댓글 더 보여주기  
+	$("button#displayMoreCmnt").click(function(){
+		var cmntCount = $("span#cmntCount").text();
+		var totalCmntCount = $("span#totalCmntCount").text();
+		
+		console.log("cmntCount: "+cmntCount);
+		console.log("totalCmntCount: "+totalCmntCount);
+		
+		if(cmntCount >= 5){
+			$("div#commentDisplay").append("<hr style='margin: 10px 0;'>");
+			displayComment($(this).val());
+		} else if(cmntCount == totalCmntCount){
+			$(this).hide();
+		}
+		
+	});
+	
 }); // end of $(document).ready(function(){})------------------
 
+var updateCmntCnt = 0;
 //=== 댓글쓰기 ===
 function goWriteComment() {
 	
@@ -47,10 +76,25 @@ function goWriteComment() {
 		type:"post",
 		dataType:"json",
 		success:function(json){
-			// goReadComment();  // 페이징처리 안한 댓글 읽어오기
-			goViewComment(1); // 페이징처리 한 댓글 읽어오기 
-		   $("input#commentContent").val("");
-		   
+			if(json.n == 1){
+				$("div#commentDisplay").empty();
+				$("span#cmntCount").text(0);
+				
+				if(updateCmntCnt > 0){
+					updateCmntCnt = updateCmntCnt +1;
+					$("span#totalCmntCountDisplay").text("댓글("+updateCmntCnt+")");
+				} else {
+					updateCmntCnt = ${requestScope.totalCmntCount}+1;
+					$("span#totalCmntCountDisplay").text("댓글("+updateCmntCnt+")");
+				}
+				
+				console.log("업뎃댓글갯수: "+updateCmntCnt);
+				displayComment(1); // 페이징처리 한 댓글 읽어오기
+			   $("input#commentContent").val("");
+			 	return;
+			} else{
+				alert('댓글쓰기를 실패했습니다.');
+			}
 		},
 		error: function(request, status, error){
 			alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -59,200 +103,215 @@ function goWriteComment() {
 	
 }// end of function goAddWrite(){}--------------------------
 
-//=== Ajax로 불러온 댓글내용을 페이징처리하기 ===
-function goViewComment(currentShowPageNo) {
+ 
+var len = 5; // 한번에 댓글 5개씩 보기
+
+//display 할 댓글 정보를 추가 요청하기
+function displayComment(start){
+	// 댓글 수 5개 이하는 더보기 버튼 숨기기, 5개 이상 보이기
+	if(${requestScope.totalCmntCount} > 5 || updateCmntCnt > 5){
+		$("button#displayMoreCmnt").show();
+	} else {
+		$("button#displayMoreCmnt").hide();
+	}
 	
 	$.ajax({
 		url:"<%=ctxPath%>/t1/commentList.tw",
-		data:{"fk_seq":"${requestScope.boardvo.seq}",
-			  "currentShowPageNo":currentShowPageNo},
-		dataType:"json",
-		success:function(json){ 
+		// type:"GET",
+		data:{"fk_seq":"${requestScope.boardvo.seq}"
+			 ,"start":start
+			 ,"len":len},
+		dataType:"JSON",
+		success:function(json){
 			
 			var html = "";
-			
-			if(json.length > 0) {
-				$.each(json, function(index, item){
-					
+			if(updateCmntCnt > 0){
+				$("span#totalCmntCountDisplay").text("댓글("+updateCmntCnt+")");
+			} else {
+				$("span#totalCmntCountDisplay").text("댓글(${requestScope.totalCmntCount})");
+			}
+			if(start == "1" && json.length == 0){
+               
+				html += "댓글이 없습니다.";
+				$("div#commentDisplay").html(html);
+				
+			} else if(json.length > 0) {
+				// 처음에 데이터가 존재하는 경우
+				$.each(json, function(index,item){	// ajax 반복문
 					html += "<strong style='font-size:13px;'>"+item.name+"</strong>&nbsp;&nbsp;";
-					html += "<span style='display:inline-block; margin-bottom:5px; font-size:13px;'>"+item.regDate+"</span>&nbsp;&nbsp;"
+					html += "<span style='display:inline-block; margin-bottom:5px; font-size:13px;'>"+item.regDate+"</span>&nbsp;&nbsp;";
 					
 					if($("input[name=fk_employeeid]").val() == item.fk_employeeid){
-						html+="<a href='javascript:editGenComment("+item.seq+")' style='margin-right:5px; font-size:13px; text-decoration: none;'>수정</a><a href='javascript:delGenComment("+item.seq+")' style='border-left: solid 1px gray; padding-left: 5px; font-size:13px; text-decoration: none;'>삭제</a><br>";
+						html+="<a href='javascript:goEdit("+index+")' class='editCmnt' value='"+index+"' style='margin-right:5px; font-size:13px; text-decoration: none;'>수정</a>";
+						html+="<a href='javascript:editComplete("+index+")' class='editConfirm' style='margin-right:5px; font-size:13px; text-decoration: none;'>확인</a>";
+						html+="<a href='javascript:delComment("+item.seq+")' class='delCmnt' style='border-left: solid 1px gray; padding-left: 5px; font-size:13px; text-decoration: none;'>삭제</a>";
+						html+="<a href='javascript:editCancel("+index+")' class='editCancel' style='border-left: solid 1px gray; padding-left: 5px; font-size:13px; text-decoration: none;'>취소</a><br>";
 					} else {
 						html+="<br>";
 					}
-					
-					html += "<span style='font-size:13px;'>"+item.content+"</span>";
-					
+					console.log("인덱스확인용: "+index);
+					html += "<span class='content-span' name='content-span' style='font-size:13px;'>"+item.content+"</span>";
+					html += "<input class='editComntContent' type='hidden' value='"+item.content+"' />";
+					html += "<input class='editCmntSeq' type='hidden' value='"+item.seq+"' />";
+					html += "<form name='editCmntFrm'>";
+					html += "</form>";
 					if(index < json.length-1){
 						html +="<hr style='margin: 10px 0;'>";
 					}
 					
-				});
-			}
-			else {
-				html += "<span>댓글이 없습니다</span>";
-			}
-			
-			$("div#commentDisplay").html(html);
-			
-			// 페이지바 함수 호출
-			makeCommentPageBar(currentShowPageNo);
+				});	// end of $.each(json, function(index,item){}) ----------------
+				
+				//댓글 출력하기
+				$("div#commentDisplay").append(html);
+				$("form[name=editCmntFrm]").hide();
+				$("a.editConfirm").hide();
+				$("a.editCancel").hide();
+				
+				// >>> !!! 중요 !!! 더보기... 버튼의 value 속성에 값을 지정하기 <<< //  
+				$("button#displayMoreCmnt").val(Number(start)+len);
+				
+				// cmntCount에 지금까지 출력된 댓글의 개수를 누적해서 기록한다
+				$("span#cmntCount").text( Number($("span#cmntCount").text()) +json.length );
+				
+				if(updateCmntCnt > 0){
+					$("span#updateCmntCnt").text(updateCmntCnt);					
+				} else {
+					$("span#totalCmntCount").text(json.totalCmntCount);
+				}
+
+				 // 더보기... 버튼을 계속해서 클릭하여 countHIT 값과 totalHITCount 값이 일치하는 경우 
+				 if(updateCmntCnt > 0){
+					if($("span#updateCmntCnt").text() == $("span#cmntCount").text()){
+						$("button#displayMoreCmnt").hide();
+						//$("span#cmntCount").text("0");
+					}
+				 } else {
+					if($("span#totalCmntCount").text() == $("span#cmntCount").text()){
+						$("button#displayMoreCmnt").hide();
+						//$("span#cmntCount").text("0");
+					}
+				 }
+			} 
 		},
 		error: function(request, status, error){
-			alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-	 	}
+           alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		}
 	});
 	
-}// end of function goViewComment(currentShowPageNo) {}----------------------
 	
-//==== 댓글내용 페이지바  Ajax로 만들기 ==== // 
-function makeCommentPageBar(currentShowPageNo) {
+}// end of function displayComment()---------------------- 
+ 
+ 
+var editComntContent ="";
+var editCmntSeq = "";
 
-	$.ajax({
-		url:"<%= ctxPath%>/t1/getCommentTotalPage.tw",
-		data:{"fk_seq":"${requestScope.boardvo.seq}",
-			  "sizePerPage":"5"},
-		type:"get",
-		dataType:"json",
-		success:function(json) {
-			
-			if(json.totalPage > 0) {
-				// 댓글이 있는 경우 
-				var totalPage = json.totalPage;
-				
-				var pageBarHTML = "<ul style='list-style: none;'>";
-				
-				var blockSize = 3;
-				// blockSize 는 1개 블럭(토막)당 보여지는 페이지번호의 개수 이다.
-				
-				var loop = 1;
-			    
-			    if(typeof currentShowPageNo == "string") {
-			    	currentShowPageNo = Number(currentShowPageNo);
-			    }
-			    
-			    // *** !! 다음은 currentShowPageNo 를 얻어와서 pageNo 를 구하는 공식이다. !! *** //
-				var pageNo = Math.floor((currentShowPageNo - 1)/blockSize) * blockSize + 1;
-				
-			
-			// === [맨처음][이전] 만들기 === 
-				if(pageNo != 1) {
-					pageBarHTML += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='javascript:goViewComment(\"1\")'>[맨처음]</a></li>";
-					pageBarHTML += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='javascript:goViewComment(\""+(pageNo-1)+"\")'>[이전]</a></li>";
-				}
-			
-				while( !(loop > blockSize || pageNo > totalPage) ) {
-				
-					if(pageNo == currentShowPageNo) {
-						pageBarHTML += "<li style='display:inline-block; width:30px; font-size:12pt; border:solid 1px gray; color:red; padding:2px 4px;'>"+pageNo+"</li>";
-					}
-					else {
-						pageBarHTML += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='javascript:goViewComment(\""+pageNo+"\")'>"+pageNo+"</a></li>";
-					}
-					
-					loop++;
-					pageNo++;
-				}// end of while------------------------
-			
-			
-			// === [다음][마지막] 만들기 === 
-				if(pageNo <= totalPage) {
-					pageBarHTML += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='javascript:goViewComment(\""+pageNo+"\")'>[다음]</a></li>";
-					pageBarHTML += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='javascript:goViewComment(\""+totalPage+"\")'>[마지막]</a></li>";
-				}
-				
-				pageBarHTML += "</ul>";
-			    
-				$("div#pageBar").html(pageBarHTML);
-			}
-		},
-		error: function(request, status, error){
-			alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-	 	}
-	});
+//댓글 수정 클릭시 입력창 표시하기
+function goEdit(idx){
+	 // console.log("이 댓글 인덱스 : "+idx);
+	//$("input[name=content-input]").eq(idx).toggle();
+	$("span.content-span").eq(idx).toggle();
 	
-}// end of function makeCommentPageBar(currentShowPageNo) {}-----------------
+	editComntContent = $("input.editComntContent").eq(idx).val();
+	editCmntSeq = $("input.editCmntSeq").eq(idx).val();
+	
+	 console.log("editComntContent : "+editComntContent);
+	 console.log("editCmntSeq : "+editCmntSeq);
+	
+	$("form[name=editCmntFrm]").append("<input name='editComntContent' type='text' style='width:95%;'/>");
+	$("form[name=editCmntFrm]").append("<input name='editCmntSeq' type='hidden' />");
+	
+	$("input[name=editCmntSeq]").val(editCmntSeq);
+	$("input[name=editComntContent]").val(editComntContent);
+	
+	$("form[name=editCmntFrm]").eq(idx).toggle();
+	$("a.editCmnt").eq(idx).toggle();
+	$("a.delCmnt").eq(idx).toggle();
+	$("a.editConfirm").eq(idx).toggle();
+	$("a.editCancel").eq(idx).toggle();
+	
+}
 
+//댓글 수정 취소
+function editCancel(idx){
+	console.log("이 수정댓글창 인덱스: "+idx);
+	$("form[name=editCmntFrm]").find('input').remove();
+	//$("form[name=editCmntFrm]").eq(idx).children().children().remove();
+	$("form[name=editCmntFrm]").eq(idx).toggle();
+	$("span.content-span").eq(idx).toggle();
+	$("a.editCmnt").eq(idx).toggle();
+	$("a.delCmnt").eq(idx).toggle();
+	$("a.editConfirm").eq(idx).toggle();
+	$("a.editCancel").eq(idx).toggle();
+}
 
-//댓글 수정하기
-function editGenComment(comment_seq){
+//확인 클릭시 댓글 수정완료하기
+function editComplete(idx){
    
-   var bool = confirm("댓글을 수정하시겠습니까?");
-   console.log("bool => " + bool);
-   console.log("넘겨받은 댓글번호"+comment_seq);
+   var form_data = $("form[name=editCmntFrm]").eq(idx).serialize();
    
-   
-   
-   if(bool){
-	   alert("아직 구현중이에요.. ㅎㅎ");
-	   $("input.textbox").show();
-	   <%-- 
-	   
-	   $.ajax({
-		   url:"<%=request.getContextPath()%>/t1/editSuggComment.tw",
-		   data:{"seq":comment_seq,
-			   	 "content":content},
-		   dataType:"json",
-		   success:function(json){
-			   if(json.n == 1){
-				   alert('댓글 수정 성공');
-				   goViewComment();
-			   } else {
-				   alert('댓글 수정 실패');
-			   }
-			   
-		   },
-		   error: function(request, status, error){
-	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-	       }
+   $.ajax({
+	   url:"<%=request.getContextPath()%>/t1/editGenComment.tw",
+	   data:form_data,
+	   type:"get",
+	   dataType:"json",
+	   success:function(json){
+		   if(json.n == 1){
+			   //alert('댓글 수정 성공');
+			   $("div#commentDisplay").empty();
+			   $("span#cmntCount").text(0);
+			   displayComment(1);
+		   } else {
+			   alert('댓글 수정 실패');
+		   }
 		   
-		   
-	   });
-	   
-	    --%>
-   }
+	   },
+	   error: function(request, status, error){
+            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+       }
+   });
    
-}  //end of function editGenComment(comment_seq) -------
+}  //end of function editComplete(idx) -------
 
-
-
-// 댓글 삭제하기
-function delGenComment(comment_seq){
+//댓글 삭제하기
+function delComment(comment_seq){
    
    var bool = confirm("댓글을 삭제하시겠습니까?");
    console.log("bool => " + bool);
- console.log("넘겨받은 seq : "+comment_seq);
-   
-   
+ 
    if(bool){
 	   $.ajax({
 		   url:"<%=request.getContextPath()%>/t1/delGenComment.tw",
-		   data:{"seq":comment_seq},
+		   data:{"seq":comment_seq,
+			     "fk_seq":"${requestScope.boardvo.seq}"},
 		   dataType:"json",
 		   success:function(json){
+			   
 			   if(json.n == 1){
 				   console.log("댓글 삭제 성공");
-				   goViewComment();
+				   $("div#commentDisplay").empty();
+				   $("span#cmntCount").text(0);
+				   if(updateCmntCnt > 0){
+					    updateCmntCnt = updateCmntCnt-1;
+						console.log("업뎃댓글갯수: "+updateCmntCnt);
+						$("span#updateCmntCnt").text("댓글("+updateCmntCnt+")");
+					   displayComment(1);
+					} else {
+						updateCmntCnt = ${requestScope.totalCmntCount}-1;
+						console.log("업뎃댓글갯수: "+updateCmntCnt);
+						$("span#totalCmntCountDisplay").text("댓글("+updateCmntCnt+")");
+					   displayComment(1);
+					}	
+				   
 			   } else {
 				   alert('댓글 삭제가 실패했습니다.');
 			   }
-			   
 		   },
 		   error: function(request, status, error){
 	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 	       }
-		   
-		   
 	   });
-	   
-	   
    }
-}  //end of function delGenComment(comment_seq) -------
-
-
-
+}  //end of function delComment(comment_seq) -------
 
 </script>
 
@@ -329,14 +388,20 @@ function delGenComment(comment_seq){
 			<input type="hidden" name="fk_seq" value="${requestScope.boardvo.seq}" /> 
 			댓글쓰기(500자이내)<br>
 			<input id="commentContent" type="text" name="content" style="display: inline-block; width: 93%; height: 28px; margin: 5px 0;"/> 
-			<button class="cmnt-btn-style" id="btnComment" type="button" onclick="goWriteComment()">확인</button> 
+			<button class="btn-style" id="btnComment" type="button" onclick="goWriteComment()">확인</button> 
 			<button class="cmnt-btn-style" type="reset">취소</button>
 		</form>
     </c:if>
     
-    <span style="display: inline-block; margin-top: 20px; margin-bottom: 10px;">댓글(개수표시하기)</span>
+    <%-- <span style="display: inline-block; margin-top: 20px; margin-bottom: 10px;">댓글 (${requestScope.boardvo.commentCount})</span> --%>
+    <span id="totalCmntCountDisplay" style="display: inline-block; margin-top: 20px; margin-bottom: 10px;"></span>
     <!-- ===== #94. 댓글 내용 보여주기 ===== -->
     <div id="commentDisplay" style="clear:both; border-top: solid 1px #eee; border-bottom: solid 1px #eee; padding: 10px 10px;"></div>
+	<button type="button" id="displayMoreCmnt" class="btn-style" style="margin-top: 10px; font-size: 8pt;">더보기</button>
+
+	<span id="totalCmntCount">${requestScope.totalCmntCount}</span>
+	<span id="updateCmntCnt"></span>
+    <span id="cmntCount">0</span>
 
     <%-- ==== #136. 댓글 페이지바 ==== --%>
     <div id="pageBar" style="width: 90%; margin: 10px auto; text-align: center;"></div> 

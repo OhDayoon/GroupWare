@@ -105,11 +105,23 @@ public class MyDocumentSiaDAO implements InterMyDocumentSiaDAO {
 		int n = sqlsession4.update("mydocument_sia.approval", paraMap);
 		return n;
 	}
+	// 결재로그 테이블에 insert 하기(승인)
+	@Override
+	public int approvalLog(Map<String, String> paraMap) {
+		int n = sqlsession4.insert("mydocument_sia.approvalLog", paraMap);
+		return n;
+	}
 
 	// 내문서함 - 수신함 - 반려버튼 클릭
 	@Override
 	public int reject(Map<String, String> paraMap) {
 		int n = sqlsession4.update("mydocument_sia.reject", paraMap);
+		return n;
+	}
+	// 결재로그 테이블에 insert 하기(반려)
+	@Override
+	public int rejectLog(Map<String, String> paraMap) {
+		int n = sqlsession4.insert("mydocument_sia.rejectLog", paraMap);
 		return n;
 	}
 	
@@ -284,7 +296,7 @@ public class MyDocumentSiaDAO implements InterMyDocumentSiaDAO {
 		return avo;
 	}
 	
-	// 내문서함 - 임시저장함 - 일반결재 - 저장버튼 클릭		
+	// 내문서함 - 임시저장함 - 저장버튼 클릭		
 	// 전자결재 테이블 update 첨부파일 없는 경우 - 임시저장 상태
 	@Override
 	public int approvalSave(ApprovalSiaVO avo) {
@@ -294,14 +306,14 @@ public class MyDocumentSiaDAO implements InterMyDocumentSiaDAO {
 	// 전자결재 테이블 update 첨부파일 있는 경우 - 임시저장 상태
 	@Override
 	public int approvalSave_withFile(ApprovalSiaVO avo) {
-		int n = sqlsession4.update("mydocument_sia.approvalSave_withFile", avo);
+		int n = sqlsession4.update("mydocument_sia.approvalSave_withFile", avo);		
 		return n;
 	}
 	
 	// 전자결재 테이블 update 첨부파일 없는 경우 - 일반결재 - 제출
 	@Override
 	public int approvalSubmit(ApprovalSiaVO avo) {
-		int n = sqlsession4.update("mydocument_sia.approvalSubmit", avo);
+		int n = sqlsession4.update("mydocument_sia.approvalSubmit", avo);		
 		return n;
 	}
 	// 전자결재 테이블 update 첨부파일 있는 경우 - 일반결재 - 제출
@@ -330,6 +342,13 @@ public class MyDocumentSiaDAO implements InterMyDocumentSiaDAO {
 	public int optionSaveVacation(ApprovalSiaVO avo) {
 		int result = sqlsession4.update("mydocument_sia.optionSaveVacation", avo);
 		return result;
+	}
+
+	// 결재로그 테이블에 insert하기 (제출)
+	@Override
+	public int submitLog(Map<String, String> paraMap) {
+		int n = sqlsession4.insert("mydocument_sia.submitLog", paraMap);
+		return n;
 	}
 	
 	/////////////////////////////////////////////////////////////////////
@@ -401,6 +420,31 @@ public class MyDocumentSiaDAO implements InterMyDocumentSiaDAO {
 		ApprovalSiaVO avo = sqlsession4.selectOne("mydocument_sia.myDocuVacation_complete_detail", paraMap);
 		return avo;
 	}
+
+	
+	// 결재의견 삭제하기
+	@Override
+	public int delMyOpinion(Map<String, String> paraMap) {
+		int n = sqlsession4.delete("mydocument_sia.delMyOpinion", paraMap);
+		return n;
+	}
+
+	// 결재로그 리스트보기
+	@Override
+	public List<ApprovalSiaVO> approvalLogList(String parentAno) {
+		List<ApprovalSiaVO> avo = sqlsession4.selectList("mydocument_sia.approvalLogList", parentAno);
+		return avo;
+	}
+
+	// 연차 반차 개수 복구하기
+	@Override
+	public int subtract(Map<String, String> paraMap) {
+		int n = sqlsession4.update("mydocument_sia.subtract", paraMap);
+		return n;
+	}
+
+	
+
 
 
 

@@ -391,8 +391,8 @@ function addJoinEmp(value){
 
 
 </script>
-<div style="margin-left: 80px; width: 88%;">
-<h3 style="display: inline-block;">일정 수정하기</h3>&nbsp;&nbsp;<a  href="<%= ctxPath%>/t1/schedule.tw"><span style="color: #395673;">◀캘린더로 돌아가기</span></a>
+<div style="margin: 30px 0px 30px 50px; width: 88%;">
+<i class="far fa-calendar-alt fa-2x"></i>&nbsp;<span style="font-size: 18pt; font-weight: bold;">일정 수정하기</span>&nbsp;&nbsp;<a  href="<%= ctxPath%>/t1/schedule.tw"><span style="color: #395673;">◀캘린더로 돌아가기</span></a>
 
 	<form name="scheduleFrm">
 		<table id="schedule" class="table  table-bordered">

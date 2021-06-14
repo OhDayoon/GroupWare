@@ -101,9 +101,9 @@ $(document).ready(function(){
 				<tr class="tbody">
 					<td>${fn:length(boardList) - status.index}</td>
 					<td>
-					<%-- === 댓글쓰기가 없는 게시판 === --%>
-      				<%-- <span class="subject" onclick="goView('${boardvo.seq}')">${boardvo.subject}</span> --%> 
-					<a class="anchor-style" href="javascript:goView('${boardvo.seq}')" >${boardvo.subject}</a>
+					<a class="anchor-style" href="javascript:goView('${boardvo.seq}')" >${boardvo.subject}&nbsp;
+					<c:if test="${boardvo.commentCount > 0}">(<span style="font-weight:bold;">${boardvo.commentCount}</span>)</c:if>
+					</a>
       				<c:if test="${boardvo.privatePost eq 1}">
       				<i class="fas fa-lock"></i>
       				</c:if> 

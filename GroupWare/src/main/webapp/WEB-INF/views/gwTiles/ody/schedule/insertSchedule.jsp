@@ -140,9 +140,9 @@ button.btn_normal{
 		
 		
 		// 공유자 추가하기
-		$("input#joinEmp").bind("keyup",function(){
+		$("input#joinEmp").keyup(function(){
 				var joinEmp = $(this).val();
-				console.log(joinEmp);
+			
 				$.ajax({
 					url:"<%= ctxPath%>/t1/insertSchedule/searchJoinEmpList.tw",
 					data:{"joinEmp":joinEmp},
@@ -291,8 +291,8 @@ button.btn_normal{
 
 </script>
 
-<div style="margin-left: 80px; width: 88%;">
-<h3>일정 등록</h3>
+<div style="margin: 30px 0px 30px 50px; width: 88%;">
+<i class="far fa-calendar-alt fa-2x"></i>&nbsp;<span style="font-size: 18pt; font-weight: bold;">일정 등록</span>
 
 	<form name="scheduleFrm">
 		<table id="schedule" class="table table-bordered">

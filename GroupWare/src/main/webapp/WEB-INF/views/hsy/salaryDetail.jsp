@@ -3,7 +3,8 @@
 <% String ctxPath= request.getContextPath(); %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %> 
- 
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> 
 <style type="text/css">
 
 	div#salaryDetailContainer{
@@ -17,7 +18,7 @@
 		border: solid 0px red;
 		font-size: 30pt;
 		font-weight: bold;
-		margin-bottom:50px;
+		margin-bottom:70px;
 	}
 	
 	table.table-striped{
@@ -38,6 +39,15 @@
 		font-size:12pt;
 	}
 	
+	button#downloadSalaryDetail{
+		width: 177px;
+		height: 50px;
+		cursor: pointer;
+		font-size: 12pt;
+		margin: 30px 0px 0px 40px;
+	}
+	
+	button#downloadSalaryDetail:hover{font-weight: bold;}
 </style>   
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -110,10 +120,25 @@
 		// 급여총액 값 넣어주기
 		$("td.totalSalary").html(totalSalary.toLocaleString('en')+"&nbsp;원");
 		
+		
+		// excel로 저장 버튼 클릭 시 excel파일 다운로드 진행하기
+		$("button#downloadSalaryDetail").bind('click',function(){
+			
+			var $frm= document.salaryHiddenFrm;
+			$frm.method="POST";
+			$frm.action="<%=ctxPath%>/excel/downloadSalaryExcelFile.tw";
+			$frm.submit();
+			
+		}); // end of $("buttono#downloadSalaryDetail").bind('click',function(){-----
+		
+			
 	}); // end of $(document).ready(function(){-------------
 
 </script>
 
+<button type="button" id="downloadSalaryDetail">
+	EXCEL로&nbsp;저장&nbsp;&nbsp;<span class="glyphicon glyphicon-download"></span>
+</button>
 
 <div id="salaryDetailContainer">
  	<div id="salaryDetailTitle" align="center">${year}년&nbsp;${month}월&nbsp;급여명세서</div>
@@ -203,5 +228,11 @@
 		<span style="font-size: 23pt; font-weight: bold;">T1WORKS</span>
 		<img src="<%=ctxPath%>/resources/images/login/t1works_icon.png" width="100px" height="100px" style="position:relative; top:20px;"/>
 	</div>
+	
+	<form name="salaryHiddenFrm">
+		<input type="hidden" name="year" value="${year}" />
+		<input type="hidden" name="month" value="${month}" />
+		<input type="hidden" name="employeeid" value="${mvo.employeeid}" />
+	</form>
 	
 </div>

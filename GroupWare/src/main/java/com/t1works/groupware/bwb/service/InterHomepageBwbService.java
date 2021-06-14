@@ -43,11 +43,32 @@ public interface InterHomepageBwbService {
    // 부서 월별 출퇴근기록 가지고오기
    List<Map<String, String>> selectDepMonthIndolence(String fk_dcode);
    
+   // 여행상품들의 일정 뽑아오기
+   List<Map<String, String>> productSchedule();
+   
+   // 이용자의 최근1주일 근로시간 가지고오기
+   Map<String, String> selecthourMap(Map<String, String> searchMap);
+   
+   // 일주일치 날짜 가지고오기	
+   Map<String, String> selectWeekDay(String today);
+   
+   // word-cloud 차트를 위해 데이터 뽑아오기
+   List<String> selectWordList();
+   
+   // 검색어 입력 시 자동검색기능(ajax처리)
+   List<String> wordSearch(Map<String, String> paraMap);
+   
+   // 검색어 입력 후 URL주소 뽑아오기
+   String goSebuMenu(Map<String, String> paraMap);
+   
+   // 해당 검색어 tbl_word에 insert시켜주기
+   void insertWord(String searchWord);
+   
+   // 고객여행일정 가지고오기
+   List<Map<String, String>> selectScheduleList(String clientname);
+
    
    
-
-
-
-
+  
    
 }

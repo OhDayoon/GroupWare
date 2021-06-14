@@ -257,8 +257,8 @@
 		// 모달창에서 메일 보내기 이벤트
 		$(document).on('click',"button.sendMail",function(){
 			
-			var receiverEmail= $(this).prev().text();
-			location.href="<%=ctxPath%>/t1/new_mail.tw?receiverEmail="+receiverEmail;
+			var addrsBookEmail= $(this).prev().text();
+			location.href="<%=ctxPath%>/t1/new_mail.tw?addrsBookEmail="+addrsBookEmail;
 		});
 		
 		

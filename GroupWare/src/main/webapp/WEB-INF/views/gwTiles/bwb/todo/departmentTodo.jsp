@@ -121,16 +121,61 @@
 		font-weight: bolder;
 		font-size: 15pt;
 	}
+	
+	div#infoMenu{
+		background-color: #94b8b8 !important;
+	}
 </style>
 
 <script type="text/javascript">
 
 	$(document).ready(function(){
 		
+		// 체크박스 선택 및 입력한 값 유지시키기 시작
+		var periodChoice = "${paraMap.period}";
+		var searchProject = "${paraMap.searchProject}";
+		var searchWhoCharge = "${paraMap.searchWhoCharge}";
+		var statusChoice_es = "${paraMap.statusChoice_es}";
+		
+		$("input:radio[name=periodChoice]").each(function(index,item){
+			
+			if(periodChoice == $(item).val()){
+				$(item).prop("checked",true);
+				return false;
+			}
+			
+		});
+		
+		if(statusChoice_es!=""){
+			
+			var statusChoiceArr = statusChoice_es.split(",");
+			
+			$("input:checkbox[name=statusChoice]").each(function(index,item){
+				
+				for(var i=0; i<statusChoiceArr.length; i++){
+					if($(item).val()==statusChoiceArr[i]){
+						$(item).prop("checked",true)
+						break;
+					}
+				}// end of for--
+			})// end of each(function
+		}// end of if
+		
+		$("input#searchProject").val(searchProject);
+		$("input#searchWhoCharge").val(searchWhoCharge);
+		
+		// 체크박스 선택 및 입력한 값 유지시키기 끝
+		
+		
+		
+		
+		
+		
 		// 검색하기 
 		$("button#whatSearch").click(function(){
 
 			var period = $("input:radio[name=periodChoice]:checked").val();
+			
 			var statusChoiceArr = new Array();
 			
 			$("input:checkbox[name=statusChoice]:checked").each(function(index,item){
@@ -444,7 +489,7 @@
 	
 	
 	<div id="DepartmentInfo">
-		<div id="infoMenu" style="margin-left:10px; margin-bottom:6px; border-bottom:solid 1px #ccc;">
+		<div id="infoMenu" style="padding-left:9px; margin-bottom:6px; border-bottom:solid 1px #ccc;">
 			<span class="sInfo sheader" style="width:50px;">순번</span>
 			<span class="sInfo sheader" style="width:240px;">프로젝트명</span>
 			<span class="sInfo sheader" style="width:100px;">배정자</span>
